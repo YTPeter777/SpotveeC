@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>線上保齡球</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <section id="lobby" class="panel">
+    <h1>🎳 線上保齡球</h1>
+    <p>輸入同一個房號，就能和朋友一起玩（最多 6 人）。</p>
+    <input id="name" maxlength="12" placeholder="你的名字">
+    <input id="code" maxlength="6" placeholder="房號（例如 ABC123）">
+    <button id="joinBtn">加入 / 建立房間</button>
+    <p id="err" class="err"></p>
+  </section>
+
+  <section id="game" hidden>
+    <div class="side">
+      <div class="room">房號：<b id="roomCode"></b></div>
+      <div id="status" class="status"></div>
+      <button id="startBtn" hidden>開始遊戲</button>
+      <button id="restartBtn" hidden>再玩一局</button>
+      <div id="controls" class="controls" hidden>
+        <div>旋轉：<button id="spinL">⟲</button> <span id="spinVal">0</span> <button id="spinR">⟳</button></div>
+        <p class="hint">點擊畫面（或空白鍵）三次：<br>① 決定位置 ② 決定方向 ③ 決定力道</p>
+      </div>
+      <div id="board"></div>
+    </div>
+    <canvas id="lane"></canvas>
+  </section>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/shared/physics.js"></script>
+  <script src="/shared/scoring.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>

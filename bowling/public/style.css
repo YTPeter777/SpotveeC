@@ -1,0 +1,22 @@
+:root { --bg: #14161c; --panel: #1f232c; --fg: #eef0f4; --muted: #9aa3b2; --accent: #f5a524; --line: #333a47; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: system-ui, "Noto Sans TC", sans-serif; }
+button { background: var(--accent); color: #111; border: 0; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; }
+input { width: 100%; padding: 10px; margin: 6px 0; border-radius: 8px; border: 1px solid var(--line); background: #0f1116; color: var(--fg); font-size: 16px; }
+.panel { max-width: 360px; margin: 10vh auto; padding: 24px; background: var(--panel); border-radius: 14px; }
+.panel button { width: 100%; margin-top: 8px; }
+.err { color: #ff6b6b; min-height: 1.2em; }
+#game { display: flex; gap: 16px; padding: 16px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+.side { flex: 1 1 340px; max-width: 560px; display: flex; flex-direction: column; gap: 10px; }
+.status { font-size: 18px; color: var(--accent); min-height: 1.4em; }
+.hint { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+.controls { background: var(--panel); padding: 10px; border-radius: 10px; }
+.controls button { padding: 4px 10px; }
+canvas { height: min(88vh, 900px); max-width: 100%; border-radius: 10px; background: #0b0c10; touch-action: none; cursor: crosshair; }
+.sheet { width: 100%; border-collapse: collapse; font-size: 12px; background: var(--panel); border-radius: 8px; overflow: hidden; }
+.sheet td, .sheet th { border: 1px solid var(--line); text-align: center; padding: 2px; }
+.sheet th.name { text-align: left; padding-left: 6px; white-space: nowrap; max-width: 80px; overflow: hidden; }
+.sheet tr.now { outline: 2px solid var(--accent); }
+.sheet .marks { color: var(--muted); letter-spacing: 2px; }
+.sheet .left { opacity: .4; }
+.wrap { overflow-x: auto; }

@@ -1,0 +1,18 @@
+const assert = require('assert');
+const S = require('./shared/scoring');
+const P = require('./shared/physics');
+assert.strictEqual(S.total(Array(12).fill(10)), 300);
+assert.strictEqual(S.total(Array(21).fill(5)), 150);
+assert.strictEqual(S.total(Array(20).fill(0)), 0);
+assert.deepStrictEqual(S.frameScores([10, 3, 4]), [17, 24]);
+assert.deepStrictEqual(S.frameScores([10, 3]), [null]);
+assert.deepStrictEqual(S.frameMarks([...Array(18).fill(0), 10, 10, 10])[9], ['X', 'X', 'X']);
+assert.deepStrictEqual(S.frameMarks([...Array(18).fill(0), 10, 4, 6])[9], ['X', '4', '/']);
+assert.deepStrictEqual(S.frameMarks([...Array(18).fill(0), 7, 3, 10])[9], ['7', '/', 'X']);
+const up = Array(10).fill(true);
+const res = [];
+for (let x = 20; x <= 180; x += 20) for (const spin of [-0.5, 0, 0.5]) res.push(P.simulate(up, { x, aim: 0, power: 0.8, spin }).length);
+console.log('pins knocked over a sweep:', res.join(','));
+assert(Math.max(...res) >= 8, 'some throws should knock most pins');
+assert.strictEqual(P.simulate(up, { x: 12, aim: -0.15, power: 1, spin: 0 }).length, 0, 'gutter ball');
+console.log('all tests passed');
