@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<title>NOVA</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div>
+      <div class="brand">NOVA <span>控制基地</span></div>
+      <div id="greet" class="greet"></div>
+    </div>
+    <div id="clock" class="clock"></div>
+  </header>
+
+  <main class="grid">
+    <section class="card wide">
+      <div class="card-head">
+        <h2>常用捷徑</h2>
+        <div class="actions">
+          <button data-add="app">＋ 程式/檔案</button>
+          <button data-add="folder">＋ 資料夾</button>
+          <button data-add="url">＋ 網址</button>
+        </div>
+      </div>
+      <div id="shortcuts" class="shortcuts"></div>
+      <form id="urlForm" class="inline" hidden>
+        <input id="urlName" placeholder="名稱（例如 YouTube）">
+        <input id="urlValue" placeholder="https://…">
+        <button type="submit">加入</button>
+        <button type="button" id="urlCancel" class="ghost">取消</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>電腦狀態</h2></div>
+      <div class="meters">
+        <div class="meter"><div class="ring" id="cpuRing"><span id="cpu">–</span></div><label>CPU</label></div>
+        <div class="meter"><div class="ring" id="memRing"><span id="mem">–</span></div><label>記憶體</label></div>
+        <div class="meter"><div class="ring" id="diskRing"><span id="disk">–</span></div><label>磁碟</label></div>
+      </div>
+      <p id="summary" class="summary"></p>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>待辦</h2><span id="todoCount" class="muted"></span></div>
+      <form id="todoForm" class="inline"><input id="todoInput" placeholder="新增待辦，按 Enter"></form>
+      <ul id="todos" class="todos"></ul>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>整理下載資料夾</h2></div>
+      <p class="muted">依照檔案類型分到「圖片」「文件」「影片」等子資料夾。會先列出清單給你確認，也可以復原。</p>
+      <div class="actions"><button id="scanBtn">掃描</button><button id="undoBtn" class="ghost" hidden>復原上一次</button></div>
+      <div id="orgResult"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

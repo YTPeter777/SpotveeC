@@ -1,0 +1,23 @@
+{
+  "name": "nova",
+  "productName": "NOVA",
+  "version": "0.1.0",
+  "description": "NOVA 控制基地：常用捷徑、待辦、電腦狀態、下載資料夾整理",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node test.js",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "dev.nova.app",
+    "files": ["main.js", "preload.js", "lib/**", "src/**"],
+    "win": { "target": "nsis" },
+    "mac": { "target": "dmg" }
+  }
+}
