@@ -283,9 +283,11 @@ body.chatting #feed .m.gone{opacity:1}
 #help,#photo{position:fixed;inset:0;z-index:45;display:grid;place-items:center;background:rgba(8,5,22,.6);padding-inline:16px}
 #help>div{max-width:480px;width:100%;box-sizing:border-box;padding:22px;display:flex;flex-direction:column;gap:14px;max-height:86vh;overflow-y:auto}
 #help h2{margin:0;font:800 24px var(--txt)}
-.keys{display:grid;grid-template-columns:auto 1fr;gap:12px 14px;font:600 14px/1.5 var(--txt);align-items:center;color:var(--ink2)}
+.keys{display:grid;grid-template-columns:var(--kc,124px) 1fr;gap:12px 14px;font:600 14px/1.5 var(--txt);align-items:center;color:var(--ink2)}
 .keys>span:nth-child(odd){display:flex;gap:4px;justify-content:flex-end;color:var(--ink)}
 .keys .i{color:var(--pink1)}
+.keys.tch{display:none}@media (pointer:coarse){.keys{--kc:78px}.keys.kb{display:none}.keys.tch{display:grid}}
+.joyi{display:block;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle,#fff 34%,rgba(255,255,255,.18) 37%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
 #photo>div{padding:14px 14px 18px;border-radius:8px;background:#fffdf7;color:#2a2340;display:flex;flex-direction:column;gap:12px;align-items:center;transform:rotate(-2deg);box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:min(420px,90vw)}
 #photo img{width:100%;border-radius:4px;display:block}
 #photo b{font:800 18px var(--disp)}
@@ -449,17 +451,27 @@ body.chatting #feed .m.gone{opacity:1}
 
 <div id="help" hidden><div class="pnl">
  <h2>操作說明</h2>
- <div class="keys">
-  <span><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span></span><span>走路（手機用左下搖桿），<span class="key">Shift</span> 跑步</span>
+ <div class="keys kb">
+  <span><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span></span><span>走路，按住 <span class="key">Shift</span> 跑步</span>
   <span><span class="key">Space</span></span><span>跳</span>
   <span><span class="key">E</span></span><span>和球道、機台、沙發、販賣機互動</span>
   <span><span class="key">Enter</span></span><span>聊天</span>
   <span><span class="key">V</span></span><span>開／關麥克風</span>
-  <span><span class="key">1</span><span class="key">6</span></span><span>表情動作</span>
+  <span style="align-items:center"><span class="key">1</span>–<span class="key">6</span></span><span>表情動作</span>
+  <span>拖曳</span><span>轉動視角，滾輪縮放</span>
+ </div>
+ <div class="keys tch">
+  <span><i class="joyi"></i></span><span>左下搖桿走路，推到底就是跑步</span>
+  <span><svg class="i"><use href="#i-jump"/></svg></span><span>右下按鈕跳</span>
+  <span><svg class="i"><use href="#i-hand"/></svg></span><span>靠近球道、機台、沙發時，右下會出現「互動」按鈕</span>
+  <span><svg class="i"><use href="#i-chat"/></svg><svg class="i"><use href="#i-smile"/></svg><svg class="i"><use href="#i-mic"/></svg></span><span>聊天、表情、麥克風</span>
+  <span>滑動</span><span>轉動視角，雙指縮放</span>
+ </div>
+ <div class="hr"></div>
+ <div class="keys">
   <span><svg class="i"><use href="#i-users"/></svg></span><span>點左上角自己的名字：看在線玩家和延遲、邀請組隊</span>
-  <span><svg class="i"><use href="#i-pin"/></svg></span><span>有隊伍時在球道按 E，可以全隊輪流一起打</span>
-  <span><svg class="i"><use href="#i-game"/></svg></span><span>曲棍球、四子棋、投籃、賽車、跳舞機都能雙人對戰：一人站一邊按 E</span>
-  <span>拖曳</span><span>轉動視角，滾輪或雙指縮放</span>
+  <span><svg class="i"><use href="#i-pin"/></svg></span><span>有隊伍時在球道互動，可以全隊輪流一起打</span>
+  <span><svg class="i"><use href="#i-game"/></svg></span><span>曲棍球、四子棋、投籃、賽車、跳舞機都能雙人對戰：一人站一邊</span>
  </div>
  <button class="cb pink wide" id="help-x">知道了</button>
 </div></div>
@@ -1028,7 +1040,7 @@ const joy=$('joy'),knob=$('knob');let jv={x:0,y:0},jid=null;
 joy.addEventListener('pointerdown',e=>{jid=e.pointerId;joy.setPointerCapture(jid);jm(e)});
 joy.addEventListener('pointermove',e=>{if(e.pointerId===jid)jm(e)});
 const jend=()=>{jid=null;jv={x:0,y:0};knob.style.transform=''};joy.addEventListener('pointerup',jend);joy.addEventListener('pointercancel',jend);
-function jm(e){const r=joy.getBoundingClientRect();let x=(e.clientX-r.left-62)/50,y=(e.clientY-r.top-62)/50;const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}jv={x,y};knob.style.transform=`translate(${x*40}px,${y*40}px)`}
+function jm(e){const r=joy.getBoundingClientRect();let x=(e.clientX-r.left-r.width/2)/50,y=(e.clientY-r.top-r.height/2)/50;const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}jv={x,y};knob.style.transform=`translate(${x*40}px,${y*40}px)`}
 $('a-jump').onclick=jump;$('a-act').onclick=()=>interact();$('prompt').onclick=()=>interact();
 $('a-chat').onclick=()=>openChat();$('a-mic').onclick=()=>toggleMic();$('a-emo').onclick=()=>togglePop('emopop');
 EMOTES.forEach(([k,ic,n],i)=>{const b=document.createElement('button');b.innerHTML=`<b>${ic}</b>${n}`;b.title=`${n}（${i+1}）`;b.onclick=()=>doEmote(k);$('emopop').append(b)});
@@ -1735,7 +1747,7 @@ function setVideo(id,start){Object.assign(YTS,{v:id,title:'',t:start||0,p:true,b
 function renderNow(){$('tvnow').textContent=YTS.v?`${YTS.p?'▶ 播放中':'⏸ 已暫停'}：${YTS.title||YTS.v}${YTS.by?' · '+YTS.by+' 點播':''}`:'還沒有影片';$('tv-play').disabled=$('tv-sync').disabled=!YTS.v}
 onNet('yt',(d,id)=>{const v=parseYT(d.v||'');if(!v)return;const changed=v!==YTS.v;ytLastRecv=performance.now();
  Object.assign(YTS,{v,title:String(d.title||'').slice(0,90)||(changed?'':YTS.title),t:Math.max(0,num(d.t))+.15,p:d.p===1,by:String(d.by||'').slice(0,12),at:performance.now(),setBy:id});
- if(changed)feed('sys','',`🎬 ${YTS.by||'有人'} 播放了一支影片，按 📺 一起看`);applyYT();drawTV()});
+ if(changed)feed('sys','',`🎬 ${YTS.by||'有人'} 播放了一支影片，點右上角電視一起看`);applyYT();drawTV()});
 onNet('ytq',()=>{if(!YTS.v)return;const asked=performance.now();setTimeout(()=>{if(ytLastRecv>asked)return;NET.emit('yt',ytMsg())},200+Math.random()*900)});
 $('tvform').addEventListener('submit',e=>{e.preventDefault();const q=$('tvq').value.trim();if(!q)return;const id=parseYT(q);if(id){$('tvq').value='';$('tvres').replaceChildren();setVideo(id,ytStart(q));return}searchYT(q)});
 async function searchYT(q){const box=$('tvres');box.replaceChildren();
