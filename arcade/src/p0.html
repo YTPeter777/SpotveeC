@@ -351,6 +351,21 @@ body.in-mach #pad .ab{width:72px;height:64px;border-radius:20px}body.in-mach #pa
 @media (max-height:560px) and (orientation:landscape){body.in-mach #cabbox{display:flex;grid-template-columns:none}body.in-mach #pad{position:fixed;right:var(--sr);bottom:calc(var(--sb) + 4px)}body.in-mach #cabfoot{position:fixed;left:var(--sl);bottom:var(--sb)}body.in-mach #pad .ab{width:60px;height:54px}}
 #sc>*{flex-shrink:0}
 a.cb{text-decoration:none}
+/* ---- now playing / npc speech / loading / perf ---- */
+#nowp{display:flex;align-items:center;gap:9px;padding:6px 14px 6px 10px;border-radius:999px;max-width:260px;text-align:left;color:var(--ink)}
+#nowp .nt2{display:flex;flex-direction:column;min-width:0}#nowp b{font:800 12.5px var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#nowp small{font:700 11px var(--txt);color:var(--dim)}
+.eq{display:inline-flex;align-items:flex-end;gap:2px;height:16px}.eq i{width:3px;background:var(--pink1);border-radius:2px;animation:eq 1s ease-in-out infinite}.eq i:nth-child(1){height:10px}.eq i:nth-child(2){height:16px;animation-delay:-.4s}.eq i:nth-child(3){height:7px;animation-delay:-.7s}
+@keyframes eq{50%{transform:scaleY(.4)}}
+.npcb{position:fixed;left:0;top:0;z-index:5;max-width:220px;padding:8px 12px;border-radius:14px;background:#fff;color:#2a1f63;font:700 13px/1.4 var(--txt);box-shadow:0 6px 16px rgba(0,0,0,.3);pointer-events:none;animation:tin .3s}
+.npcb::after{content:"";position:absolute;left:50%;bottom:-6px;width:12px;height:12px;background:#fff;transform:translateX(-50%) rotate(45deg)}
+#rload{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#2a1d63,#0a0718 70%);transition:opacity .35s}
+#rload.out{opacity:0}.rl-in{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(320px,80vw)}.rl-name{font:800 20px var(--txt)}.rl-step{font:700 13px var(--txt);color:var(--dim)}
+#perf{right:var(--sr);top:calc(var(--st) + 66px);z-index:11;display:grid;grid-template-columns:auto auto;gap:2px 12px;padding:10px 14px;border-radius:16px;font:700 11.5px var(--disp);color:var(--ink2);pointer-events:none}
+#perf b{font:800 24px var(--disp);color:var(--mint);grid-row:span 2}#perf small{color:var(--dim);align-self:end}#perf span{grid-column:span 2}
+/* rounded connection indicator instead of signal bars */
+.sig{display:inline-block;width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;vertical-align:middle}.sig i{display:none}
+.netp .sig{width:8px;height:8px}.prow .st .sig{width:7px;height:7px}
+.nc-top .sig{width:14px;height:14px}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -685,7 +700,7 @@ summary::-webkit-details-marker{display:none}
      <article><svg class="i"><use href="#i-game"/></svg><h3>十幾台街機</h3><p>夾娃娃、投籃機、推幣機、空氣曲棍球、跳舞機、賽車，玩法都跟現實一樣。</p></article>
      <article><svg class="i"><use href="#i-door"/></svg><h3>私人包廂</h3><p>自己開包廂、設人數和密碼，複製邀請連結給朋友就能進來。</p></article>
      <article><svg class="i"><use href="#i-mic"/></svg><h3>近距離語音</h3><p>走近的人聲音比較大，誰在說話一眼就看得到，每個人音量都能各自調整。</p></article>
-     <article><svg class="i"><use href="#i-tv"/></svg><h3>大家一起點歌</h3><p>影音區的電視全館同步，大家輪流點 YouTube，旁邊螢幕顯示待播清單。</p></article>
+     <article><svg class="i"><use href="#i-tv"/></svg><h3>大家一起點歌</h3><p>放映室的電視全館同步，大家輪流點 YouTube，旁邊螢幕顯示待播清單。</p></article>
      <article><svg class="i"><use href="#i-cup"/></svg><h3>點心吧與拍貼機</h3><p>排隊買飲料點心，再一起走進拍貼機拍一張合照。</p></article>
     </div>
     <div class="steps"><div><b>1</b><h4>取一個匿名暱稱</h4><p>不用註冊、不用 Email，挑一隻喜歡的 Q 版動物。</p></div><div><b>2</b><h4>選包廂或開新包廂</h4><p>進公開大廳認識新朋友，或開私人包廂只給朋友。</p></div><div><b>3</b><h4>一起玩</h4><p>電腦、手機、平板都能玩，打開瀏覽器就好。</p></div></div>
@@ -733,7 +748,7 @@ summary::-webkit-details-marker{display:none}
    <h2>3. 行為規範</h2><p>請遵守《社群守則》。禁止騷擾、仇恨言論、詐騙、散布個資、利用漏洞或外掛、干擾他人遊玩或伺服器運作。</p>
    <h2>4. 虛擬代幣與道具</h2><p>AVÉRA 代幣與特殊道具僅能在本服務內使用，不具現金價值，不可兌換、轉售或轉讓。管理員可因違規或系統錯誤調整。</p>
    <h2>5. 包廂</h2><p>包廂版主可設定人數、密碼與上鎖，並可請人離開自己的包廂。版主離開後包廂會自動關閉。官方包廂由管理員管理。</p>
-   <h2>6. 第三方內容</h2><p>影音區播放的 YouTube 影片由第三方提供，播放行為同時受 YouTube 服務條款規範。請勿點播違法或不當內容。</p>
+   <h2>6. 第三方內容</h2><p>放映室播放的 YouTube 影片由第三方提供，播放行為同時受 YouTube 服務條款規範。請勿點播違法或不當內容。</p>
    <h2>7. 管理與處分</h2><p>違反條款或守則時，管理員得視情節予以提醒、禁言、移出包廂、暫時或永久停權，並保留相關紀錄。</p>
    <h2>8. 免責與變更</h2><p>本服務以現狀提供，可能因維護或不可抗力中斷。我們可能更新本條款，更新後繼續使用即視為同意新版條款。</p>
    <h2>9. 聯絡</h2><p>對本條款有任何疑問，請透過網站的「聯絡我們」表單與我們聯繫。</p>
@@ -797,6 +812,7 @@ summary::-webkit-details-marker{display:none}
 <div class="fx h" id="tl">
  <button class="pnl" id="me-btn" aria-expanded="false" aria-label="玩家與隊伍"><span class="pf" id="me-pf"><img id="me-badge" alt=""></span><span class="mb"><span id="me-name">—</span><span class="meta"><span class="netp q-n" id="me-net"><span class="sig" id="me-bars"><i></i><i></i><i></i><i></i></span><span id="me-ms">—</span></span><span class="onl"><svg class="i"><use href="#i-users"/></svg><b id="n-on">1</b></span></span></span><svg class="i chev"><use href="#i-down"/></svg></button>
  <div class="pnl" id="loc"><svg class="i sm"><use href="#i-pin2"/></svg><span class="fl" id="loc-f">1F</span><span id="loc-t">大廳</span></div>
+ <button class="pnl" id="nowp" hidden aria-label="正在播放"><span class="eq"><i></i><i></i><i></i></span><span class="nt2"><b id="nowp-t"></b><small id="nowp-s"></small></span></button>
  <div class="pnl" id="party-strip" hidden></div>
  <div class="pnl" id="talkers" hidden></div>
  <div class="pnl" id="people" hidden></div>
@@ -826,7 +842,10 @@ summary::-webkit-details-marker{display:none}
   <div class="mrow"><svg class="i"><use href="#i-sparkle"/></svg><span class="grow">畫質</span></div>
   <div class="seg" id="qseg"><button data-q="ultra">極致</button><button data-q="high">高</button><button data-q="low">省電</button></div>
   <div class="mrow"><svg class="i"><use href="#i-user"/></svg><span class="grow">顯示名牌</span><button class="tog" id="t-tags" aria-label="顯示名牌"></button></div>
-  <div class="mrow"><svg class="i"><use href="#i-chart"/></svg><span class="grow">畫面更新率<small id="st-fps">—</small></span></div></div>
+  <label class="slab">視角靈敏度<input type="range" id="s-sens" min="40" max="200"></label>
+  <div class="mrow"><svg class="i"><use href="#i-sync"/></svg><span class="grow">走路時鏡頭自動跟到背後</span><button class="tog" id="t-follow" aria-label="鏡頭跟隨"></button></div>
+  <div class="mrow"><svg class="i"><use href="#i-up"/></svg><span class="grow">上下視角反轉</span><button class="tog" id="t-inv" aria-label="上下反轉"></button></div>
+  <div class="mrow"><svg class="i"><use href="#i-chart"/></svg><span class="grow">效能監看<small id="st-fps">—</small></span><button class="tog" id="t-perf" aria-label="效能監看"></button></div></div>
  <div class="spane" data-t="inv" hidden><div id="st-inv"></div></div>
  <div class="spane" data-t="acct" hidden><div id="st-acct"></div></div>
  <div class="spane" data-t="about" hidden><div class="aboutl">
@@ -847,6 +866,8 @@ summary::-webkit-details-marker{display:none}
   <p class="note" style="margin:0">會附上目前包廂、模式與網路狀態，方便管理員判斷。</p>
   <button class="cb pink wide" type="submit">送出</button></form></div></div>
 <div class="fx" id="nstack" role="status" aria-live="polite"></div>
+<div class="fx pnl" id="perf" hidden></div>
+<div id="rload" hidden><div class="rl-in"><span class="wm big" style="font-size:54px">AV<em>É</em>RA</span><div class="rl-name" id="rl-name"></div><div class="qbar"><i></i></div><div class="rl-step" id="rl-step"></div></div></div>
 <div class="fx h" id="feed"></div>
 <form class="fx pnl" id="chatbar" hidden><input id="msg" maxlength="80" placeholder="說點什麼…" autocomplete="off" enterkeyhint="send"><button id="send" class="cb pink round" aria-label="送出"><svg class="i"><use href="#i-send"/></svg></button></form>
 <div class="fx h nb" id="acts">

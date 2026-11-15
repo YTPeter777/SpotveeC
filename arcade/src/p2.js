@@ -3,7 +3,7 @@
 const RB=(w,h,d,r=.06)=>new RoundedBoxGeometry(w,h,d,3,Math.min(r,w/2-.002,h/2-.002,d/2-.002));
 const boxes=[],camBlock=[],targets=[],anims=[],stations=new Map();
 function put(m,x,y,z,o={}){m.position.set(x,y,z);if(o.ry)m.rotation.y=o.ry;m.traverse(c=>{if(c.isMesh){c.castShadow=o.cast!==false&&!c.material.transparent&&!c.material.isMeshBasicMaterial;c.receiveShadow=o.recv!==false}});(o.parent||scene).add(m);if(o.cam)camBlock.push(m);return m}
-function solid(obj,f,pad=0){obj.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(obj);boxes.push({x0:b.min.x-pad,x1:b.max.x+pad,z0:b.min.z-pad,z1:b.max.z+pad,f});return obj}
+function solid(obj,f,pad=0){let r=obj;while(r.parent)r=r.parent;r.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(obj);boxes.push({x0:b.min.x-pad,x1:b.max.x+pad,z0:b.min.z-pad,z1:b.max.z+pad,f});return obj}
 function merged(list,mat){return new THREE.Mesh(mergeGeometries(list),mat)}
 const tg=(g,x,y,z,rx=0,ry=0,rz=0)=>{if(rx)g.rotateX(rx);if(ry)g.rotateY(ry);if(rz)g.rotateZ(rz);g.translate(x,y,z);return g};
 function colorize(g,c){const col=new THREE.Color(c),n=g.attributes.position.count,a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=col.r;a[i*3+1]=col.g;a[i*3+2]=col.b}g.setAttribute('color',new THREE.BufferAttribute(a,3));return g}
@@ -49,7 +49,7 @@ sign('GAME ZONE','#ffd864',8,4.5,5.7,W.z0+.03,0,'復古電玩');
 sign('↑ 2F','#62c9ff',3.2,W.x1-.03,3.2,-12.4,-Math.PI/2,'電玩區・DJ 舞池');
 sign('1F ↓','#62c9ff',2.4,W.x1-.03,F2+2.6,6.5,-Math.PI/2);
 sign('服務台・兌換','#ffd864',3,7,3.95,W.z1-.03,Math.PI);
-sign('影音區 · TV','#ad93ff',2.6,W.x0+.03,5.12,11.1,Math.PI/2);
+sign('放映室','#ad93ff',2.4,W.x0+.03,5.12,11.1,Math.PI/2,'SCREENING ROOM');
 sign('ARCADE 2F','#ff6fb1',8,-8,10.1,W.z1-.03,Math.PI,'電玩區');
 sign('DJ','#55eeb4',3,12.8,9.6,W.z1-.03,Math.PI,'DANCE FLOOR');
 sign('SNACK','#ff9a5c',3,W.x1-.03,4.75,11,-Math.PI/2);
@@ -69,7 +69,7 @@ const key=new THREE.DirectionalLight('#fff1e6',1.45);key.position.set(8,22,6);ke
 Object.assign(key.shadow.camera,{left:-25,right:25,top:25,bottom:-25,near:1,far:60});key.shadow.bias=-.0004;key.shadow.normalBias=.04;scene.add(key,key.target);
 [['#ff6fb1',-13,6.5,-17,28],['#62c9ff',4,6,-18,24],['#ffd9b0',0,5.2,11,10],['#ad93ff',-8,10.5,11,20],['#55eeb4',12.8,10,14,18],['#ff9a5c',14,5,11,8]].forEach(([c,x,y,z,i])=>{const l=new THREE.PointLight(c,i,22,1.8);l.position.set(x,y,z);scene.add(l)});
 // moving beam lights (fake volumetric cones)
-const beamTex=ctex(16,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.85,'rgba(255,255,255,.55)');gr.addColorStop(1,'rgba(255,255,255,.9)');g.fillStyle=gr;g.fillRect(0,0,w,h)});
+const beamTex=ctex(16,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.7,'rgba(255,255,255,.32)');gr.addColorStop(.97,'rgba(255,255,255,.18)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,w,h)});
 function beam(x,y,z,color,len,phase){const pivot=new THREE.Group();pivot.position.set(x,y,z);const geo=new THREE.CylinderGeometry(.08,len<7?.7:1.1,len,24,1,true);geo.translate(0,-len/2,0);
  const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:beamTex,color,transparent:true,opacity:len<7?.12:.2,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,toneMapped:false}));pivot.add(m);
  const head=new THREE.Mesh(new THREE.CylinderGeometry(.16,.12,.3,16),std('#222',.4,.6));pivot.add(head);scene.add(pivot);
@@ -259,14 +259,14 @@ airHockey(12.6,0,-18.5,0,'hk1');danceMachine(12.2,0,-11.5,Math.PI/2,'dance1');
 plant(13.6,0,-25.3);plant(-5.5,0,-25.3,.9);plant(14.3,0,-6.2,.9);
 // ---- lobby ----
 const tvC=cv(1024,576);const tvTex=tex(tvC);
-{const fr=new THREE.Mesh(RB(5.5,3.2,.16,.08),std('#0b0a14',.35,.4));fr.rotation.y=Math.PI/2;put(fr,W.x0+.1,3.05,11.1,{cam:true});
- const sc=new THREE.Mesh(new THREE.PlaneGeometry(5.2,2.925),new THREE.MeshBasicMaterial({map:tvTex,toneMapped:false}));sc.rotation.y=Math.PI/2;put(sc,W.x0+.19,3.05,11.1,{cast:false});
- put(new THREE.Mesh(new THREE.BoxGeometry(.04,.04,5.5),glow('#ad93ff',2)),W.x0+.2,1.42,11.1,{cast:false});
+{const fr=new THREE.Mesh(RB(5.42,3.1,.05,.03),std('#0b0a14',.3,.5));fr.rotation.y=Math.PI/2;put(fr,W.x0+.06,3.05,11.1,{cam:true});
+ const sc=new THREE.Mesh(new THREE.PlaneGeometry(5.2,2.925),new THREE.MeshBasicMaterial({map:tvTex,toneMapped:false}));sc.rotation.y=Math.PI/2;put(sc,W.x0+.09,3.05,11.1,{cast:false});
+ put(new THREE.Mesh(new THREE.BoxGeometry(.03,.03,5.4),glow('#ad93ff',2)),W.x0+.06,1.45,11.1,{cast:false});
  const rug=new THREE.Mesh(new THREE.PlaneGeometry(6,4),M.rug);rug.rotation.x=-Math.PI/2;rug.rotation.z=Math.PI/2;put(rug,-15.2,.006,11.1,{cast:false});
  const s1=sofa(-13.2,0,9.7,-Math.PI/2,'#7fd9ff'),s2=sofa(-13.2,0,12.5,-Math.PI/2,'#ff9cc9');
  const t=new THREE.Mesh(new THREE.CylinderGeometry(.55,.55,.4,32),phys('#f6f1ff',{clearcoat:1}));put(t,-15.9,.2,11.1);solid(t,0,.02);
  lamp(-12.2,8.0,'#ffd9b0');lamp(-12.2,14.2,'#ffd9b0');
- targets.push({type:'tv',x:-15,z:11.1,f:0,y:2,r:3.4,px:W.x0+.5,py:1.35,pz:11.1,label:'一起看 YouTube'});
+ targets.push({type:'tv',x:-15,z:11.1,f:0,y:2,r:3.4,px:W.x0+.5,py:1.35,pz:11.1,label:'打開點歌平板'});
  [[s1,9.7],[s2,12.5]].forEach(([s,z])=>[-.7,.7].forEach(o=>targets.push({type:'sit',x:-14.3,z:z+o,f:0,y:1.6,r:.75,face:-Math.PI/2,label:'坐下來',seat:{x:-13.3,z:z+o,y:.42}})))}
 vending(W.x0+.45,0,6.0,Math.PI/2,'#ff6fb1');vending(W.x0+.45,0,7.25,Math.PI/2,'#62c9ff');
 lockers(W.x0+.26,14.4,6);

@@ -47,3 +47,6 @@ $('b-report').onclick=()=>openReport('bug');$('b-contact').onclick=()=>openRepor
 $('repf-f').addEventListener('submit',async e=>{e.preventDefault();const body=$('rp-body').value.trim();if(body.length<5){notify({tone:'warn',text:'內容至少 5 個字'});return}
  const r=await sendReport($('rp-kind').value,$('rp-tgt').value,body,{room:ROOM.id,roomName:ROOM.name,mode:me.mode,game:me.mode==='cab'?curGame:'',ping:net.self,fps:Math.round(NETH.fps),ua:navigator.userAgent.slice(0,120)});
  if(r.ok){$('repf').hidden=true;notify({tone:'ok',title:'已送出',text:'謝謝你！管理員會在後台查看並處理。',ms:5000})}else notify({tone:'err',text:{rate:'送出太頻繁了，請一小時後再試',length:'內容太短或太長',net:'連線失敗'}[r.error]||'送出失敗'})});
+
+$('s-sens').value=Math.round(VIEW.sens*100);$('s-sens').oninput=()=>{VIEW.sens=$('s-sens').value/100;store.set('vsens',VIEW.sens)};
+for(const[id,k,key]of [['t-follow','follow','vfollow'],['t-inv','inv','vinv']]){$(id).setAttribute('aria-pressed',VIEW[k]);$(id).onclick=()=>{VIEW[k]=!VIEW[k];store.set(key,VIEW[k]);$(id).setAttribute('aria-pressed',VIEW[k])}}

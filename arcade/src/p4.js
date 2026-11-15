@@ -51,7 +51,10 @@ addEventListener('keyup',e=>{keys[e.code]=false;if(me.mode==='bowl'&&e.code==='S
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
 const gl=$('gl');let drag=null;
 gl.addEventListener('pointerdown',e=>{drag={id:e.pointerId,x:e.clientX,y:e.clientY};gl.setPointerCapture(e.pointerId);togglePop('people',false);togglePop('menu',false);togglePop('emopop',false);if(typing())document.activeElement.blur()});
-gl.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;if(me.mode==='walk'||me.mode==='sit'){camYaw-=(e.clientX-drag.x)*.006;camPitch=THREE.MathUtils.clamp(camPitch+(e.clientY-drag.y)*.004,-.05,1.15)}drag.x=e.clientX;drag.y=e.clientY});
+const VIEW={sens:store.get('vsens',1),inv:store.get('vinv',false),follow:store.get('vfollow',true),lastDrag:0};
+gl.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;if(me.mode==='walk'||me.mode==='sit'||me.mode==='queue'){const k=VIEW.sens*(isTouch?1.25:1);camYaw-=(e.clientX-drag.x)*.0055*k;camPitch=THREE.MathUtils.clamp(camPitch+(e.clientY-drag.y)*.0042*k*(VIEW.inv?-1:1),.02,1.05);VIEW.lastDrag=performance.now()}drag.x=e.clientX;drag.y=e.clientY});
+// third-person follow: while walking, the camera eases in behind the character unless you are steering it
+function camAutoFollow(dt){if(!VIEW.follow||me.speed<.6||performance.now()-VIEW.lastDrag<1200||drag)return;const want=myAv.rotation.y+Math.PI;let d=want-camYaw;d=Math.atan2(Math.sin(d),Math.cos(d));camYaw+=d*Math.min(1,dt*1.1)}
 const endDrag=()=>drag=null;gl.addEventListener('pointerup',endDrag);gl.addEventListener('pointercancel',endDrag);
 gl.addEventListener('wheel',e=>{camDist=THREE.MathUtils.clamp(camDist+e.deltaY*.01,2.8,11)},{passive:true});
 let pinch=null;gl.addEventListener('touchstart',e=>{if(e.touches.length===2){pinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);drag=null}},{passive:true});
@@ -88,7 +91,7 @@ function feed(cls,name,text,color,lk){const d=document.createElement('div');d.cl
  while($('feed').children.length>60)$('feed').firstChild.remove();setTimeout(()=>d.classList.add('gone'),cls==='sys'?7000:14000);if(name&&!document.body.classList.contains('chatting'))$('unread').hidden=false;showFeed()}
 function announce(t){feed('ann','',`${myName} ${t}`);NET.emit('ann',{t})}
 function showCoach(){if(store.get('coached',false))return;notify({key:'coach',tone:'tip',title:'小提示',text:`走到機台、球道前按${isTouch?'「互動」':' E '}就能開始玩；點左上角自己的名字可以看誰在線、邀請組隊。`,ms:16000,btns:[{t:'知道了',pri:true,fn:()=>store.set('coached',true)}],onClose:()=>store.set('coached',true)})}
-function zoneName(){if(me.y>3){if(me.x>10&&me.z>11.8)return'2F · DJ 舞池';return'2F · 電玩區'}if(inRamp(me.x,me.z))return'樓梯';if(me.x<-6.4&&me.z<-1)return'1F · 保齡球館';if(me.z<-5)return'1F · 復古電玩';if(me.x<-11&&me.z>4)return'1F · 影音區';if(me.x>12&&me.z>7)return'1F · 點心吧';return'1F · 大廳'}
+function zoneName(){if(me.y>3){if(me.x>10&&me.z>11.8)return'2F · DJ 舞池';return'2F · 電玩區'}if(inRamp(me.x,me.z))return'樓梯';if(me.x<-6.4&&me.z<-1)return'1F · 保齡球館';if(me.z<-5)return'1F · 復古電玩';if(me.x<-11&&me.z>4)return'1F · 放映室';if(me.x>12&&me.z>7)return'1F · 點心吧';return'1F · 大廳'}
 
 // ================= interactions =================
 let near=null;

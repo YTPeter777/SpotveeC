@@ -38,7 +38,7 @@ const composer=new EffectComposer(renderer,rtt);composer.addPass(new RenderPass(
 const gtao=new GTAOPass(scene,camera,2,2);gtao.blendIntensity=.85;try{gtao.updateGtaoMaterial({radius:.45,distanceExponent:1.4,thickness:1,scale:1,samples:12})}catch(e){}composer.addPass(gtao);
 const bloom=new UnrealBloomPass(new THREE.Vector2(256,256),.5,.35,1.3);composer.addPass(bloom);composer.addPass(new OutputPass());
 function resize(){renderer.setSize(innerWidth,innerHeight,false);composer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()}
-addEventListener('resize',resize);
+let rzT=0,rzW=innerWidth,rzH=innerHeight;addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();clearTimeout(rzT);rzT=setTimeout(()=>{if(Math.abs(innerWidth-rzW)<2&&Math.abs(innerHeight-rzH)<90)return;rzW=innerWidth;rzH=innerHeight;resize()},180)});
 const maxAniso=renderer.capabilities.getMaxAnisotropy();
 
 // ================= procedural textures (colour + height → normal + roughness) =================
@@ -70,13 +70,13 @@ function marbleSet(S,o,rep){const c=cv(S,S),h=cv(S,S),r=cv(S,S);const g=c.getCon
   if(branch>0)for(let b=0;b<2;b++){const p=pts[Math.floor(rnd()*pts.length)];vein(p[0],p[1],a+(rnd()-.5)*2,len*.35,w*.5,alpha*.7,branch-1)}};
  for(let ty=0;ty<n;ty++)for(let tx=0;tx<n;tx++){const x0=tx*ts,y0=ty*ts;for(const ctx of [g,gh,gr]){ctx.save();ctx.beginPath();ctx.rect(x0,y0,ts,ts);ctx.clip()}
   g.fillStyle=`rgba(${rnd()<.5?255:0},${rnd()<.5?255:0},${rnd()<.5?255:0},${(.01+rnd()*.025).toFixed(3)})`;g.fillRect(x0,y0,ts,ts);
-  const dir=rnd()*Math.PI*2;for(let v=0;v<3+Math.floor(rnd()*3);v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*.8,60+rnd()*90,(.8+rnd()*1.9)*k,o.va*(.45+rnd()*.4),2);
-  for(let v=0;v<14;v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*1.6,15+rnd()*40,(.5+rnd()*.7)*k,o.va*.22,0);
+  const dir=rnd()*Math.PI*2;for(let v=0;v<1+Math.floor(rnd()*2);v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*.5,70+rnd()*80,(.6+rnd()*1.1)*k,o.va*(.35+rnd()*.3),1);
+  for(let v=0;v<4;v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*1.2,20+rnd()*30,(.4+rnd()*.5)*k,o.va*.14,0);
   for(const ctx of [g,gh,gr])ctx.restore()}
  for(let i=0;i<=n;i++){const p=i*ts;g.fillStyle=o.inlay;g.fillRect(p-inl/2,0,inl,S);g.fillRect(0,p-inl/2,S,inl);gh.fillStyle='rgb(90,90,90)';gh.fillRect(p-inl,0,inl*2,S);gh.fillRect(0,p-inl,S,inl*2);gr.fillStyle=`rgb(0,70,255)`;gr.fillRect(p-inl/2,0,inl,S);gr.fillRect(0,p-inl/2,S,inl)}
  const nh=cv(S/2,S/2);nh.getContext('2d').drawImage(h,0,0,S/2,S/2);const rt=tex(r,rep,false);return{map:tex(c,rep),normalMap:tex(normalFrom(nh,1.4),rep,false),roughnessMap:rt,metalnessMap:rt}}
 const MQ=isTouch?1024:2048;
-const marbleDark=marbleSet(MQ,{tiles:4,base:'#15111f',cloudA:'rgba(70,52,110,.07)',cloudB:'rgba(0,0,0,.12)',vein:'rgba(236,228,255,A)',va:.75,inlay:'#c9a35a',rough:22},[40/4.8,44/4.8]);
+const marbleDark=marbleSet(MQ,{tiles:4,base:'#15111f',cloudA:'rgba(80,62,130,.05)',cloudB:'rgba(0,0,0,.06)',vein:'rgba(236,228,255,A)',va:.6,inlay:'#c9a35a',rough:22},[40/4.8,44/4.8]);
 const marbleLight=marbleSet(isTouch?512:1024,{tiles:2,base:'#cfc8d8',cloudA:'rgba(255,255,255,.18)',cloudB:'rgba(120,110,150,.08)',vein:'rgba(90,80,110,A)',va:.6,inlay:'#c9a35a',rough:40},[40/2.4,14/2.4]);
 function woodSet(rep,boards=20){return pbr(TQ,(g,h,r,S)=>{const bw=S/boards;for(let i=0;i<boards;i++){const hue=30+rnd()*7,l=63+rnd()*10;g.fillStyle=`hsl(${hue},48%,${l}%)`;g.fillRect(i*bw,0,bw,S);h.fillStyle='rgb(140,140,140)';h.fillRect(i*bw,0,bw,S);
   for(let k=0;k<120;k++){const x=i*bw+rnd()*bw,y=rnd()*S,len=40+rnd()*260,w=.6+rnd()*1.4;g.fillStyle=`hsla(${hue-6},50%,${l-22}%,${.04+rnd()*.08})`;g.fillRect(x,y,w,len);h.fillStyle=`rgba(90,90,90,${.15+rnd()*.2})`;h.fillRect(x,y,w,len)}
@@ -101,7 +101,7 @@ const fabric=color=>new THREE.MeshPhysicalMaterial({color,roughness:.9,sheen:1,s
 const glowCache=new Map();
 function glow(c,i=2.4){const k=c+'|'+i;if(!glowCache.has(k))glowCache.set(k,new THREE.MeshStandardMaterial({color:'#000000',emissive:c,emissiveIntensity:i}));return glowCache.get(k)}
 const M={
- floor:new THREE.MeshPhysicalMaterial({...marbleDark,roughness:1,metalness:1,clearcoat:.55,clearcoatRoughness:.06,normalScale:new THREE.Vector2(.35,.35),envMapIntensity:1.4}),
+ floor:new THREE.MeshPhysicalMaterial({...marbleDark,roughness:1,metalness:1,clearcoat:.4,clearcoatRoughness:.22,normalScale:new THREE.Vector2(.35,.35),envMapIntensity:1.4}),
  floor2:new THREE.MeshPhysicalMaterial({...marbleLight,roughness:1,metalness:1,clearcoat:.5,clearcoatRoughness:.1,normalScale:new THREE.Vector2(.3,.3)}),
  wall:new THREE.MeshStandardMaterial({...wallSet,roughness:1}),
  carpet:new THREE.MeshPhysicalMaterial({...carpet,roughness:1,sheen:.6,sheenRoughness:.8,sheenColor:new THREE.Color('#6a58b0'),normalScale:new THREE.Vector2(.8,.8)}),

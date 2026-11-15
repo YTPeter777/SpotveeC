@@ -107,8 +107,8 @@ function heldItem(a,kind){const u=a.userData;if(u.held){u.arms[1].remove(u.held)
 // NPC staff
 const npcs=[];
 function npc(lk,x,f,z,ry,kind,name){const a=makeAnimal(lk,{outfit:'#3a2b70',npc:true});a.position.set(x,f,z);a.rotation.y=ry;scene.add(a);npcs.push({a,kind,ph:Math.random()*9,name});const cap=new THREE.Mesh(new THREE.CylinderGeometry(.19,.21,.1,20),fabric('#ff6fb1'));cap.position.y=.72;a.userData.head.add(cap);return a}
-npc({sp:3,fur:1,cl:0,acc:0},7,0,16.1,Math.PI,'clerk','熊店長');npc({sp:2,fur:3,cl:0,acc:0},15.5,0,11,-Math.PI/2,'snack','兔兔店員');
-npc({sp:5,fur:5,cl:0,acc:5},12.8,F2,17.62,Math.PI,'dj','DJ 狐狸');npc({sp:1,fur:0,cl:0,acc:2},-4.0,0,-1.8,-Math.PI/2,'shoes','狗狗服務員');
+npc({sp:3,fur:1,cl:0,acc:0},7,.32,16.1,Math.PI,'clerk','熊店長');npc({sp:2,fur:3,cl:0,acc:0},15.4,.32,11,-Math.PI/2,'snack','兔兔店員');
+npc({sp:5,fur:5,cl:0,acc:5},12.8,F2,17.62,Math.PI,'dj','DJ 狐狸');npc({sp:1,fur:0,cl:0,acc:2},-4.0,.2,-1.8,-Math.PI/2,'shoes','狗狗服務員');
 function animNPCs(t,dt){for(const n of npcs){const k=n.kind;if(k==='dj')animAvatar(n.a,t,dt,0,'dance',t-1,false,false);else{const w=((t+n.ph)%9)<2.4;animAvatar(n.a,t,dt,0,w?'wave':'',w?t-((t+n.ph)%9):-9,false,false)}}}
 
 // ================= 3D portraits for the HUD =================

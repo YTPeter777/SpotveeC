@@ -26,7 +26,7 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
  if(me.mode==='walk'||me.mode==='sit'){walkStep(dt,t);
   near=me.mode==='walk'?findNear():null;$('a-act').hidden=!near;if(near&&near!==lastNear){lastNear=near;const ic=TICON[near.type]||'hand';$('p-i').firstElementChild.setAttribute('href','#i-'+ic);$('a-act-i').firstElementChild.setAttribute('href','#i-'+ic);$('a-act-t').textContent=TLABEL[near.type]||'互動'}
   if(near){const s=toScreen(near.px??near.x,near.py??near.y,near.pz??near.z);if(s){$('prompt').hidden=false;const lb=targetLabel(near);if($('p-t').textContent!==lb)$('p-t').textContent=lb;const x=THREE.MathUtils.clamp(s[0],120,innerWidth-120),y=THREE.MathUtils.clamp(s[1],110,innerHeight-130);$('prompt').style.transform=`translate(${x.toFixed(1)}px,${(y+Math.sin(t*4)*3).toFixed(1)}px) translate(-50%,-100%)`}else $('prompt').hidden=true}else $('prompt').hidden=true;
-  camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt);arrow.visible=false}
+  camAutoFollow(dt);camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt);arrow.visible=false}
  else if(me.mode==='bowl'){$('prompt').hidden=true;laneCamera(dt,t)}
  else if(me.mode==='booth'){$('prompt').hidden=true;boothCam()}
  else if(me.mode==='queue'){$('prompt').hidden=true;$('a-act').hidden=true;updShop();camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt)}
@@ -46,7 +46,7 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
  animNPCs(t,dt);for(const f of anims)f(t,dt);
  for(let i=floaters.length-1;i>=0;i--){const h=floaters[i];h.t+=dt;if(h.t<0){h.s.visible=false;continue}h.s.visible=true;h.s.position.y+=dt*.8;h.s.position.x+=Math.sin(h.t*6+i)*dt*.3;h.s.material.opacity=Math.max(0,1-h.t/1.6);h.s.scale.setScalar(.25+h.t*.12);if(h.t>1.6){scene.remove(h.s);h.s.material.dispose();floaters.splice(i,1)}}
  const beat=Math.floor(t*2.5);danceTiles.forEach((m,i)=>m.emissiveIntensity=(beat+i)%4===0?2.4:.35);
- gameTick(dt);
+ gameTick(dt);if(frameN%6===0)npcTick(t);perfTick();
  if(frameN%4===0)drawAttract(t);
  if(frameN%3===0)for(const L of lanes)if(L.state||L.mon.fx||frameN%12===0)drawMonitor(L,t);
  if(frameN%20===0&&(me.mode==='walk'||me.mode==='sit')){const z=zoneName();if(z!==lastZone){lastZone=z;showZone(z)}}

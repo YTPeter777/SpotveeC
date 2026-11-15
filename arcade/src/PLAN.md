@@ -46,3 +46,47 @@ pA account+rooms+backend(BK), p4 sfx/input/chat, p5 bowling, p6 minigames, p7 ne
 p8 voice+YouTube, pW site camera+themes(themeHooks)+applyEquip stub, pC settings, pT tutorial, pD admin, pS website/lobby/room flow, p9 loop+boot.
 Tests: s1.js (site/rooms flow), s2.js (settings/admin/report/kick), h1.js (HUD suite; old start flow — needs update).
 pV.js = world v2 (reflection, wall dressing, signage, theme hooks, centre island). v1.js = camera-view screenshot test (node v1.js ultra hall,cab,bowl [theme]).
+
+## ROUND 3 requirements (user, 2026-11-15) — status: [ ] todo [x] done
+A. UX fixes
+ [x] A1 camera direction/rotation feels wrong (drag direction, pitch, smoothing) — fix
+ [x] A2 marble looks dirty → cleaner marble (fewer, finer veins)
+ [x] A3 a floor area cannot be walked (invisible collision) — find & fix
+ [x] A4 counters (service desk, snack bar, shoe rental) crowded/too low → taller, spaced; NPC greet/speech bubbles when near
+ [ ] A5 chairs sittable but never two people in one seat
+ [x] A6 TVs flush on wall (no protrusion), queue screen on wall NOT above vending machines; rename "影音區 TV"; HUD left panel: now playing / time left / requester; "tablet" song request UI (search + paste)
+ [x] A7 network HUD: no wifi/signal-bar icon → rounded pill style
+ [x] A8 creator: bottom notification stuck — fix
+ [x] A9 room entry loading screen (no stutter); quality must NOT keep changing; performance panel (FPS, draw calls, memory, ping)
+ [x] A10 tutorial reachable from menu (exists in settings — make obvious)
+B. Economy & fairness
+ [ ] B1 signup bonus 5000 coins; daily 1000 coins; coins from games
+ [ ] B2 every game costs coins (not enough → cannot play); CPU games limited free plays then cost & no scoring
+ [ ] B3 leaderboards: 3D wall board + menu tab
+ [ ] B4 anti-cheat: autoclicker/impossible scores → not counted, logged for admin
+C. Characters
+ [ ] C1 cuter, girl-appealing, refined (lashes, sparkly eyes, softer pastel palette, blush)
+ [ ] C2 more accessories; fix accessories that clip
+ [ ] C3 hold-out items (free + paid with coins); admins have special items; admins look cooler
+D. Chat & reports
+ [ ] D1 anti-spam rate limit, profanity / 18+ filter
+ [ ] D2 report a chat message; report player behaviour; reports auto-capture device; malicious reporters flagged (admin sees who reported)
+E. Admin
+ [ ] E1 admin hidden mode, fly + noclip, invincible (room owner cannot kick admins)
+ [ ] E2 admin joins room → everyone notified
+ [ ] E3 every backend setting applies live (no refresh); feature toggles (disable bowling/games/TV/shop/chat/voice/booth...)
+ [ ] E4 clear-everyone's-cache button
+ [ ] E5 backend sees: rooms status (count, music now, players), player activity logs, all chat logs, reports, login logs (IP, device, time), security alerts (signups, bot/crack attempts)
+ [ ] E6 separate admin web page (admin.html): unauthorized → fake 404 + attempt logged; admin password set first time; re-login every 8h
+ [ ] E7 Supabase: pg_cron 20:00 Asia/Taipei backup snapshot + VACUUM ANALYZE; IP via request.headers
+F. Photos
+ [ ] F1 booth: group shot, print-out animation, template choice, items/actions
+ [ ] F2 in-game photo mode: hide HUD, toggle name tags
+ [ ] F3 website photo gallery with upload
+G. Games
+ [ ] G1 new grip-strength game
+ [ ] G2 every game: solo + online + CPU
+ [ ] G3 advanced claw (weak/strong grip, payout), restock, queue, spectators see who plays
+H. [ ] lighting themes incl. nightclub + normal bright
+I. [ ] notification settings: on/off, styles/templates, colours, animations
+J. [ ] legal terms (Taiwan PDPA etc.), credit "由僑泰匿名牆團隊製作"; name change also on website settings page

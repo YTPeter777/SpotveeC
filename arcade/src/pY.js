@@ -62,15 +62,15 @@ $('tv-min').onclick=()=>$('tv').classList.toggle('mini');$('tv-x').onclick=close
 // ---- 3D screens: the lounge TV, a queue screen beside it, and repeater TVs around the hall ----
 let tvThumb=null,tvThumbId='';const tvQC=cv(512,576),tvQTex=tex(tvQC);
 {const add=(w,x,y,z,ry,map)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,w*(map===tvQTex?576/512:9/16)),new THREE.MeshBasicMaterial({map,toneMapped:false}));m.position.set(x,y,z);m.rotation.y=ry;scene.add(m);
-  const fr=new THREE.Mesh(RB(w+.12,w*(map===tvQTex?576/512:9/16)+.12,.08,.03),std('#0b0a14',.35,.5));fr.position.set(x-Math.sin(ry)*.045,y,z-Math.cos(ry)*.045);fr.rotation.y=ry;scene.add(fr)};
- add(1.9,W.x0+.16,3.0,6.4,Math.PI/2,tvQTex);add(2.3,W.x1-.08,4.95,11,-Math.PI/2,tvTex);add(2.3,W.x0+.08,F2+2.2,15.6,Math.PI/2,tvTex);add(2.3,-13,4.7,-25.9,0,tvTex)}
+  const fr=new THREE.Mesh(RB(w+.1,w*(map===tvQTex?576/512:9/16)+.1,.04,.02),std('#0b0a14',.3,.5));fr.position.set(x-Math.sin(ry)*.03,y,z-Math.cos(ry)*.03);fr.rotation.y=ry;scene.add(fr)};
+ add(1.7,W.x0+.07,3.05,15.15,Math.PI/2,tvQTex);add(2.3,W.x0+.07,F2+2.2,15.6,Math.PI/2,tvTex);add(2.3,-13,4.7,W.z0+.07,0,tvTex)}
 function drawTV(){const g=tvC.getContext('2d'),w=1024,h=576;const gr=g.createLinearGradient(0,0,w,h);gr.addColorStop(0,'#1d1450');gr.addColorStop(1,'#3a1d5c');g.fillStyle=gr;g.fillRect(0,0,w,h);
  if(YTS.v&&tvThumbId!==YTS.v){tvThumbId=YTS.v;tvThumb=null;const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{if(tvThumbId===YTS.v){tvThumb=im;drawTV()}};im.src=`https://i.ytimg.com/vi/${YTS.v}/hqdefault.jpg`}
  g.textAlign='center';g.textBaseline='middle';
  if(YTS.v){if(tvThumb)try{g.drawImage(tvThumb,0,-72,w,w*.75);g.fillStyle='rgba(10,6,30,.5)';g.fillRect(0,0,w,h)}catch(e){}
   g.fillStyle='#ff6fb1';g.font='800 40px "Unbounded","Baloo 2",sans-serif';g.fillText(YTS.p?'▶ NOW PLAYING':'❚❚ PAUSED',w/2,190);g.fillStyle='#fff';g.font='800 46px "Noto Sans TC",sans-serif';const t=YTS.title||('youtu.be/'+YTS.v);g.fillText(t.length>22?t.slice(0,21)+'…':t,w/2,270);
-  g.fillStyle='#d8d0ff';g.font='600 30px "Noto Sans TC",sans-serif';g.fillText(`${YTS.by} 點播 · 走到影音區一起看`,w/2,340);if(YTS.d){const k=Math.min(1,ytNow()/YTS.d);g.fillStyle='rgba(255,255,255,.2)';g.fillRect(212,400,600,8);g.fillStyle='#ff6fb1';g.fillRect(212,400,600*k,8)}}
- else{drawWordmark(g,w/2,220,110,{blur:.2});g.fillStyle='#fff';g.font='800 44px "Noto Sans TC",sans-serif';g.fillText('AVÉRA TV · 一起點歌',w/2,340);g.fillStyle='#d8d0ff';g.font='600 30px "Noto Sans TC",sans-serif';g.fillText('走到影音區按 E，貼上 YouTube 連結就能點播',w/2,400)}
+  g.fillStyle='#d8d0ff';g.font='600 30px "Noto Sans TC",sans-serif';g.fillText(`${YTS.by} 點播 · 到放映室一起看`,w/2,340);if(YTS.d){const k=Math.min(1,ytNow()/YTS.d);g.fillStyle='rgba(255,255,255,.2)';g.fillRect(212,400,600,8);g.fillStyle='#ff6fb1';g.fillRect(212,400,600*k,8)}}
+ else{drawWordmark(g,w/2,220,110,{blur:.2});g.fillStyle='#fff';g.font='800 44px "Noto Sans TC",sans-serif';g.fillText('AVÉRA 放映室 · 一起點歌',w/2,340);g.fillStyle='#d8d0ff';g.font='600 30px "Noto Sans TC",sans-serif';g.fillText('到放映室打開點歌平板，搜尋或貼上連結',w/2,400)}
  tvTex.needsUpdate=true;drawTVQueue()}
 function drawTVQueue(){const g=tvQC.getContext('2d'),w=512,h=576;g.fillStyle='#120d2e';g.fillRect(0,0,w,h);g.fillStyle='#ffd27a';g.font='800 34px "Noto Sans TC",sans-serif';g.textAlign='left';g.textBaseline='middle';g.fillText('待播清單',30,46);g.fillStyle='#a39bd2';g.font='700 18px "Unbounded",sans-serif';g.textAlign='right';g.fillText('UP NEXT',w-30,48);
  g.fillStyle='rgba(255,255,255,.08)';g.fillRect(30,80,w-60,2);g.textAlign='left';if(!TVQ.length){g.fillStyle='#d8d0ff';g.font='600 26px "Noto Sans TC",sans-serif';g.fillText('還沒有人點歌',30,140);g.fillText('輪流點播，每人最多 3 首',30,184)}

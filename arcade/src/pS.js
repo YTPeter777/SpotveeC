@@ -86,7 +86,7 @@ function enterRoom(room,waiting){clearInterval(APP.roomsT);Object.assign(ROOM,{i
   isOwner:!!(room.is_owner||room.mine||(room.owner&&room.owner===ACC.pid))});
  document.body.classList.add('in-room');$('site').hidden=true;$('creator').hidden=true;if(location.hash!=='#/r/'+room.id)history.replaceState(null,'','#/r/'+room.id);
  applyTheme(ROOM.theme);
- if(waiting){showQueue(true);connectNet(ROOM.chan,true)}else{connectNet(ROOM.chan,false);startPlaying()}}
+ if(waiting){showQueue(true);connectNet(ROOM.chan,true)}else roomLoading(ROOM.name,async step=>{connectNet(ROOM.chan,false);step('準備場館…');warmUp();await new Promise(r=>setTimeout(r,250));step('同步玩家…');startPlaying()})}
 function startPlaying(){showQueue(false);staffUI();NET.waiting=false;Object.assign(look,ACC.look||look);myName=ACC.name;$('me-name').textContent=myName;
  const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;myAv.visible=true;
  document.body.classList.add('playing');me.mode='walk';me.x=SPAWN.x+(Math.random()-.5)*2;me.z=SPAWN.z+(Math.random()-.5)*1.4;me.y=0;camera.clearViewOffset();camYaw=0;camCur=camDist;myAv.rotation.y=Math.PI;sfx('go');

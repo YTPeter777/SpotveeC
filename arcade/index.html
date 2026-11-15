@@ -351,6 +351,21 @@ body.in-mach #pad .ab{width:72px;height:64px;border-radius:20px}body.in-mach #pa
 @media (max-height:560px) and (orientation:landscape){body.in-mach #cabbox{display:flex;grid-template-columns:none}body.in-mach #pad{position:fixed;right:var(--sr);bottom:calc(var(--sb) + 4px)}body.in-mach #cabfoot{position:fixed;left:var(--sl);bottom:var(--sb)}body.in-mach #pad .ab{width:60px;height:54px}}
 #sc>*{flex-shrink:0}
 a.cb{text-decoration:none}
+/* ---- now playing / npc speech / loading / perf ---- */
+#nowp{display:flex;align-items:center;gap:9px;padding:6px 14px 6px 10px;border-radius:999px;max-width:260px;text-align:left;color:var(--ink)}
+#nowp .nt2{display:flex;flex-direction:column;min-width:0}#nowp b{font:800 12.5px var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#nowp small{font:700 11px var(--txt);color:var(--dim)}
+.eq{display:inline-flex;align-items:flex-end;gap:2px;height:16px}.eq i{width:3px;background:var(--pink1);border-radius:2px;animation:eq 1s ease-in-out infinite}.eq i:nth-child(1){height:10px}.eq i:nth-child(2){height:16px;animation-delay:-.4s}.eq i:nth-child(3){height:7px;animation-delay:-.7s}
+@keyframes eq{50%{transform:scaleY(.4)}}
+.npcb{position:fixed;left:0;top:0;z-index:5;max-width:220px;padding:8px 12px;border-radius:14px;background:#fff;color:#2a1f63;font:700 13px/1.4 var(--txt);box-shadow:0 6px 16px rgba(0,0,0,.3);pointer-events:none;animation:tin .3s}
+.npcb::after{content:"";position:absolute;left:50%;bottom:-6px;width:12px;height:12px;background:#fff;transform:translateX(-50%) rotate(45deg)}
+#rload{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#2a1d63,#0a0718 70%);transition:opacity .35s}
+#rload.out{opacity:0}.rl-in{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(320px,80vw)}.rl-name{font:800 20px var(--txt)}.rl-step{font:700 13px var(--txt);color:var(--dim)}
+#perf{right:var(--sr);top:calc(var(--st) + 66px);z-index:11;display:grid;grid-template-columns:auto auto;gap:2px 12px;padding:10px 14px;border-radius:16px;font:700 11.5px var(--disp);color:var(--ink2);pointer-events:none}
+#perf b{font:800 24px var(--disp);color:var(--mint);grid-row:span 2}#perf small{color:var(--dim);align-self:end}#perf span{grid-column:span 2}
+/* rounded connection indicator instead of signal bars */
+.sig{display:inline-block;width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;vertical-align:middle}.sig i{display:none}
+.netp .sig{width:8px;height:8px}.prow .st .sig{width:7px;height:7px}
+.nc-top .sig{width:14px;height:14px}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -685,7 +700,7 @@ summary::-webkit-details-marker{display:none}
      <article><svg class="i"><use href="#i-game"/></svg><h3>十幾台街機</h3><p>夾娃娃、投籃機、推幣機、空氣曲棍球、跳舞機、賽車，玩法都跟現實一樣。</p></article>
      <article><svg class="i"><use href="#i-door"/></svg><h3>私人包廂</h3><p>自己開包廂、設人數和密碼，複製邀請連結給朋友就能進來。</p></article>
      <article><svg class="i"><use href="#i-mic"/></svg><h3>近距離語音</h3><p>走近的人聲音比較大，誰在說話一眼就看得到，每個人音量都能各自調整。</p></article>
-     <article><svg class="i"><use href="#i-tv"/></svg><h3>大家一起點歌</h3><p>影音區的電視全館同步，大家輪流點 YouTube，旁邊螢幕顯示待播清單。</p></article>
+     <article><svg class="i"><use href="#i-tv"/></svg><h3>大家一起點歌</h3><p>放映室的電視全館同步，大家輪流點 YouTube，旁邊螢幕顯示待播清單。</p></article>
      <article><svg class="i"><use href="#i-cup"/></svg><h3>點心吧與拍貼機</h3><p>排隊買飲料點心，再一起走進拍貼機拍一張合照。</p></article>
     </div>
     <div class="steps"><div><b>1</b><h4>取一個匿名暱稱</h4><p>不用註冊、不用 Email，挑一隻喜歡的 Q 版動物。</p></div><div><b>2</b><h4>選包廂或開新包廂</h4><p>進公開大廳認識新朋友，或開私人包廂只給朋友。</p></div><div><b>3</b><h4>一起玩</h4><p>電腦、手機、平板都能玩，打開瀏覽器就好。</p></div></div>
@@ -733,7 +748,7 @@ summary::-webkit-details-marker{display:none}
    <h2>3. 行為規範</h2><p>請遵守《社群守則》。禁止騷擾、仇恨言論、詐騙、散布個資、利用漏洞或外掛、干擾他人遊玩或伺服器運作。</p>
    <h2>4. 虛擬代幣與道具</h2><p>AVÉRA 代幣與特殊道具僅能在本服務內使用，不具現金價值，不可兌換、轉售或轉讓。管理員可因違規或系統錯誤調整。</p>
    <h2>5. 包廂</h2><p>包廂版主可設定人數、密碼與上鎖，並可請人離開自己的包廂。版主離開後包廂會自動關閉。官方包廂由管理員管理。</p>
-   <h2>6. 第三方內容</h2><p>影音區播放的 YouTube 影片由第三方提供，播放行為同時受 YouTube 服務條款規範。請勿點播違法或不當內容。</p>
+   <h2>6. 第三方內容</h2><p>放映室播放的 YouTube 影片由第三方提供，播放行為同時受 YouTube 服務條款規範。請勿點播違法或不當內容。</p>
    <h2>7. 管理與處分</h2><p>違反條款或守則時，管理員得視情節予以提醒、禁言、移出包廂、暫時或永久停權，並保留相關紀錄。</p>
    <h2>8. 免責與變更</h2><p>本服務以現狀提供，可能因維護或不可抗力中斷。我們可能更新本條款，更新後繼續使用即視為同意新版條款。</p>
    <h2>9. 聯絡</h2><p>對本條款有任何疑問，請透過網站的「聯絡我們」表單與我們聯繫。</p>
@@ -797,6 +812,7 @@ summary::-webkit-details-marker{display:none}
 <div class="fx h" id="tl">
  <button class="pnl" id="me-btn" aria-expanded="false" aria-label="玩家與隊伍"><span class="pf" id="me-pf"><img id="me-badge" alt=""></span><span class="mb"><span id="me-name">—</span><span class="meta"><span class="netp q-n" id="me-net"><span class="sig" id="me-bars"><i></i><i></i><i></i><i></i></span><span id="me-ms">—</span></span><span class="onl"><svg class="i"><use href="#i-users"/></svg><b id="n-on">1</b></span></span></span><svg class="i chev"><use href="#i-down"/></svg></button>
  <div class="pnl" id="loc"><svg class="i sm"><use href="#i-pin2"/></svg><span class="fl" id="loc-f">1F</span><span id="loc-t">大廳</span></div>
+ <button class="pnl" id="nowp" hidden aria-label="正在播放"><span class="eq"><i></i><i></i><i></i></span><span class="nt2"><b id="nowp-t"></b><small id="nowp-s"></small></span></button>
  <div class="pnl" id="party-strip" hidden></div>
  <div class="pnl" id="talkers" hidden></div>
  <div class="pnl" id="people" hidden></div>
@@ -826,7 +842,10 @@ summary::-webkit-details-marker{display:none}
   <div class="mrow"><svg class="i"><use href="#i-sparkle"/></svg><span class="grow">畫質</span></div>
   <div class="seg" id="qseg"><button data-q="ultra">極致</button><button data-q="high">高</button><button data-q="low">省電</button></div>
   <div class="mrow"><svg class="i"><use href="#i-user"/></svg><span class="grow">顯示名牌</span><button class="tog" id="t-tags" aria-label="顯示名牌"></button></div>
-  <div class="mrow"><svg class="i"><use href="#i-chart"/></svg><span class="grow">畫面更新率<small id="st-fps">—</small></span></div></div>
+  <label class="slab">視角靈敏度<input type="range" id="s-sens" min="40" max="200"></label>
+  <div class="mrow"><svg class="i"><use href="#i-sync"/></svg><span class="grow">走路時鏡頭自動跟到背後</span><button class="tog" id="t-follow" aria-label="鏡頭跟隨"></button></div>
+  <div class="mrow"><svg class="i"><use href="#i-up"/></svg><span class="grow">上下視角反轉</span><button class="tog" id="t-inv" aria-label="上下反轉"></button></div>
+  <div class="mrow"><svg class="i"><use href="#i-chart"/></svg><span class="grow">效能監看<small id="st-fps">—</small></span><button class="tog" id="t-perf" aria-label="效能監看"></button></div></div>
  <div class="spane" data-t="inv" hidden><div id="st-inv"></div></div>
  <div class="spane" data-t="acct" hidden><div id="st-acct"></div></div>
  <div class="spane" data-t="about" hidden><div class="aboutl">
@@ -847,6 +866,8 @@ summary::-webkit-details-marker{display:none}
   <p class="note" style="margin:0">會附上目前包廂、模式與網路狀態，方便管理員判斷。</p>
   <button class="cb pink wide" type="submit">送出</button></form></div></div>
 <div class="fx" id="nstack" role="status" aria-live="polite"></div>
+<div class="fx pnl" id="perf" hidden></div>
+<div id="rload" hidden><div class="rl-in"><span class="wm big" style="font-size:54px">AV<em>É</em>RA</span><div class="rl-name" id="rl-name"></div><div class="qbar"><i></i></div><div class="rl-step" id="rl-step"></div></div></div>
 <div class="fx h" id="feed"></div>
 <form class="fx pnl" id="chatbar" hidden><input id="msg" maxlength="80" placeholder="說點什麼…" autocomplete="off" enterkeyhint="send"><button id="send" class="cb pink round" aria-label="送出"><svg class="i"><use href="#i-send"/></svg></button></form>
 <div class="fx h nb" id="acts">
@@ -951,7 +972,7 @@ const composer=new EffectComposer(renderer,rtt);composer.addPass(new RenderPass(
 const gtao=new GTAOPass(scene,camera,2,2);gtao.blendIntensity=.85;try{gtao.updateGtaoMaterial({radius:.45,distanceExponent:1.4,thickness:1,scale:1,samples:12})}catch(e){}composer.addPass(gtao);
 const bloom=new UnrealBloomPass(new THREE.Vector2(256,256),.5,.35,1.3);composer.addPass(bloom);composer.addPass(new OutputPass());
 function resize(){renderer.setSize(innerWidth,innerHeight,false);composer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()}
-addEventListener('resize',resize);
+let rzT=0,rzW=innerWidth,rzH=innerHeight;addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();clearTimeout(rzT);rzT=setTimeout(()=>{if(Math.abs(innerWidth-rzW)<2&&Math.abs(innerHeight-rzH)<90)return;rzW=innerWidth;rzH=innerHeight;resize()},180)});
 const maxAniso=renderer.capabilities.getMaxAnisotropy();
 
 // ================= procedural textures (colour + height → normal + roughness) =================
@@ -983,13 +1004,13 @@ function marbleSet(S,o,rep){const c=cv(S,S),h=cv(S,S),r=cv(S,S);const g=c.getCon
   if(branch>0)for(let b=0;b<2;b++){const p=pts[Math.floor(rnd()*pts.length)];vein(p[0],p[1],a+(rnd()-.5)*2,len*.35,w*.5,alpha*.7,branch-1)}};
  for(let ty=0;ty<n;ty++)for(let tx=0;tx<n;tx++){const x0=tx*ts,y0=ty*ts;for(const ctx of [g,gh,gr]){ctx.save();ctx.beginPath();ctx.rect(x0,y0,ts,ts);ctx.clip()}
   g.fillStyle=`rgba(${rnd()<.5?255:0},${rnd()<.5?255:0},${rnd()<.5?255:0},${(.01+rnd()*.025).toFixed(3)})`;g.fillRect(x0,y0,ts,ts);
-  const dir=rnd()*Math.PI*2;for(let v=0;v<3+Math.floor(rnd()*3);v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*.8,60+rnd()*90,(.8+rnd()*1.9)*k,o.va*(.45+rnd()*.4),2);
-  for(let v=0;v<14;v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*1.6,15+rnd()*40,(.5+rnd()*.7)*k,o.va*.22,0);
+  const dir=rnd()*Math.PI*2;for(let v=0;v<1+Math.floor(rnd()*2);v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*.5,70+rnd()*80,(.6+rnd()*1.1)*k,o.va*(.35+rnd()*.3),1);
+  for(let v=0;v<4;v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*1.2,20+rnd()*30,(.4+rnd()*.5)*k,o.va*.14,0);
   for(const ctx of [g,gh,gr])ctx.restore()}
  for(let i=0;i<=n;i++){const p=i*ts;g.fillStyle=o.inlay;g.fillRect(p-inl/2,0,inl,S);g.fillRect(0,p-inl/2,S,inl);gh.fillStyle='rgb(90,90,90)';gh.fillRect(p-inl,0,inl*2,S);gh.fillRect(0,p-inl,S,inl*2);gr.fillStyle=`rgb(0,70,255)`;gr.fillRect(p-inl/2,0,inl,S);gr.fillRect(0,p-inl/2,S,inl)}
  const nh=cv(S/2,S/2);nh.getContext('2d').drawImage(h,0,0,S/2,S/2);const rt=tex(r,rep,false);return{map:tex(c,rep),normalMap:tex(normalFrom(nh,1.4),rep,false),roughnessMap:rt,metalnessMap:rt}}
 const MQ=isTouch?1024:2048;
-const marbleDark=marbleSet(MQ,{tiles:4,base:'#15111f',cloudA:'rgba(70,52,110,.07)',cloudB:'rgba(0,0,0,.12)',vein:'rgba(236,228,255,A)',va:.75,inlay:'#c9a35a',rough:22},[40/4.8,44/4.8]);
+const marbleDark=marbleSet(MQ,{tiles:4,base:'#15111f',cloudA:'rgba(80,62,130,.05)',cloudB:'rgba(0,0,0,.06)',vein:'rgba(236,228,255,A)',va:.6,inlay:'#c9a35a',rough:22},[40/4.8,44/4.8]);
 const marbleLight=marbleSet(isTouch?512:1024,{tiles:2,base:'#cfc8d8',cloudA:'rgba(255,255,255,.18)',cloudB:'rgba(120,110,150,.08)',vein:'rgba(90,80,110,A)',va:.6,inlay:'#c9a35a',rough:40},[40/2.4,14/2.4]);
 function woodSet(rep,boards=20){return pbr(TQ,(g,h,r,S)=>{const bw=S/boards;for(let i=0;i<boards;i++){const hue=30+rnd()*7,l=63+rnd()*10;g.fillStyle=`hsl(${hue},48%,${l}%)`;g.fillRect(i*bw,0,bw,S);h.fillStyle='rgb(140,140,140)';h.fillRect(i*bw,0,bw,S);
   for(let k=0;k<120;k++){const x=i*bw+rnd()*bw,y=rnd()*S,len=40+rnd()*260,w=.6+rnd()*1.4;g.fillStyle=`hsla(${hue-6},50%,${l-22}%,${.04+rnd()*.08})`;g.fillRect(x,y,w,len);h.fillStyle=`rgba(90,90,90,${.15+rnd()*.2})`;h.fillRect(x,y,w,len)}
@@ -1014,7 +1035,7 @@ const fabric=color=>new THREE.MeshPhysicalMaterial({color,roughness:.9,sheen:1,s
 const glowCache=new Map();
 function glow(c,i=2.4){const k=c+'|'+i;if(!glowCache.has(k))glowCache.set(k,new THREE.MeshStandardMaterial({color:'#000000',emissive:c,emissiveIntensity:i}));return glowCache.get(k)}
 const M={
- floor:new THREE.MeshPhysicalMaterial({...marbleDark,roughness:1,metalness:1,clearcoat:.55,clearcoatRoughness:.06,normalScale:new THREE.Vector2(.35,.35),envMapIntensity:1.4}),
+ floor:new THREE.MeshPhysicalMaterial({...marbleDark,roughness:1,metalness:1,clearcoat:.4,clearcoatRoughness:.22,normalScale:new THREE.Vector2(.35,.35),envMapIntensity:1.4}),
  floor2:new THREE.MeshPhysicalMaterial({...marbleLight,roughness:1,metalness:1,clearcoat:.5,clearcoatRoughness:.1,normalScale:new THREE.Vector2(.3,.3)}),
  wall:new THREE.MeshStandardMaterial({...wallSet,roughness:1}),
  carpet:new THREE.MeshPhysicalMaterial({...carpet,roughness:1,sheen:.6,sheenRoughness:.8,sheenColor:new THREE.Color('#6a58b0'),normalScale:new THREE.Vector2(.8,.8)}),
@@ -1030,7 +1051,7 @@ const M={
 const RB=(w,h,d,r=.06)=>new RoundedBoxGeometry(w,h,d,3,Math.min(r,w/2-.002,h/2-.002,d/2-.002));
 const boxes=[],camBlock=[],targets=[],anims=[],stations=new Map();
 function put(m,x,y,z,o={}){m.position.set(x,y,z);if(o.ry)m.rotation.y=o.ry;m.traverse(c=>{if(c.isMesh){c.castShadow=o.cast!==false&&!c.material.transparent&&!c.material.isMeshBasicMaterial;c.receiveShadow=o.recv!==false}});(o.parent||scene).add(m);if(o.cam)camBlock.push(m);return m}
-function solid(obj,f,pad=0){obj.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(obj);boxes.push({x0:b.min.x-pad,x1:b.max.x+pad,z0:b.min.z-pad,z1:b.max.z+pad,f});return obj}
+function solid(obj,f,pad=0){let r=obj;while(r.parent)r=r.parent;r.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(obj);boxes.push({x0:b.min.x-pad,x1:b.max.x+pad,z0:b.min.z-pad,z1:b.max.z+pad,f});return obj}
 function merged(list,mat){return new THREE.Mesh(mergeGeometries(list),mat)}
 const tg=(g,x,y,z,rx=0,ry=0,rz=0)=>{if(rx)g.rotateX(rx);if(ry)g.rotateY(ry);if(rz)g.rotateZ(rz);g.translate(x,y,z);return g};
 function colorize(g,c){const col=new THREE.Color(c),n=g.attributes.position.count,a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=col.r;a[i*3+1]=col.g;a[i*3+2]=col.b}g.setAttribute('color',new THREE.BufferAttribute(a,3));return g}
@@ -1076,7 +1097,7 @@ sign('GAME ZONE','#ffd864',8,4.5,5.7,W.z0+.03,0,'復古電玩');
 sign('↑ 2F','#62c9ff',3.2,W.x1-.03,3.2,-12.4,-Math.PI/2,'電玩區・DJ 舞池');
 sign('1F ↓','#62c9ff',2.4,W.x1-.03,F2+2.6,6.5,-Math.PI/2);
 sign('服務台・兌換','#ffd864',3,7,3.95,W.z1-.03,Math.PI);
-sign('影音區 · TV','#ad93ff',2.6,W.x0+.03,5.12,11.1,Math.PI/2);
+sign('放映室','#ad93ff',2.4,W.x0+.03,5.12,11.1,Math.PI/2,'SCREENING ROOM');
 sign('ARCADE 2F','#ff6fb1',8,-8,10.1,W.z1-.03,Math.PI,'電玩區');
 sign('DJ','#55eeb4',3,12.8,9.6,W.z1-.03,Math.PI,'DANCE FLOOR');
 sign('SNACK','#ff9a5c',3,W.x1-.03,4.75,11,-Math.PI/2);
@@ -1096,7 +1117,7 @@ const key=new THREE.DirectionalLight('#fff1e6',1.45);key.position.set(8,22,6);ke
 Object.assign(key.shadow.camera,{left:-25,right:25,top:25,bottom:-25,near:1,far:60});key.shadow.bias=-.0004;key.shadow.normalBias=.04;scene.add(key,key.target);
 [['#ff6fb1',-13,6.5,-17,28],['#62c9ff',4,6,-18,24],['#ffd9b0',0,5.2,11,10],['#ad93ff',-8,10.5,11,20],['#55eeb4',12.8,10,14,18],['#ff9a5c',14,5,11,8]].forEach(([c,x,y,z,i])=>{const l=new THREE.PointLight(c,i,22,1.8);l.position.set(x,y,z);scene.add(l)});
 // moving beam lights (fake volumetric cones)
-const beamTex=ctex(16,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.85,'rgba(255,255,255,.55)');gr.addColorStop(1,'rgba(255,255,255,.9)');g.fillStyle=gr;g.fillRect(0,0,w,h)});
+const beamTex=ctex(16,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.7,'rgba(255,255,255,.32)');gr.addColorStop(.97,'rgba(255,255,255,.18)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,w,h)});
 function beam(x,y,z,color,len,phase){const pivot=new THREE.Group();pivot.position.set(x,y,z);const geo=new THREE.CylinderGeometry(.08,len<7?.7:1.1,len,24,1,true);geo.translate(0,-len/2,0);
  const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:beamTex,color,transparent:true,opacity:len<7?.12:.2,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,toneMapped:false}));pivot.add(m);
  const head=new THREE.Mesh(new THREE.CylinderGeometry(.16,.12,.3,16),std('#222',.4,.6));pivot.add(head);scene.add(pivot);
@@ -1286,14 +1307,14 @@ airHockey(12.6,0,-18.5,0,'hk1');danceMachine(12.2,0,-11.5,Math.PI/2,'dance1');
 plant(13.6,0,-25.3);plant(-5.5,0,-25.3,.9);plant(14.3,0,-6.2,.9);
 // ---- lobby ----
 const tvC=cv(1024,576);const tvTex=tex(tvC);
-{const fr=new THREE.Mesh(RB(5.5,3.2,.16,.08),std('#0b0a14',.35,.4));fr.rotation.y=Math.PI/2;put(fr,W.x0+.1,3.05,11.1,{cam:true});
- const sc=new THREE.Mesh(new THREE.PlaneGeometry(5.2,2.925),new THREE.MeshBasicMaterial({map:tvTex,toneMapped:false}));sc.rotation.y=Math.PI/2;put(sc,W.x0+.19,3.05,11.1,{cast:false});
- put(new THREE.Mesh(new THREE.BoxGeometry(.04,.04,5.5),glow('#ad93ff',2)),W.x0+.2,1.42,11.1,{cast:false});
+{const fr=new THREE.Mesh(RB(5.42,3.1,.05,.03),std('#0b0a14',.3,.5));fr.rotation.y=Math.PI/2;put(fr,W.x0+.06,3.05,11.1,{cam:true});
+ const sc=new THREE.Mesh(new THREE.PlaneGeometry(5.2,2.925),new THREE.MeshBasicMaterial({map:tvTex,toneMapped:false}));sc.rotation.y=Math.PI/2;put(sc,W.x0+.09,3.05,11.1,{cast:false});
+ put(new THREE.Mesh(new THREE.BoxGeometry(.03,.03,5.4),glow('#ad93ff',2)),W.x0+.06,1.45,11.1,{cast:false});
  const rug=new THREE.Mesh(new THREE.PlaneGeometry(6,4),M.rug);rug.rotation.x=-Math.PI/2;rug.rotation.z=Math.PI/2;put(rug,-15.2,.006,11.1,{cast:false});
  const s1=sofa(-13.2,0,9.7,-Math.PI/2,'#7fd9ff'),s2=sofa(-13.2,0,12.5,-Math.PI/2,'#ff9cc9');
  const t=new THREE.Mesh(new THREE.CylinderGeometry(.55,.55,.4,32),phys('#f6f1ff',{clearcoat:1}));put(t,-15.9,.2,11.1);solid(t,0,.02);
  lamp(-12.2,8.0,'#ffd9b0');lamp(-12.2,14.2,'#ffd9b0');
- targets.push({type:'tv',x:-15,z:11.1,f:0,y:2,r:3.4,px:W.x0+.5,py:1.35,pz:11.1,label:'一起看 YouTube'});
+ targets.push({type:'tv',x:-15,z:11.1,f:0,y:2,r:3.4,px:W.x0+.5,py:1.35,pz:11.1,label:'打開點歌平板'});
  [[s1,9.7],[s2,12.5]].forEach(([s,z])=>[-.7,.7].forEach(o=>targets.push({type:'sit',x:-14.3,z:z+o,f:0,y:1.6,r:.75,face:-Math.PI/2,label:'坐下來',seat:{x:-13.3,z:z+o,y:.42}})))}
 vending(W.x0+.45,0,6.0,Math.PI/2,'#ff6fb1');vending(W.x0+.45,0,7.25,Math.PI/2,'#62c9ff');
 lockers(W.x0+.26,14.4,6);
@@ -1537,8 +1558,8 @@ function heldItem(a,kind){const u=a.userData;if(u.held){u.arms[1].remove(u.held)
 // NPC staff
 const npcs=[];
 function npc(lk,x,f,z,ry,kind,name){const a=makeAnimal(lk,{outfit:'#3a2b70',npc:true});a.position.set(x,f,z);a.rotation.y=ry;scene.add(a);npcs.push({a,kind,ph:Math.random()*9,name});const cap=new THREE.Mesh(new THREE.CylinderGeometry(.19,.21,.1,20),fabric('#ff6fb1'));cap.position.y=.72;a.userData.head.add(cap);return a}
-npc({sp:3,fur:1,cl:0,acc:0},7,0,16.1,Math.PI,'clerk','熊店長');npc({sp:2,fur:3,cl:0,acc:0},15.5,0,11,-Math.PI/2,'snack','兔兔店員');
-npc({sp:5,fur:5,cl:0,acc:5},12.8,F2,17.62,Math.PI,'dj','DJ 狐狸');npc({sp:1,fur:0,cl:0,acc:2},-4.0,0,-1.8,-Math.PI/2,'shoes','狗狗服務員');
+npc({sp:3,fur:1,cl:0,acc:0},7,.32,16.1,Math.PI,'clerk','熊店長');npc({sp:2,fur:3,cl:0,acc:0},15.4,.32,11,-Math.PI/2,'snack','兔兔店員');
+npc({sp:5,fur:5,cl:0,acc:5},12.8,F2,17.62,Math.PI,'dj','DJ 狐狸');npc({sp:1,fur:0,cl:0,acc:2},-4.0,.2,-1.8,-Math.PI/2,'shoes','狗狗服務員');
 function animNPCs(t,dt){for(const n of npcs){const k=n.kind;if(k==='dj')animAvatar(n.a,t,dt,0,'dance',t-1,false,false);else{const w=((t+n.ph)%9)<2.4;animAvatar(n.a,t,dt,0,w?'wave':'',w?t-((t+n.ph)%9):-9,false,false)}}}
 
 // ================= 3D portraits for the HUD =================
@@ -1870,7 +1891,10 @@ addEventListener('keyup',e=>{keys[e.code]=false;if(me.mode==='bowl'&&e.code==='S
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
 const gl=$('gl');let drag=null;
 gl.addEventListener('pointerdown',e=>{drag={id:e.pointerId,x:e.clientX,y:e.clientY};gl.setPointerCapture(e.pointerId);togglePop('people',false);togglePop('menu',false);togglePop('emopop',false);if(typing())document.activeElement.blur()});
-gl.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;if(me.mode==='walk'||me.mode==='sit'){camYaw-=(e.clientX-drag.x)*.006;camPitch=THREE.MathUtils.clamp(camPitch+(e.clientY-drag.y)*.004,-.05,1.15)}drag.x=e.clientX;drag.y=e.clientY});
+const VIEW={sens:store.get('vsens',1),inv:store.get('vinv',false),follow:store.get('vfollow',true),lastDrag:0};
+gl.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;if(me.mode==='walk'||me.mode==='sit'||me.mode==='queue'){const k=VIEW.sens*(isTouch?1.25:1);camYaw-=(e.clientX-drag.x)*.0055*k;camPitch=THREE.MathUtils.clamp(camPitch+(e.clientY-drag.y)*.0042*k*(VIEW.inv?-1:1),.02,1.05);VIEW.lastDrag=performance.now()}drag.x=e.clientX;drag.y=e.clientY});
+// third-person follow: while walking, the camera eases in behind the character unless you are steering it
+function camAutoFollow(dt){if(!VIEW.follow||me.speed<.6||performance.now()-VIEW.lastDrag<1200||drag)return;const want=myAv.rotation.y+Math.PI;let d=want-camYaw;d=Math.atan2(Math.sin(d),Math.cos(d));camYaw+=d*Math.min(1,dt*1.1)}
 const endDrag=()=>drag=null;gl.addEventListener('pointerup',endDrag);gl.addEventListener('pointercancel',endDrag);
 gl.addEventListener('wheel',e=>{camDist=THREE.MathUtils.clamp(camDist+e.deltaY*.01,2.8,11)},{passive:true});
 let pinch=null;gl.addEventListener('touchstart',e=>{if(e.touches.length===2){pinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);drag=null}},{passive:true});
@@ -1907,7 +1931,7 @@ function feed(cls,name,text,color,lk){const d=document.createElement('div');d.cl
  while($('feed').children.length>60)$('feed').firstChild.remove();setTimeout(()=>d.classList.add('gone'),cls==='sys'?7000:14000);if(name&&!document.body.classList.contains('chatting'))$('unread').hidden=false;showFeed()}
 function announce(t){feed('ann','',`${myName} ${t}`);NET.emit('ann',{t})}
 function showCoach(){if(store.get('coached',false))return;notify({key:'coach',tone:'tip',title:'小提示',text:`走到機台、球道前按${isTouch?'「互動」':' E '}就能開始玩；點左上角自己的名字可以看誰在線、邀請組隊。`,ms:16000,btns:[{t:'知道了',pri:true,fn:()=>store.set('coached',true)}],onClose:()=>store.set('coached',true)})}
-function zoneName(){if(me.y>3){if(me.x>10&&me.z>11.8)return'2F · DJ 舞池';return'2F · 電玩區'}if(inRamp(me.x,me.z))return'樓梯';if(me.x<-6.4&&me.z<-1)return'1F · 保齡球館';if(me.z<-5)return'1F · 復古電玩';if(me.x<-11&&me.z>4)return'1F · 影音區';if(me.x>12&&me.z>7)return'1F · 點心吧';return'1F · 大廳'}
+function zoneName(){if(me.y>3){if(me.x>10&&me.z>11.8)return'2F · DJ 舞池';return'2F · 電玩區'}if(inRamp(me.x,me.z))return'樓梯';if(me.x<-6.4&&me.z<-1)return'1F · 保齡球館';if(me.z<-5)return'1F · 復古電玩';if(me.x<-11&&me.z>4)return'1F · 放映室';if(me.x>12&&me.z>7)return'1F · 點心吧';return'1F · 大廳'}
 
 // ================= interactions =================
 let near=null;
@@ -2711,15 +2735,15 @@ $('tv-min').onclick=()=>$('tv').classList.toggle('mini');$('tv-x').onclick=close
 // ---- 3D screens: the lounge TV, a queue screen beside it, and repeater TVs around the hall ----
 let tvThumb=null,tvThumbId='';const tvQC=cv(512,576),tvQTex=tex(tvQC);
 {const add=(w,x,y,z,ry,map)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,w*(map===tvQTex?576/512:9/16)),new THREE.MeshBasicMaterial({map,toneMapped:false}));m.position.set(x,y,z);m.rotation.y=ry;scene.add(m);
-  const fr=new THREE.Mesh(RB(w+.12,w*(map===tvQTex?576/512:9/16)+.12,.08,.03),std('#0b0a14',.35,.5));fr.position.set(x-Math.sin(ry)*.045,y,z-Math.cos(ry)*.045);fr.rotation.y=ry;scene.add(fr)};
- add(1.9,W.x0+.16,3.0,6.4,Math.PI/2,tvQTex);add(2.3,W.x1-.08,4.95,11,-Math.PI/2,tvTex);add(2.3,W.x0+.08,F2+2.2,15.6,Math.PI/2,tvTex);add(2.3,-13,4.7,-25.9,0,tvTex)}
+  const fr=new THREE.Mesh(RB(w+.1,w*(map===tvQTex?576/512:9/16)+.1,.04,.02),std('#0b0a14',.3,.5));fr.position.set(x-Math.sin(ry)*.03,y,z-Math.cos(ry)*.03);fr.rotation.y=ry;scene.add(fr)};
+ add(1.7,W.x0+.07,3.05,15.15,Math.PI/2,tvQTex);add(2.3,W.x0+.07,F2+2.2,15.6,Math.PI/2,tvTex);add(2.3,-13,4.7,W.z0+.07,0,tvTex)}
 function drawTV(){const g=tvC.getContext('2d'),w=1024,h=576;const gr=g.createLinearGradient(0,0,w,h);gr.addColorStop(0,'#1d1450');gr.addColorStop(1,'#3a1d5c');g.fillStyle=gr;g.fillRect(0,0,w,h);
  if(YTS.v&&tvThumbId!==YTS.v){tvThumbId=YTS.v;tvThumb=null;const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{if(tvThumbId===YTS.v){tvThumb=im;drawTV()}};im.src=`https://i.ytimg.com/vi/${YTS.v}/hqdefault.jpg`}
  g.textAlign='center';g.textBaseline='middle';
  if(YTS.v){if(tvThumb)try{g.drawImage(tvThumb,0,-72,w,w*.75);g.fillStyle='rgba(10,6,30,.5)';g.fillRect(0,0,w,h)}catch(e){}
   g.fillStyle='#ff6fb1';g.font='800 40px "Unbounded","Baloo 2",sans-serif';g.fillText(YTS.p?'▶ NOW PLAYING':'❚❚ PAUSED',w/2,190);g.fillStyle='#fff';g.font='800 46px "Noto Sans TC",sans-serif';const t=YTS.title||('youtu.be/'+YTS.v);g.fillText(t.length>22?t.slice(0,21)+'…':t,w/2,270);
-  g.fillStyle='#d8d0ff';g.font='600 30px "Noto Sans TC",sans-serif';g.fillText(`${YTS.by} 點播 · 走到影音區一起看`,w/2,340);if(YTS.d){const k=Math.min(1,ytNow()/YTS.d);g.fillStyle='rgba(255,255,255,.2)';g.fillRect(212,400,600,8);g.fillStyle='#ff6fb1';g.fillRect(212,400,600*k,8)}}
- else{drawWordmark(g,w/2,220,110,{blur:.2});g.fillStyle='#fff';g.font='800 44px "Noto Sans TC",sans-serif';g.fillText('AVÉRA TV · 一起點歌',w/2,340);g.fillStyle='#d8d0ff';g.font='600 30px "Noto Sans TC",sans-serif';g.fillText('走到影音區按 E，貼上 YouTube 連結就能點播',w/2,400)}
+  g.fillStyle='#d8d0ff';g.font='600 30px "Noto Sans TC",sans-serif';g.fillText(`${YTS.by} 點播 · 到放映室一起看`,w/2,340);if(YTS.d){const k=Math.min(1,ytNow()/YTS.d);g.fillStyle='rgba(255,255,255,.2)';g.fillRect(212,400,600,8);g.fillStyle='#ff6fb1';g.fillRect(212,400,600*k,8)}}
+ else{drawWordmark(g,w/2,220,110,{blur:.2});g.fillStyle='#fff';g.font='800 44px "Noto Sans TC",sans-serif';g.fillText('AVÉRA 放映室 · 一起點歌',w/2,340);g.fillStyle='#d8d0ff';g.font='600 30px "Noto Sans TC",sans-serif';g.fillText('到放映室打開點歌平板，搜尋或貼上連結',w/2,400)}
  tvTex.needsUpdate=true;drawTVQueue()}
 function drawTVQueue(){const g=tvQC.getContext('2d'),w=512,h=576;g.fillStyle='#120d2e';g.fillRect(0,0,w,h);g.fillStyle='#ffd27a';g.font='800 34px "Noto Sans TC",sans-serif';g.textAlign='left';g.textBaseline='middle';g.fillText('待播清單',30,46);g.fillStyle='#a39bd2';g.font='700 18px "Unbounded",sans-serif';g.textAlign='right';g.fillText('UP NEXT',w-30,48);
  g.fillStyle='rgba(255,255,255,.08)';g.fillRect(30,80,w-60,2);g.textAlign='left';if(!TVQ.length){g.fillStyle='#d8d0ff';g.font='600 26px "Noto Sans TC",sans-serif';g.fillText('還沒有人點歌',30,140);g.fillText('輪流點播，每人最多 3 首',30,184)}
@@ -2848,6 +2872,9 @@ $('repf-f').addEventListener('submit',async e=>{e.preventDefault();const body=$(
  const r=await sendReport($('rp-kind').value,$('rp-tgt').value,body,{room:ROOM.id,roomName:ROOM.name,mode:me.mode,game:me.mode==='cab'?curGame:'',ping:net.self,fps:Math.round(NETH.fps),ua:navigator.userAgent.slice(0,120)});
  if(r.ok){$('repf').hidden=true;notify({tone:'ok',title:'已送出',text:'謝謝你！管理員會在後台查看並處理。',ms:5000})}else notify({tone:'err',text:{rate:'送出太頻繁了，請一小時後再試',length:'內容太短或太長',net:'連線失敗'}[r.error]||'送出失敗'})});
 
+$('s-sens').value=Math.round(VIEW.sens*100);$('s-sens').oninput=()=>{VIEW.sens=$('s-sens').value/100;store.set('vsens',VIEW.sens)};
+for(const[id,k,key]of [['t-follow','follow','vfollow'],['t-inv','inv','vinv']]){$(id).setAttribute('aria-pressed',VIEW[k]);$(id).onclick=()=>{VIEW[k]=!VIEW[k];store.set(key,VIEW[k]);$(id).setAttribute('aria-pressed',VIEW[k])}}
+
 // ================= first-time tutorial (once per account/device) =================
 const TUT=[
  {t:'走路與視角',d:()=>isTouch?'用左下角的搖桿走路，推到底就是跑步。用手指拖曳畫面可以轉視角，兩指縮放。':'用 W A S D 或方向鍵走路，按住 Shift 跑步。拖曳畫面轉視角，滾輪縮放。',el:()=>isTouch?'joy':null},
@@ -2929,7 +2956,7 @@ function admShop(m){const shop=JSON.parse(JSON.stringify(ACC.config.shop||DEFAUL
  for(const[k,it]of Object.entries(shop)){const r=el('div','arow');r.append(el('b','sname',it.n));const p=el('input','fld');p.type='number';p.min=0;p.max=999;p.value=it.p;p.style.maxWidth='90px';p.oninput=()=>it.p=Math.max(0,Math.min(999,+p.value|0));
   const t=el('button','tog');t.setAttribute('aria-pressed',!it.off);t.onclick=()=>{it.off=!it.off;t.setAttribute('aria-pressed',!it.off)};r.append(p,el('small',null,'代幣'),t);l.append(r)}
  c.append(l,btn('儲存菜單','pink',async()=>{if(await admDo('config',{k:'shop',v:shop},'菜單已更新'))ACC.config.shop=shop},'check'));m.append(c)}
-function admTV(m){const c=el('div','adm-card');c.append(el('h3',null,'影音區電視'),el('p','note','所有包廂的電視都會收到指令。'));const r=el('div','adm-btns');
+function admTV(m){const c=el('div','adm-card');c.append(el('h3',null,'放映室電視'),el('p','note','所有包廂的電視都會收到指令。'));const r=el('div','adm-btns');
  r.append(btn('跳過目前影片','ghost',()=>admDo('tv',{op:'skip'},'已跳過'),'right'),btn('清空待播清單','ghost',()=>admDo('tv',{op:'clear'},'已清空'),'trash'),btn(ACC.config.tv_lock?'解除點歌鎖定':'鎖定點歌（只有管理員能點）','ghost',async()=>{const lock=!ACC.config.tv_lock;if(await admDo('tv',{op:lock?'lock':'unlock'},lock?'已鎖定':'已解除')){ACC.config.tv_lock=lock;admTab('tv')}},'lock'));c.append(r);m.append(c)}
 async function admAudit(m){const l=el('div','adm-list');m.append(l);l.textContent='讀取中…';const r=await adminOp('audit');l.replaceChildren();if(!r.ok){l.textContent='讀取失敗';return}if(!r.audit.length){l.textContent=BK.mode==='supa'?'沒有紀錄':'預覽版不保存操作紀錄（正式網站會保存）';return}
  for(const a of r.audit){const row=el('div','arow');row.append(el('small','tm',fmtT(a.at)),el('b',null,a.by_name||'—'),el('span',null,a.op),el('small','ctx',JSON.stringify(a.data||{}).slice(0,120)));l.append(row)}}
@@ -3021,7 +3048,7 @@ function enterRoom(room,waiting){clearInterval(APP.roomsT);Object.assign(ROOM,{i
   isOwner:!!(room.is_owner||room.mine||(room.owner&&room.owner===ACC.pid))});
  document.body.classList.add('in-room');$('site').hidden=true;$('creator').hidden=true;if(location.hash!=='#/r/'+room.id)history.replaceState(null,'','#/r/'+room.id);
  applyTheme(ROOM.theme);
- if(waiting){showQueue(true);connectNet(ROOM.chan,true)}else{connectNet(ROOM.chan,false);startPlaying()}}
+ if(waiting){showQueue(true);connectNet(ROOM.chan,true)}else roomLoading(ROOM.name,async step=>{connectNet(ROOM.chan,false);step('準備場館…');warmUp();await new Promise(r=>setTimeout(r,250));step('同步玩家…');startPlaying()})}
 function startPlaying(){showQueue(false);staffUI();NET.waiting=false;Object.assign(look,ACC.look||look);myName=ACC.name;$('me-name').textContent=myName;
  const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;myAv.visible=true;
  document.body.classList.add('playing');me.mode='walk';me.x=SPAWN.x+(Math.random()-.5)*2;me.z=SPAWN.z+(Math.random()-.5)*1.4;me.y=0;camera.clearViewOffset();camYaw=0;camCur=camDist;myAv.rotation.y=Math.PI;sfx('go');
@@ -3136,6 +3163,29 @@ $('contact-f').addEventListener('submit',async e=>{e.preventDefault();const body
  if(r.ok){$('cf-body').value='';$('cf-target').value='';$('cf-cnt').textContent='0 / 1000';dialog({icon:'check',title:'已送出',text:'謝謝你！管理員會在後台查看並處理。',color:'var(--mint)'})}else notify({tone:'err',text:{rate:'送出太頻繁了，請一小時後再試',length:'內容太短或太長',net:'連線失敗，請稍後再試'}[r.error]||'送出失敗'})});
 $('cf-body').oninput=()=>$('cf-cnt').textContent=$('cf-body').value.length+' / 1000';
 
+// ================= NPC greetings, now-playing chip, loading screen, performance panel =================
+const NPCSAY={clerk:['歡迎光臨 AVÉRA！','需要幫忙嗎？設定裡可以重看新手教學喔','每天登入都會送 1000 枚代幣！'],snack:['要來點什麼嗎？按 E 排隊點餐','今天的珍珠奶茶特別好喝！','爆米花剛爆好喔～'],shoes:['打保齡球前記得換鞋！','四條球道都開放中','組隊可以全隊輪流打喔'],dj:['一起跳舞吧！','想點歌？到 1F 放映室打開點歌平板']};
+const npcBub=new Map();
+function npcTick(t){if(!document.body.classList.contains('playing'))return;for(const n of npcs){const lines=NPCSAY[n.kind];if(!lines)continue;const d=Math.hypot(n.a.position.x-me.x,n.a.position.z-me.z);let b=npcBub.get(n);
+ if(!b){const e=document.createElement('div');e.className='npcb';e.hidden=true;document.body.append(e);b={e,until:0,cool:0};npcBub.set(n,b)}
+ if(d<3.2&&Math.abs(n.a.position.y-me.y)<2&&t>b.cool){b.e.textContent=`${n.name}：${lines[Math.floor(Math.random()*lines.length)]}`;b.until=t+4.5;b.cool=t+25}
+ const on=t<b.until;if(on){const s=toScreen(n.a.position.x,n.a.position.y+1.75,n.a.position.z);if(s){b.e.hidden=false;b.e.style.transform=`translate(${s[0].toFixed(0)}px,${s[1].toFixed(0)}px) translate(-50%,-100%)`}else b.e.hidden=true}else b.e.hidden=true}}
+// now playing (top-left): what the room's TV is playing, who asked for it and how long is left
+function fmtDur(s){s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+setInterval(()=>{const el=$('nowp');if(!el)return;const on=!!YTS.v&&document.body.classList.contains('playing');el.hidden=!on;if(!on)return;
+ $('nowp-t').textContent=YTS.title||'youtu.be/'+YTS.v;$('nowp-s').textContent=`${YTS.by} 點播 · ${YTS.d?'剩 '+fmtDur(YTS.d-ytNow()):(YTS.p?'播放中':'已暫停')}`},1000);
+$('nowp').onclick=()=>openTV();
+// entering a room: a short loading screen while the room connects and shaders warm up
+async function roomLoading(name,work){const L=$('rload');$('rl-name').textContent=name;$('rl-step').textContent='連線到包廂…';L.hidden=false;L.classList.remove('out');const t0=performance.now();
+ try{await work((s)=>{$('rl-step').textContent=s})}finally{const left=Math.max(0,900-(performance.now()-t0));await new Promise(r=>setTimeout(r,left));L.classList.add('out');setTimeout(()=>{L.hidden=true},380)}}
+let warmed=false;function warmUp(){if(warmed)return;warmed=true;try{renderer.compile(scene,camera)}catch(e){}}
+// performance panel
+const PERF={on:store.get('perf',false),t:0};
+function perfTick(){if(!PERF.on)return;const now=performance.now();if(now-PERF.t<500)return;PERF.t=now;const i=renderer.info,m=performance.memory;
+ $('perf').innerHTML=`<b>${Math.round(NETH.fps)}</b><small>FPS</small><span>畫質 ${{ultra:'極致',high:'高',low:'省電'}[QUAL]}</span><span>繪製 ${i.render.calls}</span><span>三角形 ${(i.render.triangles/1000).toFixed(0)}k</span><span>貼圖 ${i.memory.textures}</span>${m?`<span>記憶體 ${(m.usedJSHeapSize/1048576).toFixed(0)} MB</span>`:''}<span>延遲 ${net.self??'—'} ms</span><span>解析度 ×${renderer.getPixelRatio().toFixed(2)}</span>`}
+function setPerf(on){PERF.on=on;store.set('perf',on);$('perf').hidden=!on;$('t-perf')?.setAttribute('aria-pressed',on)}
+setPerf(PERF.on);$('t-perf').onclick=()=>setPerf(!PERF.on);
+
 // ================= name tags =================
 function makeTag(){const d=document.createElement('div');d.className='tag';d.innerHTML='<div class="bub" hidden></div><div class="nt"><span class="cdot"></span><svg class="i f pt"><use href="#i-star"/></svg><svg class="i mic"><use href="#i-mic"/></svg><span class="n"></span></div>';document.body.append(d);return d}
 const myTag=makeTag();myTag.hidden=true;
@@ -3163,7 +3213,7 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
  if(me.mode==='walk'||me.mode==='sit'){walkStep(dt,t);
   near=me.mode==='walk'?findNear():null;$('a-act').hidden=!near;if(near&&near!==lastNear){lastNear=near;const ic=TICON[near.type]||'hand';$('p-i').firstElementChild.setAttribute('href','#i-'+ic);$('a-act-i').firstElementChild.setAttribute('href','#i-'+ic);$('a-act-t').textContent=TLABEL[near.type]||'互動'}
   if(near){const s=toScreen(near.px??near.x,near.py??near.y,near.pz??near.z);if(s){$('prompt').hidden=false;const lb=targetLabel(near);if($('p-t').textContent!==lb)$('p-t').textContent=lb;const x=THREE.MathUtils.clamp(s[0],120,innerWidth-120),y=THREE.MathUtils.clamp(s[1],110,innerHeight-130);$('prompt').style.transform=`translate(${x.toFixed(1)}px,${(y+Math.sin(t*4)*3).toFixed(1)}px) translate(-50%,-100%)`}else $('prompt').hidden=true}else $('prompt').hidden=true;
-  camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt);arrow.visible=false}
+  camAutoFollow(dt);camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt);arrow.visible=false}
  else if(me.mode==='bowl'){$('prompt').hidden=true;laneCamera(dt,t)}
  else if(me.mode==='booth'){$('prompt').hidden=true;boothCam()}
  else if(me.mode==='queue'){$('prompt').hidden=true;$('a-act').hidden=true;updShop();camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt)}
@@ -3183,7 +3233,7 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
  animNPCs(t,dt);for(const f of anims)f(t,dt);
  for(let i=floaters.length-1;i>=0;i--){const h=floaters[i];h.t+=dt;if(h.t<0){h.s.visible=false;continue}h.s.visible=true;h.s.position.y+=dt*.8;h.s.position.x+=Math.sin(h.t*6+i)*dt*.3;h.s.material.opacity=Math.max(0,1-h.t/1.6);h.s.scale.setScalar(.25+h.t*.12);if(h.t>1.6){scene.remove(h.s);h.s.material.dispose();floaters.splice(i,1)}}
  const beat=Math.floor(t*2.5);danceTiles.forEach((m,i)=>m.emissiveIntensity=(beat+i)%4===0?2.4:.35);
- gameTick(dt);
+ gameTick(dt);if(frameN%6===0)npcTick(t);perfTick();
  if(frameN%4===0)drawAttract(t);
  if(frameN%3===0)for(const L of lanes)if(L.state||L.mon.fx||frameN%12===0)drawMonitor(L,t);
  if(frameN%20===0&&(me.mode==='walk'||me.mode==='sit')){const z=zoneName();if(z!==lastZone){lastZone=z;showZone(z)}}
