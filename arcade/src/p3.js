@@ -4,7 +4,7 @@ const SPECIES=[{k:'cat',n:'貓咪',e:'🐱'},{k:'dog',n:'狗狗',e:'🐶'},{k:'b
 const FURS=['#f6d7b0','#c98a5a','#9a93ad','#fffaf2','#ffb7d2','#ffbf66','#9fe0b9','#a8c8ff'];
 const FUR_DEFAULT={cat:0,dog:1,bunny:3,bear:1,panda:3,fox:5,frog:6,penguin:2};
 const OUTFIT=['#ff6fb1','#ff9a5c','#ffd864','#55eeb4','#62c9ff','#8f7bff','#f2efff','#463d6b'];
-const ACCS=[{k:'none',n:'無'},{k:'bow',n:'蝴蝶結'},{k:'cap',n:'帽子'},{k:'glasses',n:'眼鏡'},{k:'crown',n:'皇冠'},{k:'phones',n:'耳機'}];
+const ACCS=[{k:'none',n:'無'},{k:'bow',n:'蝴蝶結'},{k:'cap',n:'棒球帽'},{k:'glasses',n:'圓眼鏡'},{k:'crown',n:'小皇冠'},{k:'phones',n:'耳機'},{k:'flower',n:'花冠'},{k:'clip',n:'星星髮夾'},{k:'heart',n:'愛心眼鏡'},{k:'beret',n:'貝雷帽'},{k:'berry',n:'草莓帽'},{k:'scarf',n:'圍巾'},{k:'bag',n:'小背包'},{k:'ribbon',n:'大蝴蝶結'}];
 const look=(()=>{const l=store.get('look',null)||{};const sp=clampI(l.sp,SPECIES.length,Math.floor(Math.random()*SPECIES.length));return{sp,fur:clampI(l.fur,FURS.length,FUR_DEFAULT[SPECIES[sp].k]),cl:clampI(l.cl,OUTFIT.length,Math.floor(Math.random()*6)),acc:clampI(l.acc,ACCS.length,0)}})();
 const lookKey=l=>[l.sp,l.fur,l.cl,l.acc].join(',');
 const parseLook=a=>Array.isArray(a)?{sp:clampI(a[0],SPECIES.length),fur:clampI(a[1],FURS.length),cl:clampI(a[2],OUTFIT.length),acc:clampI(a[3],ACCS.length)}:{sp:0,fur:0,cl:0,acc:0};
@@ -16,8 +16,10 @@ const AG={head:new THREE.SphereGeometry(.36,44,32),torso:new THREE.LatheGeometry
  tailCat:new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[0,0,0],[0,.08,-.12],[0,.24,-.2],[.04,.36,-.14],[.02,.42,-.06]].map(p=>new THREE.Vector3(...p))),24,.03,10)};
 const MAT={skin:new Map()};
 const matFor=(c,r=.62)=>{const k=c+r;if(!MAT.skin.has(k))MAT.skin.set(k,new THREE.MeshPhysicalMaterial({color:c,roughness:r,sheen:.5,sheenRoughness:.7,sheenColor:new THREE.Color(c).lerp(new THREE.Color('#fff'),.5)}));return MAT.skin.get(k)};
-const eyeMat=std('#221a2e',.12),whiteMat=new THREE.MeshBasicMaterial({color:'#ffffff'}),blushMat=new THREE.MeshBasicMaterial({color:'#ff8fb0',transparent:true,opacity:.55,depthWrite:false}),
+const eyeMat=std('#221a2e',.08),irisMat=new THREE.MeshBasicMaterial({color:'#8c6ad8',transparent:true,opacity:.75,depthWrite:false}),whiteMat=new THREE.MeshBasicMaterial({color:'#ffffff'}),blushMat=new THREE.MeshBasicMaterial({color:'#ff8fb0',transparent:true,opacity:.62,depthWrite:false}),
  pinkMat=std('#ff9cbc',.5),blackMat=std('#26222f',.55),noseBlack=std('#2a2230',.25),orangeMat=std('#ff9a3c',.45),goldMat=std('#ffd864',.25,.9),chromeMat=M.chrome;
+const whiteMat2=std('#fffaf2',.6),starMat=new THREE.MeshStandardMaterial({color:'#ffd864',roughness:.4,emissive:'#ffb84a',emissiveIntensity:.25});
+const starGeo=(()=>{const sh=new THREE.Shape();for(let i=0;i<10;i++){const a=i/10*Math.PI*2+Math.PI/2,r=i%2?.016:.036;i?sh.lineTo(Math.cos(a)*r,Math.sin(a)*r):sh.moveTo(Math.cos(a)*r,Math.sin(a)*r)}return new THREE.ExtrudeGeometry(sh,{depth:.006,bevelEnabled:false})})();
 const glowSprite=ctex(128,128,(g,w,h)=>{const gr=g.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);gr.addColorStop(0,'rgba(85,238,180,.9)');gr.addColorStop(1,'rgba(85,238,180,0)');g.fillStyle=gr;g.fillRect(0,0,w,h)});
 function makeAnimal(lk,opt={}){
  const sp=SPECIES[lk.sp]?.k||'cat',fur=FURS[lk.fur]||FURS[0],oc=opt.outfit||OUTFIT[lk.cl]||OUTFIT[0];
@@ -30,7 +32,7 @@ function makeAnimal(lk,opt={}){
  // body
  const torso=mk(AG.torso,sp==='penguin'?furM:cloth,0,.2,0);
  if(sp==='penguin'){const belly=mk(AG.muzzle,light,0,.4,.1);belly.scale.set(1.25,1.6,.8);const bow=mk(AG.bowL,cloth,-.05,.62,.15);bow.rotation.z=Math.PI/2;const bow2=mk(AG.bowL,cloth,.05,.62,.15);bow2.rotation.z=-Math.PI/2}
- else{const hood=mk(AG.hood,cloth,0,.62,-.04);hood.rotation.x=Math.PI/2-.3;const pocket=mk(new THREE.BoxGeometry(.2,.08,.02),pants,0,.36,.205,root,false);pocket.rotation.x=-.12}
+ else{const hood=mk(AG.hood,cloth,0,.62,-.04);hood.rotation.x=Math.PI/2-.3;[-1,1].forEach(s=>{mk(new THREE.CylinderGeometry(.006,.006,.12,6),whiteMat2,s*.045,.53,.19,root,false);mk(new THREE.SphereGeometry(.014,8,6),whiteMat2,s*.045,.47,.195,root,false)});const st=mk(starGeo,starMat,.075,.42,.215,root,false);st.scale.setScalar(.9);const pocket=mk(new THREE.BoxGeometry(.2,.08,.02),pants,0,.36,.205,root,false);pocket.rotation.x=-.12}
  // arms
  const arms=[-1,1].map(s=>{const p=new THREE.Group();p.position.set(s*.2,.56,0);root.add(p);
   if(sp==='penguin'){const fl=mk(AG.arm,furM,0,-.1,0,p);fl.scale.set(.6,1.3,1.4)}else{mk(AG.arm,cloth,0,-.1,0,p);mk(AG.paw,sp==='panda'?blackMat:furM,0,-.2,0,p)}return p});
@@ -42,7 +44,9 @@ function makeAnimal(lk,opt={}){
  if(sp==='frog'){[-1,1].forEach(s=>{const b=mk(AG.ball,furM,s*.15,.62,.1,head);b.scale.setScalar(1.15)})}
  const eyeY=sp==='frog'?.65:.34,eyeZ=sp==='frog'?.205:sp==='penguin'?.355:.327;
  const eyes=[-1,1].map(s=>{const e=mk(AG.eye,eyeMat,s*(sp==='frog'?.15:.125),eyeY,eyeZ,head,false);e.scale.set(.92,1.22,.55);mk(AG.shine,whiteMat,s*(sp==='frog'?.15:.125)+.022,eyeY+.03,eyeZ+.028,head,false);mk(AG.shine,whiteMat,s*(sp==='frog'?.15:.125)-.014,eyeY-.025,eyeZ+.03,head,false).scale.setScalar(.55);return e});
- if(sp!=='penguin'&&sp!=='panda')[-1,1].forEach(s=>{const b=mk(AG.blush,blushMat,s*.21,.25,.275,head,false);b.rotation.y=s*.62});
+ const ex=sp==='frog'?.15:.125;[-1,1].forEach(s=>{for(let i=0;i<3;i++){const l=mk(new THREE.BoxGeometry(.006,.034,.006),blackMat,s*(ex+.03+i*.016),eyeY+.058-i*.012,eyeZ+.012,head,false);l.rotation.z=-s*(.5+i*.38)}
+  const ir=mk(new THREE.CircleGeometry(.03,18),irisMat,s*ex,eyeY-.028,eyeZ+.031,head,false);ir.scale.set(1,.7,1);mk(AG.shine,whiteMat,s*ex-.022,eyeY+.042,eyeZ+.029,head,false).scale.setScalar(.38)});
+ [-1,1].forEach(s=>{const b=mk(AG.blush,blushMat,s*.205,.245,sp==='penguin'?.33:.29,head,false);b.rotation.y=s*.6;b.scale.setScalar(sp==='panda'||sp==='penguin'?.8:1.08)});
  if(sp==='penguin'){const bk=mk(AG.cone,orangeMat,0,.235,.395,head);bk.scale.set(.55,.5,.55);bk.rotation.x=Math.PI/2}
  else if(sp==='frog'){const sm=mk(AG.smile,blackMat,0,.25,.33,head,false);sm.scale.set(2.4,1.6,1);sm.rotation.z=Math.PI}
  else{const n=mk(AG.nose,(sp==='cat'||sp==='bunny')?pinkMat:noseBlack,0,['dog','bear','fox','panda'].includes(sp)?.28:.265,['dog','bear','fox','panda'].includes(sp)?.37:.335,head,false);n.scale.set(1.2,.85,.9);
@@ -63,12 +67,25 @@ function makeAnimal(lk,opt={}){
  else if(sp==='bear'||sp==='panda'){tail=mk(AG.ball,sp==='panda'?blackMat:furM,0,0,0,tp);tail.scale.setScalar(.6)}
  else if(sp==='penguin'){tail=mk(AG.cone,furM,0,-.02,-.02,tp);tail.scale.set(.6,.4,.3);tail.rotation.x=-1.9}
  // accessory
- const acc=ACCS[lk.acc]?.k;const top=sp==='frog'?.66:.7;
- if(acc==='bow'){const b=new THREE.Group();b.position.set(.2,top-.04,.06);b.rotation.z=-.4;head.add(b);[-1,1].forEach(s=>{const c=mk(AG.bowL,cloth,s*.055,0,0,b);c.rotation.z=s*Math.PI/2});mk(AG.shine,cloth,0,0,0,b).scale.setScalar(2)}
- if(acc==='cap'){const c=new THREE.Group();c.position.set(0,top-.02,0);head.add(c);const dome=mk(new THREE.SphereGeometry(.28,28,16,0,Math.PI*2,0,Math.PI/2),cloth,0,0,0,c);dome.scale.set(1,.7,1);const brim=mk(new THREE.CylinderGeometry(.2,.2,.02,24,1,false,-Math.PI/2,Math.PI),cloth,0,.005,.12,c);brim.scale.set(1.1,1,1.2);c.rotation.x=-.12}
- if(acc==='glasses'){const gg=new THREE.Group();gg.position.set(0,eyeY,eyeZ+.06);head.add(gg);[-1,1].forEach(s=>mk(AG.torus,chromeMat,s*(sp==='frog'?.15:.125),0,0,gg,false));mk(new THREE.CylinderGeometry(.008,.008,.11,6),chromeMat,0,.01,0,gg,false).rotation.z=Math.PI/2}
- if(acc==='crown'){const c=new THREE.Group();c.position.set(0,top+.03,0);head.add(c);mk(new THREE.CylinderGeometry(.13,.12,.08,20,1,true),goldMat,0,0,0,c);for(let i=0;i<5;i++){const a=i/5*Math.PI*2;const sp2=mk(AG.bowL,goldMat,Math.cos(a)*.12,.08,Math.sin(a)*.12,c);sp2.scale.set(.5,.8,.5)}mk(AG.shine,matFor('#ff6fb1',.2),0,.02,.13,c).scale.setScalar(1.6)}
- if(acc==='phones'){const h=new THREE.Group();h.position.set(0,.34,0);head.add(h);const band=mk(new THREE.TorusGeometry(.37,.025,8,32,Math.PI),cloth,0,.02,0,h);[-1,1].forEach(s=>{const cup=mk(new THREE.CylinderGeometry(.09,.09,.06,20),cloth,s*.37,0,0,h);cup.rotation.z=Math.PI/2})}
+ const acc=ACCS[lk.acc]?.k;const top=sp==='frog'?.66:.7;const eared=['cat','fox','bear','panda','bunny'].includes(sp);
+ // hats sit between the ears: smaller and pushed forward on eared species so nothing pokes through
+ const hatS=sp==='bunny'?.58:eared?.82:1,hatZ=sp==='bunny'?.1:eared?.05:0;
+ const hat=(y=top)=>{const c=new THREE.Group();c.position.set(0,y,hatZ);c.scale.setScalar(hatS);head.add(c);return c};
+ if(acc==='bow'||acc==='ribbon'){const big=acc==='ribbon';const b=new THREE.Group();if(big){b.position.set(0,top+.01,-.08);b.scale.setScalar(1.7)}else{b.position.set(.27,.5,.13);b.rotation.set(0,.5,-.3)}head.add(b);const bm=big?matFor('#ff7eb6',.4):cloth;[-1,1].forEach(s=>{const c=mk(AG.bowL,bm,s*.055,0,0,b);c.rotation.z=s*Math.PI/2});mk(AG.shine,bm,0,0,0,b).scale.setScalar(2.2)}
+ if(acc==='cap'){const c=hat(top-.02);const dome=mk(new THREE.SphereGeometry(.28,28,16,0,Math.PI*2,0,Math.PI/2),cloth,0,0,0,c);dome.scale.set(1,.7,1);const brim=mk(new THREE.CylinderGeometry(.2,.2,.02,24,1,false,-Math.PI/2,Math.PI),cloth,0,.005,.12,c);brim.scale.set(1.1,1,1.2);c.rotation.x=-.12}
+ if(acc==='glasses'||acc==='heart'){const gg=new THREE.Group();gg.position.set(0,eyeY,eyeZ+.065);head.add(gg);const ex2=sp==='frog'?.15:.125;
+  if(acc==='glasses'){[-1,1].forEach(s=>mk(AG.torus,chromeMat,s*ex2,0,0,gg,false));mk(new THREE.CylinderGeometry(.008,.008,.11,6),chromeMat,0,.01,0,gg,false).rotation.z=Math.PI/2}
+  else{const hs=new THREE.Shape();hs.moveTo(0,-.05);hs.bezierCurveTo(-.09,.0,-.05,.07,0,.035);hs.bezierCurveTo(.05,.07,.09,0,0,-.05);const hg=new THREE.ExtrudeGeometry(hs,{depth:.012,bevelEnabled:false});const hm=new THREE.MeshPhysicalMaterial({color:'#ff6fb1',roughness:.2,transmission:.2,clearcoat:1});
+   [-1,1].forEach(s=>{const m=mk(hg,hm,s*ex2,0,-.006,gg,false);m.scale.setScalar(1.15)});mk(new THREE.CylinderGeometry(.007,.007,.09,6),hm,0,.02,0,gg,false).rotation.z=Math.PI/2}}
+ if(acc==='crown'){const c=hat(top+.03);mk(new THREE.CylinderGeometry(.13,.12,.08,20,1,true),goldMat,0,0,0,c);for(let i=0;i<5;i++){const a=i/5*Math.PI*2;const sp2=mk(AG.bowL,goldMat,Math.cos(a)*.12,.08,Math.sin(a)*.12,c);sp2.scale.set(.5,.8,.5)}mk(AG.shine,matFor('#ff6fb1',.2),0,.02,.13,c).scale.setScalar(1.6)}
+ if(acc==='phones'){const h=new THREE.Group();h.position.set(0,.34,0);if(eared)h.rotation.x=-.5;head.add(h);mk(new THREE.TorusGeometry(.37,.025,8,32,Math.PI),cloth,0,.02,0,h);[-1,1].forEach(s=>{const cup=mk(new THREE.CylinderGeometry(.09,.09,.06,20),cloth,s*.37,0,0,h);cup.rotation.z=Math.PI/2})}
+ if(acc==='flower'){const c=hat(top-.02);const pc=['#ffb3d1','#fff1a8','#c9b4ff','#a8e6ff','#ffc8a8'];for(let i=0;i<7;i++){const a=i/7*Math.PI*2,fx=Math.cos(a)*.17,fz=Math.sin(a)*.15;const fm=matFor(pc[i%5],.5);for(let k=0;k<5;k++){const b=k/5*Math.PI*2;mk(new THREE.SphereGeometry(.028,10,8),fm,fx+Math.cos(b)*.03,.01,fz+Math.sin(b)*.03,c,false)}mk(new THREE.SphereGeometry(.018,8,6),matFor('#ffd864',.4),fx,.025,fz,c,false)}}
+ if(acc==='clip'){[-1,1].forEach(s=>{const m=mk(starGeo,starMat,s*.25,.52,.17,head,false);m.scale.setScalar(1.6);m.rotation.y=s*.6})}
+ if(acc==='beret'){const c=hat(top-.01);const b=mk(new THREE.CylinderGeometry(.26,.22,.07,28),matFor('#ff8cc4',.7),0,0,0,c);c.rotation.z=.22;mk(new THREE.SphereGeometry(.025,8,6),matFor('#ff8cc4',.7),0,.05,0,c)}
+ if(acc==='berry'){const c=hat(top-.02);const cone=mk(new THREE.SphereGeometry(.22,24,14,0,Math.PI*2,0,Math.PI/2),matFor('#ff5a78',.45),0,0,0,c);cone.scale.set(1,1.15,1);for(let i=0;i<14;i++){const a=i*2.4,h=.03+(i%5)*.035;mk(new THREE.SphereGeometry(.009,6,4),matFor('#fff1a8',.4),Math.cos(a)*(.2-h*.6),h,Math.sin(a)*(.2-h*.6),c,false)}
+  for(let i=0;i<5;i++){const l=mk(AG.bowL,matFor('#5fcf8f',.6),Math.cos(i*1.26)*.05,.26,Math.sin(i*1.26)*.05,c);l.rotation.set(Math.sin(i*1.26)*1.1,0,-Math.cos(i*1.26)*1.1)}}
+ if(acc==='scarf'){const sc=matFor('#ff9cc9',.85);const t=mk(new THREE.TorusGeometry(.16,.045,10,28),sc,0,.6,.02,root);t.rotation.x=Math.PI/2;const tl=mk(new THREE.BoxGeometry(.07,.2,.03),sc,.09,.5,.17,root);tl.rotation.z=.15}
+ if(acc==='bag'){const bg=mk(RB(.2,.22,.1,.04),matFor('#ffd1e8',.6),0,.42,-.2,root);mk(new THREE.SphereGeometry(.03,10,8),starMat,0,.45,-.255,root,false);[-1,1].forEach(s=>{const st=mk(new THREE.TorusGeometry(.11,.012,6,16,Math.PI),matFor('#ff8cc4',.6),s*.1,.5,-.05,root,false);st.rotation.y=Math.PI/2})}
  const ring=new THREE.Mesh(AG.ring,new THREE.MeshBasicMaterial({color:oc,transparent:true,opacity:opt.npc?0:.75,toneMapped:false,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.y=.02;g.add(ring);
  const halo=new THREE.Mesh(AG.halo,new THREE.MeshBasicMaterial({color:'#55eeb4',transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false}));halo.rotation.x=-Math.PI/2;halo.position.y=.03;halo.visible=false;g.add(halo);
  const gs=new THREE.Sprite(new THREE.SpriteMaterial({map:glowSprite,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));gs.scale.set(1.8,2.2,1);gs.position.y=.75;gs.visible=false;g.add(gs);

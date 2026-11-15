@@ -532,3 +532,13 @@ begin r := avera._me(p_secret);
   insert into avera.flags(player,kind,data,ip) values (r.id, left(p_kind,24), case when pg_column_size(p_data) > 4000 then null else p_data end, avera._ip()); return jsonb_build_object('ok',true); end $$;
 
 grant execute on function public.avera_daily(text), public.avera_spend(text,text), public.avera_score(text,text,int), public.avera_leaderboard(text), public.avera_flag(text,text,jsonb) to anon, authenticated;
+
+create or replace function avera._clean_look(l jsonb) returns jsonb language plpgsql immutable set search_path = '' as $$
+declare sp int; fur int; cl int; acc int;
+begin
+  sp := coalesce((l->>'sp')::int,0); fur := coalesce((l->>'fur')::int,0); cl := coalesce((l->>'cl')::int,0); acc := coalesce((l->>'acc')::int,0);
+  if sp not between 0 and 7 then sp := 0; end if; if fur not between 0 and 7 then fur := 0; end if;
+  if cl not between 0 and 7 then cl := 0; end if; if acc not between 0 and 13 then acc := 0; end if;
+  return jsonb_build_object('sp',sp,'fur',fur,'cl',cl,'acc',acc);
+exception when others then return '{"sp":0,"fur":0,"cl":0,"acc":0}'::jsonb;
+end $$;

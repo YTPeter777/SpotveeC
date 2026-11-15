@@ -24,7 +24,7 @@ function featureOn(k){const f=ACC.config.features||{};return f[k]!==false||isSta
 const rhex=(n=16)=>[...crypto.getRandomValues(new Uint8Array(n))].map(b=>b.toString(16).padStart(2,'0')).join('');
 async function sha(s){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return 'x'+h}}
 const cleanName=t=>String(t||'').replace(/[\u0000-\u001f<>"`\\]/g,'').replace(/\s+/g,' ').trim().slice(0,12);
-const cleanLook=l=>{const c=(v,m)=>Number.isInteger(v)&&v>=0&&v<=m?v:0;l=l||{};return{sp:c(l.sp,7),fur:c(l.fur,7),cl:c(l.cl,7),acc:c(l.acc,5)}};
+const cleanLook=l=>{const c=(v,m)=>Number.isInteger(v)&&v>=0&&v<=m?v:0;l=l||{};return{sp:c(l.sp,7),fur:c(l.fur,7),cl:c(l.cl,7),acc:c(l.acc,13)}};
 const RESERVED=/(admin|管理|官方|av[eé]ra|客服|系統|\bgm\b|staff|\bmod\b)/i;
 function renameState(){const now=Date.now(),recent=(ACC.renames||[]).map(t=>+new Date(t)).filter(t=>now-t<14*864e5).sort((a,b)=>a-b);return{left:Math.max(0,2-recent.length),next:recent.length>=2?recent[0]+14*864e5:null}}
 

@@ -65,8 +65,8 @@ B. Economy & fairness
  [x] B3 leaderboards: 3D wall board + menu tab
  [x] B4 anti-cheat: autoclicker/impossible scores → not counted, logged for admin
 C. Characters
- [ ] C1 cuter, girl-appealing, refined (lashes, sparkly eyes, softer pastel palette, blush)
- [ ] C2 more accessories; fix accessories that clip
+ [x] C1 cuter, girl-appealing, refined (lashes, sparkly eyes, softer pastel palette, blush)
+ [x] C2 more accessories; fix accessories that clip
  [ ] C3 hold-out items (free + paid with coins); admins have special items; admins look cooler
 D. Chat & reports
  [ ] D1 anti-spam rate limit, profanity / 18+ filter
@@ -92,3 +92,5 @@ I. [ ] notification settings: on/off, styles/templates, colours, animations
 J. [ ] legal terms (Taiwan PDPA etc.), credit "由僑泰匿名牆團隊製作"; name change also on website settings page
 
 SQL: sql/avera_init.sql + sql/avera_r3.sql (round-3 additions). Both shipped in repo arcade/supabase/.
+
+NEXT (in order): C3 hold items + applyEquip (pW stub) ; D chat filter/report msg ; E admin powers/logs/admin.html ; F photos ; G grip+claw adv ; H themes ; I notif settings ; J legal+credit "由僑泰匿名牆團隊製作".
