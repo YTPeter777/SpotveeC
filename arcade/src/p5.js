@@ -18,7 +18,7 @@ const marksMat=new THREE.MeshBasicMaterial({map:ctex(256,2048,(g,w,h)=>{const pp
  const edges=[];for(const x of [-17.76,-14.24,-11.76,-8.24])edges.push(tg(new THREE.BoxGeometry(.03,.03,laneLen),x,.3,laneZ));for(const x of [-16,-10])edges.push(tg(new THREE.BoxGeometry(.03,.02,laneLen),x,.075,laneZ));put(merged(edges,glow('#ad93ff',1.4)),0,0,0,{cast:false});
  const ap=new THREE.Mesh(new THREE.PlaneGeometry(13,4),M.approach);ap.rotation.x=-Math.PI/2;put(ap,-13,.006,FOUL+2,{cast:false});
  const maskTex=textTex(1024,360,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#1d1450');gr.addColorStop(1,'#0e0b22');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let i=0;i<9;i++){g.strokeStyle=['#ff6fb1','#62c9ff','#ffd864'][i%3];g.globalAlpha=.25;g.lineWidth=6;g.beginPath();g.moveTo(-100+i*140,h);g.lineTo(100+i*140,0);g.stroke()}g.globalAlpha=1;
-  g.font='800 46px "Baloo 2",sans-serif';g.fillStyle='#fff';g.textAlign='center';g.fillText('NEON BOWL',w/2,h-26)});
+  const tw=drawWordmark(g,w/2-70,h-48,54,{blur:.2});g.font='800 50px "Unbounded","Baloo 2",sans-serif';g.fillStyle='#fff';g.textAlign='left';g.textBaseline='middle';g.fillText('BOWL',w/2-70+tw/2+22,h-46)});
  for(const x of [-16,-10]){const mu=new THREE.Mesh(RB(3.7,1.35,.3,.08),[M.dark,M.dark,M.dark,M.dark,new THREE.MeshBasicMaterial({map:maskTex}),M.dark]);put(mu,x,1.62,MASK_Z,{cam:true});
   const lm=new THREE.MeshStandardMaterial({color:'#000',emissive:'#fff3e4',emissiveIntensity:2.2});maskMats.push(lm);put(new THREE.Mesh(new THREE.BoxGeometry(3.6,.04,.04),lm),x,.92,MASK_Z+.14,{cast:false});
   put(new THREE.Mesh(RB(3.7,.25,1.2,.04),M.dark),x,2.42,MASK_Z-.5,{cast:false})}

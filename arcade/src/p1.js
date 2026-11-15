@@ -48,6 +48,10 @@ function cv(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;r
 function tex(c,rep,srgb=true){const t=new THREE.CanvasTexture(c);if(srgb)t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=maxAniso;if(rep){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep[0],rep[1])}return t}
 function ctex(w,h,draw,rep){const c=cv(w,h);draw(c.getContext('2d'),w,h);return tex(c,rep)}
 function textTex(w,h,draw){const c=cv(w,h);draw(c.getContext('2d'),w,h);const t=tex(c);redraws.push(()=>{const g=c.getContext('2d');g.clearRect(0,0,w,h);draw(g,w,h);t.needsUpdate=true});return t}
+// the AVÉRA wordmark, drawn into any canvas (used by signs, lanes, cabinets, posters)
+function drawWordmark(g,cx,cy,size,o={}){g.save();g.font=`800 ${size}px "Unbounded","Baloo 2",sans-serif`;g.textBaseline='middle';g.textAlign='left';const L=['A','V','É','R','A'],sp=size*(o.sp??.12);const ws=L.map(c=>g.measureText(c).width);const tot=ws.reduce((a,b)=>a+b,0)+sp*4;let x=cx-tot/2;
+ const gr=g.createLinearGradient(cx-tot/2,0,cx+tot/2,0);gr.addColorStop(0,o.c1||'#d9c9ff');gr.addColorStop(.5,o.c2||'#ff8cc4');gr.addColorStop(1,o.c3||'#ffc58a');
+ for(const pass of (o.glow===false?[0]:[1,0])){g.shadowColor=pass?(o.glowc||'#ff6fb1'):'transparent';g.shadowBlur=pass?size*(o.blur??.3):0;x=cx-tot/2;L.forEach((c,i)=>{g.fillStyle=o.flat||(c==='É'?(o.accent||'#ffd27a'):gr);g.fillText(c,x,cy);x+=ws[i]+sp})}g.restore();return tot}
 function normalFrom(hc,str){const w=hc.width,h=hc.height,src=hc.getContext('2d').getImageData(0,0,w,h).data,o=cv(w,h),og=o.getContext('2d'),img=og.createImageData(w,h),d=img.data;
  const H=(x,y)=>src[(((y+h)%h)*w+((x+w)%w))*4]/255;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const dx=(H(x+1,y)-H(x-1,y))*str,dy=(H(x,y+1)-H(x,y-1))*str;let nx=-dx,ny=dy,nz=1;const l=Math.hypot(nx,ny,nz);const i=(y*w+x)*4;d[i]=(nx/l*.5+.5)*255;d[i+1]=(ny/l*.5+.5)*255;d[i+2]=(nz/l*.5+.5)*255;d[i+3]=255}
@@ -57,11 +61,23 @@ function pbr(size,draw,rep,nStr=2){const c=cv(size,size),h=cv(size,size),r=cv(si
 function poly(g,x,y,s,n){g.beginPath();for(let k=0;k<n;k++){const a=k/n*Math.PI*2+rnd()*.8,r=s*(.55+rnd()*.6);g.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r)}g.closePath();g.fill()}
 function star(g,x,y,r,p=4){g.beginPath();for(let i=0;i<p*2;i++){const a=i/(p*2)*Math.PI*2-Math.PI/2,rr=i%2?r*.38:r;g.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}g.closePath();g.fill()}
 const TQ=isTouch?512:1024;
-const terrazzo=pbr(TQ,(g,h,r,S)=>{const k=S/1024;g.fillStyle='#231c4a';g.fillRect(0,0,S,S);h.fillStyle='rgb(110,110,110)';h.fillRect(0,0,S,S);r.fillStyle='rgb(0,120,0)';r.fillRect(0,0,S,S);
- for(let i=0;i<80;i++){const x=rnd()*S,y=rnd()*S,R=(60+rnd()*170)*k,gr=g.createRadialGradient(x,y,0,x,y,R);gr.addColorStop(0,'rgba(100,80,180,.12)');gr.addColorStop(1,'rgba(100,80,180,0)');g.fillStyle=gr;g.fillRect(x-R,y-R,2*R,2*R)}
- const cs=['#ff8fc4','#7ff0c8','#8fd2ff','#ffe08a','#c2b0ff','#ffffff','#5a4aa0'];
- for(let i=0;i<3600*k*k;i++){const x=rnd()*S,y=rnd()*S,s=(1.2+rnd()*4.4)*k,c=cs[i%7];g.globalAlpha=.25+rnd()*.5;g.fillStyle=c;poly(g,x,y,s,5);h.fillStyle='rgb(200,200,200)';seed-=0;h.globalAlpha=1;h.beginPath();h.arc(x,y,s*.8,0,7);h.fill();r.fillStyle='rgb(0,40,0)';r.beginPath();r.arc(x,y,s*.8,0,7);r.fill()}
- g.globalAlpha=1;for(const [ctx,col,w] of [[g,'rgba(255,255,255,.07)',2],[h,'rgb(40,40,40)',3],[r,'rgb(0,200,0)',3]]){ctx.strokeStyle=col;ctx.lineWidth=w*k;for(let i=0;i<=4;i++){ctx.beginPath();ctx.moveTo(i*S/4,0);ctx.lineTo(i*S/4,S);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i*S/4);ctx.lineTo(S,i*S/4);ctx.stroke()}}},[8,8.8],2.2);
+// polished marble: every tile gets its own veins; brass inlay between tiles (metalness in the blue channel)
+function marbleSet(S,o,rep){const c=cv(S,S),h=cv(S,S),r=cv(S,S);const g=c.getContext('2d'),gh=h.getContext('2d'),gr=r.getContext('2d');const n=o.tiles,ts=S/n,k=S/2048,inl=Math.max(2,5*k);
+ g.fillStyle=o.base;g.fillRect(0,0,S,S);gh.fillStyle='rgb(128,128,128)';gh.fillRect(0,0,S,S);gr.fillStyle=`rgb(0,${o.rough},0)`;gr.fillRect(0,0,S,S);
+ for(let i=0;i<220;i++){const x=rnd()*S,y=rnd()*S,R=(80+rnd()*320)*k,cg=g.createRadialGradient(x,y,0,x,y,R),col=rnd()<.5?o.cloudA:o.cloudB;cg.addColorStop(0,col);cg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=cg;g.fillRect(x-R,y-R,2*R,2*R)}
+ const vein=(x,y,a,len,w,alpha,branch)=>{const pts=[[x,y]];for(let i=0;i<len;i++){a+=(rnd()-.5)*.55;x+=Math.cos(a)*7*k;y+=Math.sin(a)*7*k;pts.push([x,y])}
+  for(const[ctx,style,lw,blur]of [[g,o.vein.replace('A',(alpha*.45).toFixed(3)),w*3.2,6*k],[g,o.vein.replace('A',alpha.toFixed(3)),w,1.5*k],[gh,'rgb(112,112,112)',w*1.2,0],[gr,`rgb(0,${o.rough+40},0)`,w*1.4,0]]){ctx.save();ctx.strokeStyle=style;ctx.lineWidth=lw;ctx.lineCap='round';ctx.lineJoin='round';ctx.shadowColor=style;ctx.shadowBlur=blur;ctx.beginPath();pts.forEach(([px,py],i)=>i?ctx.lineTo(px,py):ctx.moveTo(px,py));ctx.stroke();ctx.restore()}
+  if(branch>0)for(let b=0;b<2;b++){const p=pts[Math.floor(rnd()*pts.length)];vein(p[0],p[1],a+(rnd()-.5)*2,len*.35,w*.5,alpha*.7,branch-1)}};
+ for(let ty=0;ty<n;ty++)for(let tx=0;tx<n;tx++){const x0=tx*ts,y0=ty*ts;for(const ctx of [g,gh,gr]){ctx.save();ctx.beginPath();ctx.rect(x0,y0,ts,ts);ctx.clip()}
+  g.fillStyle=`rgba(${rnd()<.5?255:0},${rnd()<.5?255:0},${rnd()<.5?255:0},${(.01+rnd()*.025).toFixed(3)})`;g.fillRect(x0,y0,ts,ts);
+  const dir=rnd()*Math.PI*2;for(let v=0;v<3+Math.floor(rnd()*3);v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*.8,60+rnd()*90,(.8+rnd()*1.9)*k,o.va*(.45+rnd()*.4),2);
+  for(let v=0;v<14;v++)vein(x0+rnd()*ts,y0+rnd()*ts,dir+(rnd()-.5)*1.6,15+rnd()*40,(.5+rnd()*.7)*k,o.va*.22,0);
+  for(const ctx of [g,gh,gr])ctx.restore()}
+ for(let i=0;i<=n;i++){const p=i*ts;g.fillStyle=o.inlay;g.fillRect(p-inl/2,0,inl,S);g.fillRect(0,p-inl/2,S,inl);gh.fillStyle='rgb(90,90,90)';gh.fillRect(p-inl,0,inl*2,S);gh.fillRect(0,p-inl,S,inl*2);gr.fillStyle=`rgb(0,70,255)`;gr.fillRect(p-inl/2,0,inl,S);gr.fillRect(0,p-inl/2,S,inl)}
+ const nh=cv(S/2,S/2);nh.getContext('2d').drawImage(h,0,0,S/2,S/2);const rt=tex(r,rep,false);return{map:tex(c,rep),normalMap:tex(normalFrom(nh,1.4),rep,false),roughnessMap:rt,metalnessMap:rt}}
+const MQ=isTouch?1024:2048;
+const marbleDark=marbleSet(MQ,{tiles:4,base:'#15111f',cloudA:'rgba(70,52,110,.07)',cloudB:'rgba(0,0,0,.12)',vein:'rgba(236,228,255,A)',va:.75,inlay:'#c9a35a',rough:22},[40/4.8,44/4.8]);
+const marbleLight=marbleSet(isTouch?512:1024,{tiles:2,base:'#cfc8d8',cloudA:'rgba(255,255,255,.18)',cloudB:'rgba(120,110,150,.08)',vein:'rgba(90,80,110,A)',va:.6,inlay:'#c9a35a',rough:40},[40/2.4,14/2.4]);
 function woodSet(rep,boards=20){return pbr(TQ,(g,h,r,S)=>{const bw=S/boards;for(let i=0;i<boards;i++){const hue=30+rnd()*7,l=63+rnd()*10;g.fillStyle=`hsl(${hue},48%,${l}%)`;g.fillRect(i*bw,0,bw,S);h.fillStyle='rgb(140,140,140)';h.fillRect(i*bw,0,bw,S);
   for(let k=0;k<120;k++){const x=i*bw+rnd()*bw,y=rnd()*S,len=40+rnd()*260,w=.6+rnd()*1.4;g.fillStyle=`hsla(${hue-6},50%,${l-22}%,${.04+rnd()*.08})`;g.fillRect(x,y,w,len);h.fillStyle=`rgba(90,90,90,${.15+rnd()*.2})`;h.fillRect(x,y,w,len)}
   g.fillStyle='rgba(90,50,20,.35)';g.fillRect(i*bw,0,1.5,S);h.fillStyle='rgb(30,30,30)';h.fillRect(i*bw,0,2,S);const y=rnd()*S;g.fillRect(i*bw,y,bw,1.5);h.fillRect(i*bw,y,bw,2)}
@@ -85,7 +101,8 @@ const fabric=color=>new THREE.MeshPhysicalMaterial({color,roughness:.9,sheen:1,s
 const glowCache=new Map();
 function glow(c,i=2.4){const k=c+'|'+i;if(!glowCache.has(k))glowCache.set(k,new THREE.MeshStandardMaterial({color:'#000000',emissive:c,emissiveIntensity:i}));return glowCache.get(k)}
 const M={
- floor:new THREE.MeshStandardMaterial({...terrazzo,roughness:1,normalScale:new THREE.Vector2(.6,.6)}),
+ floor:new THREE.MeshPhysicalMaterial({...marbleDark,roughness:1,metalness:1,clearcoat:.55,clearcoatRoughness:.06,normalScale:new THREE.Vector2(.35,.35),envMapIntensity:1.4}),
+ floor2:new THREE.MeshPhysicalMaterial({...marbleLight,roughness:1,metalness:1,clearcoat:.5,clearcoatRoughness:.1,normalScale:new THREE.Vector2(.3,.3)}),
  wall:new THREE.MeshStandardMaterial({...wallSet,roughness:1}),
  carpet:new THREE.MeshPhysicalMaterial({...carpet,roughness:1,sheen:.6,sheenRoughness:.8,sheenColor:new THREE.Color('#6a58b0'),normalScale:new THREE.Vector2(.8,.8)}),
  lane:new THREE.MeshPhysicalMaterial({...laneWood,roughness:1,clearcoat:1,clearcoatRoughness:.04,normalScale:new THREE.Vector2(.4,.4)}),

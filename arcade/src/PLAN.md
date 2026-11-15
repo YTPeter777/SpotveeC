@@ -34,7 +34,7 @@ Preview (claude artifact) backend = artifact `db` + `user` capabilities; ?local 
 3. [~] Backend adapters (doc done; supa RPC written, SQL not applied) (doc: claude db / local) + Supabase SQL (incl. rooms) shipped in repo; single device
 4. [x] HUD systems: notification manager, network chip, speaking strip + mic waveform, settings tabs, tutorial, busy-invite reasons
 5. [x] Admin panel: players/reports/announce/rooms/theme/shop/TV/config/audit
-6. [ ] World: marble floor, LED strips/wall panels/decor, lighting themes, realistic animated cabinets w/ AVÉRA logo, bowling upgrade
+6. [~] World (DONE: marble 1F/2F + ultra planar reflection (pV), fluted wainscot+LED strips+spill, LED pillars, AVÉRA signs/medallion/lane masks/posters, theme recolour worldTheme(), realistic batched upright cabinets CAB2 with vertical attract monitors composeAttract, centre island+LED halo. TODO: bowling extras, other machines realism): marble floor, LED strips/wall panels/decor, lighting themes, realistic animated cabinets w/ AVÉRA logo, bowling upgrade
 7. [ ] Snack bar queue + coins; photo booth inside; TVs synced + queue screen + round-robin requests
 8. [ ] Real-life play views: cabinet-screen games, 3D claw, 3D hoops, coin pusher, hockey/c4 table views, dance, racer; AI for all 2P; mobile controls
 9. [ ] Characters: bigger clear eyes, no clipping
@@ -45,3 +45,4 @@ p0.html (markup+CSS) p1 config/renderer/textures, p2 world, p3 avatars+portraits
 pA account+rooms+backend(BK), p4 sfx/input/chat, p5 bowling, p6 minigames, p7 network (per-room channels, queue, invites),
 p8 voice+YouTube, pW site camera+themes(themeHooks)+applyEquip stub, pC settings, pT tutorial, pD admin, pS website/lobby/room flow, p9 loop+boot.
 Tests: s1.js (site/rooms flow), s2.js (settings/admin/report/kick), h1.js (HUD suite; old start flow — needs update).
+pV.js = world v2 (reflection, wall dressing, signage, theme hooks, centre island). v1.js = camera-view screenshot test (node v1.js ultra hall,cab,bowl [theme]).

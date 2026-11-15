@@ -12,7 +12,7 @@ function drawAttract(t){for(const k of CAB_GAMES){const{g,t:tx}=attract[k],col=G
   else if(k==='stack'){for(let r=0;r<6;r++){g.fillStyle=`hsl(${195+r*12},90%,64%)`;const w=84-r*8,x=128-w/2+(r===5?Math.sin(t*3)*50:0);g.beginPath();g.roundRect(x,170-r*22,w,18,5);g.fill()}}
   else if(k==='mole'){for(let i=0;i<3;i++){const up=Math.max(0,Math.sin(t*3+i*2));g.fillStyle='#c48a5c';g.beginPath();g.ellipse(64+i*64,146-up*40,18,20,0,0,7);g.fill();g.fillStyle='#000';g.fillRect(40+i*64,146,48,16)}}
   else{for(let r=0;r<4;r++)for(let c=0;c<7;c++)if((r*7+c+Math.floor(t*2))%5){g.fillStyle=`hsl(${r*50},85%,65%)`;g.fillRect(16+c*32,40+r*16,28,12)}const bx=128+Math.sin(t*2.3)*100,by=120+Math.abs(Math.sin(t*3.1))*-50+40;g.fillStyle='#ffd864';g.beginPath();g.arc(bx,by,5,0,7);g.fill();g.fillStyle='#fff';g.fillRect(bx-24,172,48,6)}
-  g.fillStyle='rgba(255,255,255,.05)';for(let y=0;y<192;y+=4)g.fillRect(0,y,256,1);g.fillStyle='#fff';g.font='800 20px "Baloo 2",sans-serif';g.textAlign='center';g.textBaseline='middle';if(Math.sin(t*4)>0)g.fillText('PRESS START',128,22);tx.needsUpdate=true}
+  g.fillStyle='rgba(255,255,255,.05)';for(let y=0;y<192;y+=4)g.fillRect(0,y,256,1);g.fillStyle='#fff';g.font='800 20px "Baloo 2",sans-serif';g.textAlign='center';g.textBaseline='middle';if(Math.sin(t*4)>0)g.fillText('PRESS START',128,22);composeAttract(k,t)}
  {const{g,t:tx}=racerScr,w=256,h=176;g.fillStyle='#262044';g.fillRect(0,0,w,h);g.fillStyle='#3a3360';g.beginPath();g.moveTo(w*.42,40);g.lineTo(w*.58,40);g.lineTo(w,h);g.lineTo(0,h);g.fill();g.fillStyle='#fff';const off=(t*3)%1;for(let i=0;i<6;i++){const k=((i+off)/6),y=40+k*k*(h-40),ww=2+k*8;g.fillRect(w/2-ww/2,y,ww,4+k*10)}
   g.fillStyle='#ffd864';g.beginPath();g.roundRect(w/2-20+Math.sin(t*1.7)*30,h-46,40,34,8);g.fill();g.fillStyle='#ff6178';g.font='800 18px "Baloo 2",sans-serif';g.textAlign='center';g.fillText('RACE',w/2,20);tx.needsUpdate=true}
  {const{g,t:tx}=danceScr,w=512,h=196;g.fillStyle='#26114a';g.fillRect(0,0,w,h);const cols=['#ff6fb1','#62c9ff','#55eeb4','#ffd864'],A=['◀','▼','▲','▶'];g.textAlign='center';g.textBaseline='middle';g.font='800 40px "Baloo 2",sans-serif';
@@ -48,11 +48,11 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
  if(frameN%3===0)for(const L of lanes)if(L.state||L.mon.fx||frameN%12===0)drawMonitor(L,t);
  if(frameN%20===0&&(me.mode==='walk'||me.mode==='sit')){const z=zoneName();if(z!==lastZone){lastZone=z;showZone(z)}}
  sendMove(false);if(frameN%90===0)pushInfo();
- if(QUAL==='low')renderer.render(scene,camera);else composer.render()}
+ renderReflection();if(QUAL==='low')renderer.render(scene,camera);else composer.render()}
 
 // ================= boot =================
 (function boot(){const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;me.mode='site';myAv.visible=false;resize();tick();drawTV();siteBoot();
- document.fonts.load('800 40px "Baloo 2"').then(()=>document.fonts.load('700 40px "Noto Sans TC"','保齡球館復古電玩區投籃機服務台兌換影音區夾娃娃貪食蛇疊疊樂打地鼠打磚塊極速賽車空氣曲棍球跳舞機四子棋推幣機租鞋爆米花汽水熱狗霜淇淋代幣空道站上助走按第格擊倒準備回合比賽結束挑戰最高分雙人對戰一起玩週五舞會之夜大賽')).then(()=>redraws.forEach(f=>f())).catch(()=>{});
+ Promise.all([document.fonts.load('800 40px "Baloo 2"'),document.fonts.load('800 40px "Unbounded"','AVÉRBOWL'),document.fonts.load('700 40px "Unbounded"','EST.2026')]).then(()=>document.fonts.load('700 40px "Noto Sans TC"','保齡球館復古電玩區投籃機服務台兌換影音區夾娃娃貪食蛇疊疊樂打地鼠打磚塊極速賽車空氣曲棍球跳舞機四子棋推幣機租鞋爆米花汽水熱狗霜淇淋代幣空道站上助走按第格擊倒準備回合比賽結束挑戰最高分雙人對戰一起玩週五舞會之夜大賽')).then(()=>redraws.forEach(f=>f())).catch(()=>{});
  })();
 </script>
 </body>

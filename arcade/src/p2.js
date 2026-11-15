@@ -15,7 +15,8 @@ const rampH=z=>(z-RAMP.z0)/(RAMP.z1-RAMP.z0)*F2;
 const inRamp=(x,z)=>x>RAMP.x0&&x<RAMP.x1&&z>RAMP.z0&&z<RAMP.z1;
 const PADS=[];// raised floor pads you can stand on (dance machine, dance floor)
 function groundAt(x,z,y){let g=0;if(inRamp(x,z)){const h=rampH(z);if(h<=y+.6)g=Math.max(g,h)}if(z>=MZ&&F2<=y+.6)g=Math.max(g,F2);for(const p of PADS)if(x>p.x0&&x<p.x1&&z>p.z0&&z<p.z1&&p.y<=y+.6)g=Math.max(g,p.y);return g}
-{const f=new THREE.Mesh(new THREE.PlaneGeometry(40,44),M.floor);f.rotation.x=-Math.PI/2;put(f,0,0,-4,{cast:false});
+let FLOOR1=null;
+{const f=new THREE.Mesh(new THREE.PlaneGeometry(40,44),M.floor);f.rotation.x=-Math.PI/2;put(f,0,0,-4,{cast:false});FLOOR1=f;
  const c=new THREE.Mesh(new THREE.PlaneGeometry(40,44),std('#100c24',1));c.rotation.x=Math.PI/2;put(c,0,CEIL,-4,{cast:false,cam:true});
  const wall=(w,h,d,x,y,z)=>put(new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M.wall),x,y,z,{cam:true,cast:false});
  wall(40.8,CEIL,.4,0,CEIL/2,W.z0-.2);wall(40.8,CEIL,.4,0,CEIL/2,W.z1+.2);wall(.4,CEIL,44,W.x0-.2,CEIL/2,-4);wall(.4,CEIL,44,W.x1+.2,CEIL/2,-4);
@@ -24,7 +25,7 @@ function groundAt(x,z,y){let g=0;if(inRamp(x,z)){const h=rampH(z);if(h<=y+.6)g=M
  const top=[];trim(top,40,.05,0,CEIL-.3,W.z0+.03);trim(top,40,.05,0,CEIL-.3,W.z1-.03);trim(top,.05,44,W.x0+.03,CEIL-.3,-4);trim(top,.05,44,W.x1-.03,CEIL-.3,-4);put(merged(top,glow('#ff6fb1',2)),0,0,0,{cast:false});
  const mid=[];trim(mid,40,.04,0,F2+.02,W.z0+.025);trim(mid,.04,30,W.x0+.025,F2+.02,-11);trim(mid,.04,30,W.x1-.025,F2+.02,-11);put(merged(mid,glow('#62c9ff',1.4)),0,0,0,{cast:false});
  const lp=[];for(let x=-15;x<=15;x+=7.5)for(let z=-22;z<=14;z+=6)lp.push(tg(RB(3.2,.08,1.1,.04),x,CEIL-.06,z));put(merged(lp,glow('#fff3e4',1.1)),0,0,0,{cast:false});
- const d=W.z1-MZ;const slab=new THREE.Mesh(new THREE.BoxGeometry(40,.3,d),[M.dark,M.dark,M.carpet,std('#1a1534',.9),M.dark,M.dark]);put(slab,0,F2-.15,MZ+d/2,{cam:true});
+ const d=W.z1-MZ;const slab=new THREE.Mesh(new THREE.BoxGeometry(40,.3,d),[M.dark,M.dark,M.floor2,std('#1a1534',.9),M.dark,M.dark]);put(slab,0,F2-.15,MZ+d/2,{cam:true});
  put(new THREE.Mesh(new THREE.BoxGeometry(40,.06,.06),glow('#62c9ff',2.2)),0,F2-.15,MZ-.02,{cast:false});
  const dl=[];for(let x=-17;x<=17;x+=4.25)for(let z=6.5;z<=16.5;z+=5)dl.push(tg(new THREE.CircleGeometry(.2,20),x,F2-.31,z,Math.PI/2));put(merged(dl,glow('#fff1dc',1.6)),0,0,0,{cast:false});
  const rw=RAMP.x0-W.x0,rx=(W.x0+RAMP.x0)/2;put(new THREE.Mesh(new THREE.BoxGeometry(rw,1,.04),M.glass),rx,F2+.5,MZ+.04,{cast:false,recv:false});
@@ -47,13 +48,12 @@ sign('STRIKE!','#ff6fb1',9,-13,8.1,W.z0+.03,0,'保齡球館 · BOWLING');
 sign('GAME ZONE','#ffd864',8,4.5,5.7,W.z0+.03,0,'復古電玩');
 sign('↑ 2F','#62c9ff',3.2,W.x1-.03,3.2,-12.4,-Math.PI/2,'電玩區・DJ 舞池');
 sign('1F ↓','#62c9ff',2.4,W.x1-.03,F2+2.6,6.5,-Math.PI/2);
-sign('WELCOME','#62c9ff',5,0,4.4,W.z1-.03,Math.PI);
 sign('服務台・兌換','#ffd864',3,7,3.95,W.z1-.03,Math.PI);
 sign('影音區 · TV','#ad93ff',2.6,W.x0+.03,5.12,11.1,Math.PI/2);
 sign('ARCADE 2F','#ff6fb1',8,-8,10.1,W.z1-.03,Math.PI,'電玩區');
 sign('DJ','#55eeb4',3,12.8,9.6,W.z1-.03,Math.PI,'DANCE FLOOR');
 sign('SNACK','#ff9a5c',3,W.x1-.03,4.75,11,-Math.PI/2);
-const POSTERS=[['STRIKE','保齡球之夜','#ff6fb1','#2a1650'],['SNAKE','貪食蛇大賽','#55eeb4','#0d2a2a'],['HIGH SCORE','挑戰最高分','#ffd864','#2a2010'],['VS','雙人對戰','#62c9ff','#0f1d3a'],['GAME ON','一起玩','#ad93ff','#1d1440'],['DJ NIGHT','週五舞會','#ff9a5c','#2a1414']];
+const POSTERS=[['STRIKE','AVÉRA 保齡球之夜','#ff6fb1','#2a1650'],['SNAKE','貪食蛇大賽','#55eeb4','#0d2a2a'],['HIGH SCORE','挑戰最高分','#ffd864','#2a2010'],['VS','雙人對戰','#62c9ff','#0f1d3a'],['AVÉRA','歡迎光臨','#ad93ff','#1d1440'],['DJ NIGHT','週五舞會','#ff9a5c','#2a1414']];
 function posterTex([t,s,c,bg]){return textTex(512,768,(g,w,h)=>{g.fillStyle=bg;g.fillRect(0,0,w,h);for(let i=0;i<14;i++){g.strokeStyle=c;g.globalAlpha=.08+i*.01;g.lineWidth=3;g.beginPath();g.arc(w/2,h*.42,30+i*22,0,7);g.stroke()}g.globalAlpha=1;
  g.fillStyle=c;g.globalAlpha=.9;star(g,w/2,h*.42,110,5);g.globalAlpha=1;g.fillStyle=bg;g.font='800 64px "Baloo 2",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('★',w/2,h*.43);
  g.fillStyle='#fff';g.shadowColor=c;g.shadowBlur=20;g.font=`800 ${t.length>7?70:92}px "Baloo 2",sans-serif`;g.fillText(t,w/2,h*.72);g.shadowBlur=0;g.fillStyle=c;g.font='700 40px "Noto Sans TC",sans-serif';g.fillText(s,w/2,h*.83);
@@ -117,20 +117,50 @@ const GAMES={snake:{name:'貪食蛇',col:'#55eeb4',hint:'方向鍵或滑動控�
  racer:{name:'極速賽車',col:'#ff6178',hint:'左右換車道閃開障礙物',vs:true},hoops:{name:'投籃機',col:'#ff9a5c',hint:'籃框對準時投籃，40 秒比分數',vs:true},hockey:{name:'空氣曲棍球',col:'#62c9ff',hint:'拖曳擋板把球打進對面球門，先拿 7 分',vs:true,ai:true},
  dance:{name:'跳舞機',col:'#ff6fb1',hint:'箭頭碰到上面的框框時按下對應方向',vs:true},c4:{name:'四子棋',col:'#ffd864',hint:'輪流放棋子，先連成四顆的人贏',vs:true,ai:true},claw:{name:'夾娃娃',col:'#ff9cc9',hint:'移動爪子，按下「抓」試試手氣'},coin:{name:'推幣機',col:'#ffd864',hint:'看準時機投幣，把硬幣推下去'}};
 const CAB_GAMES=['snake','stack','mole','brick'];
-const attract={};for(const k in GAMES){const c=cv(256,192);const t=tex(c);attract[k]={c,g:c.getContext('2d'),t,mat:new THREE.MeshBasicMaterial({map:t,toneMapped:false})}}
-const marq={};for(const k in GAMES){const t=textTex(512,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,w,0);gr.addColorStop(0,'#140f30');gr.addColorStop(.5,'#2b1f5c');gr.addColorStop(1,'#140f30');g.fillStyle=gr;g.fillRect(0,0,w,h);g.textAlign='center';g.textBaseline='middle';g.font='800 70px "Noto Sans TC","Baloo 2",sans-serif';g.shadowColor=GAMES[k].col;g.shadowBlur=18;g.fillStyle=GAMES[k].col;g.fillText(GAMES[k].name,w/2,h/2+4)});marq[k]=new THREE.MeshBasicMaterial({map:t,toneMapped:false})}
-const sideArt={};for(const k of [...CAB_GAMES,'racer'])sideArt[k]=new THREE.MeshStandardMaterial({map:textTex(256,512,(g,w,h)=>{const c=GAMES[k].col;const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#2b2263');gr.addColorStop(1,'#120c30');g.fillStyle=gr;g.fillRect(0,0,w,h);
+const attract={};for(const k in GAMES){const c=cv(256,192),sc=cv(384,512);const t=tex(CAB_GAMES.includes(k)?sc:c);attract[k]={c,g:c.getContext('2d'),sc,sg:sc.getContext('2d'),t,mat:new THREE.MeshBasicMaterial({map:t,toneMapped:false})}}
+// vertical arcade monitor: AVÉRA header, the game's attract loop, blinking INSERT COIN, scanlines
+function composeAttract(k,time){const a=attract[k],g=a.sg,W=384,H=512;const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#100c2a');gr.addColorStop(1,'#05040e');g.fillStyle=gr;g.fillRect(0,0,W,H);
+ drawWordmark(g,W/2,44,28,{blur:.25});g.fillStyle=GAMES[k].col;g.font='800 34px "Noto Sans TC","Baloo 2",sans-serif';g.textAlign='center';g.textBaseline='middle';g.shadowColor=GAMES[k].col;g.shadowBlur=14;g.fillText(GAMES[k].name,W/2,96);g.shadowBlur=0;
+ g.drawImage(a.c,0,0,256,192,0,128,W,288);if(Math.sin(time*4)>0){g.fillStyle='#ffd27a';g.font='800 25px "Unbounded","Baloo 2",sans-serif';g.fillText('INSERT COIN',W/2,456)}
+ g.fillStyle='rgba(255,255,255,.5)';g.font='700 17px "Unbounded",sans-serif';g.fillText('1P  ·  2P',W/2,492);g.fillStyle='rgba(0,0,0,.2)';for(let y=0;y<H;y+=3)g.fillRect(0,y,W,1);a.t.needsUpdate=true}
+const marq={};for(const k in GAMES){const t=textTex(512,176,(g,w,h)=>{const gr=g.createLinearGradient(0,0,w,0);gr.addColorStop(0,'#140f30');gr.addColorStop(.5,'#2e2166');gr.addColorStop(1,'#140f30');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let i=0;i<10;i++){g.strokeStyle=GAMES[k].col;g.globalAlpha=.12;g.lineWidth=3;g.beginPath();g.moveTo(i*60-40,h);g.lineTo(i*60+40,0);g.stroke()}g.globalAlpha=1;drawWordmark(g,w/2,30,22,{blur:.2});g.textAlign='center';g.textBaseline='middle';g.font='800 74px "Noto Sans TC","Baloo 2",sans-serif';g.shadowColor=GAMES[k].col;g.shadowBlur=18;g.fillStyle=GAMES[k].col;g.fillText(GAMES[k].name,w/2,h*.62);g.shadowBlur=4;g.fillStyle='rgba(255,255,255,.85)';g.fillText(GAMES[k].name,w/2,h*.62)});marq[k]=new THREE.MeshBasicMaterial({map:t,toneMapped:false})}
+const sideArt={};for(const k of [...CAB_GAMES,'racer'])sideArt[k]=new THREE.MeshPhysicalMaterial({map:textTex(256,512,(g,w,h)=>{const c=GAMES[k].col;const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#2b2263');gr.addColorStop(1,'#120c30');g.fillStyle=gr;g.fillRect(0,0,w,h);
  for(let i=0;i<7;i++){g.fillStyle=c;g.globalAlpha=.12+i*.05;g.beginPath();g.moveTo(0,h*.25+i*40);g.lineTo(w,h*.1+i*40);g.lineTo(w,h*.1+i*40+14);g.lineTo(0,h*.25+i*40+14);g.fill()}g.globalAlpha=1;
  g.fillStyle=c;star(g,w*.5,h*.72,60,5);g.save();g.translate(w*.5,h*.72);g.fillStyle='#120c30';g.font='800 40px "Baloo 2",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('★',0,2);g.restore();
- g.save();g.translate(w*.5,h*.45);g.rotate(-Math.PI/2);g.fillStyle='#fff';g.shadowColor=c;g.shadowBlur=14;g.font='800 52px "Noto Sans TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(GAMES[k].name,0,0);g.restore()}),roughness:.5,metalness:.1});
-const CAB={};{const body=RB(1,1.95,.82,.08);body.translate(0,.975,0);const panel=RB(1.04,.12,.46,.04);panel.rotateX(-.28);panel.translate(0,1.02,.5);CAB.body=mergeGeometries([body,panel]);
- const tr=[];for(const s of [-1,1])tr.push(tg(new THREE.BoxGeometry(.035,1.85,.035),s*.5,.97,.41));tr.push(tg(new THREE.BoxGeometry(1,.035,.035),0,.06,.41));CAB.trim=mergeGeometries(tr);
- const kn=[tg(new THREE.SphereGeometry(.045,14,10),-.24,1.16,.53)];[0,.11,.22].forEach(o=>kn.push(tg(new THREE.CylinderGeometry(.032,.032,.03,14),.02+o,1.1,.55,-.28)));CAB.knobs=mergeGeometries(kn);
- CAB.screen=tg(new THREE.PlaneGeometry(.8,.6),0,1.4,.416,-.1);CAB.marq=tg(new THREE.PlaneGeometry(.92,.23),0,1.8,.416);
- CAB.sides=mergeGeometries([tg(new THREE.PlaneGeometry(.7,1.4),.505,1.0,0,0,Math.PI/2),tg(new THREE.PlaneGeometry(.7,1.4),-.505,1.0,0,0,-Math.PI/2)])}
-function cabinet(gk,x,f,z,ry){const g=new THREE.Group();const body=new THREE.Mesh(CAB.body,M.cab);g.add(body,new THREE.Mesh(CAB.trim,glow(GAMES[gk].col,2.2)),new THREE.Mesh(CAB.knobs,glow('#ff6fb1',1.6)),new THREE.Mesh(CAB.screen,attract[gk].mat),new THREE.Mesh(CAB.marq,marq[gk]),new THREE.Mesh(CAB.sides,sideArt[gk]));
- put(g,x,f,z,{ry});camBlock.push(body);solid(g,f,.04);const fx=Math.sin(ry),fz=Math.cos(ry);
- targets.push({type:'cab',game:gk,x:x+fx*1.05,z:z+fz*1.05,f,y:f+2.25,face:ry+Math.PI,label:`玩 ${GAMES[gk].name}`})}
+ g.save();g.translate(w*.5,h*.45);g.rotate(-Math.PI/2);g.fillStyle='#fff';g.shadowColor=c;g.shadowBlur=14;g.font='800 52px "Noto Sans TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(GAMES[k].name,0,0);g.restore();g.save();g.translate(w*.5,h*.9);drawWordmark(g,0,0,30,{blur:.15});g.restore()}),roughness:.35,metalness:.1,clearcoat:1});
+// upright cabinet modelled on real ones: profiled side panels with T-molding, vertical monitor behind a tilted bezel,
+// control panel with joystick and buttons, coin door with lit slots, backlit marquee. All cabinets are batched per material.
+const CAB2=(()=>{const Wd=.72,T=.025,IW=Wd-2*T;const P=[[-.36,0],[.30,0],[.30,.82],[.50,.90],[.50,.98],[.26,1.06],[.14,1.62],[.30,1.66],[.30,1.92],[-.36,1.92]];
+ const shape=new THREE.Shape(P.map(([z,y])=>new THREE.Vector2(z,y)));const rotSide=g=>{g.rotateY(-Math.PI/2);return g};
+ const sideR=rotSide(new THREE.ExtrudeGeometry(shape,{depth:T,bevelEnabled:false,curveSegments:1})).translate(Wd/2,0,0),sideL=rotSide(new THREE.ExtrudeGeometry(shape,{depth:T,bevelEnabled:false,curveSegments:1})).translate(-Wd/2+T,0,0);
+ const art=new THREE.ShapeGeometry(shape);const uv=art.attributes.uv,pos=art.attributes.position;for(let i=0;i<uv.count;i++)uv.setXY(i,(pos.getX(i)+.36)/.86,pos.getY(i)/1.92);
+ const artL=art.clone().rotateY(-Math.PI/2).translate(-Wd/2-.002,0,0),artR=art.clone();{const u=artR.attributes.uv;for(let i=0;i<u.count;i++)u.setX(i,1-u.getX(i))}artR.rotateY(-Math.PI/2).translate(Wd/2+.002,0,0);
+ const cpShape=new THREE.Shape([[.26,.84],[.50,.89],[.50,.98],[.26,1.06]].map(([z,y])=>new THREE.Vector2(z,y)));const cp=rotSide(new THREE.ExtrudeGeometry(cpShape,{depth:IW,bevelEnabled:false})).translate(IW/2,0,0);
+ const body=mergeGeometries([tg(new THREE.BoxGeometry(IW,1.9,.5),0,.95,-.11),tg(new THREE.BoxGeometry(IW,.82,.02),0,.41,.29),tg(new THREE.BoxGeometry(IW,.02,.66),0,1.91,-.03),tg(new THREE.BoxGeometry(IW,.26,.15),0,1.79,.22),tg(new THREE.BoxGeometry(IW,.6,.12),0,1.34,.13)]);
+ const kick=tg(new THREE.BoxGeometry(IW,.1,.03),0,.05,.305);
+ const tilt=-Math.atan2(.12,.56),bz=.20,by=1.34;const plane=(w,h,off)=>{const g=new THREE.PlaneGeometry(w,h);g.rotateX(tilt);g.translate(0,by+Math.sin(-tilt)*0+0,bz);g.translate(0,Math.sin(-tilt)*off,Math.cos(tilt)*off);return g};
+ const bezel=plane(IW,.575,0),screen=plane(.39,.52,.004),glassG=plane(.44,.56,.012);
+ const marq=tg(new THREE.PlaneGeometry(IW,.24),0,1.79,.298);
+ const door=mergeGeometries([tg(new THREE.BoxGeometry(.28,.38,.02),0,.46,.305),tg(new THREE.BoxGeometry(.2,.05,.02),0,.2,.305)]);
+ const slots=mergeGeometries([tg(new THREE.BoxGeometry(.04,.065,.012),-.06,.56,.318),tg(new THREE.BoxGeometry(.04,.065,.012),.06,.56,.318),tg(new THREE.BoxGeometry(.06,.03,.012),-.06,.38,.318),tg(new THREE.BoxGeometry(.06,.03,.012),.06,.38,.318)]);
+ const a=Math.atan2(.08,.24),onCP=(x,s,h)=>[x,.98+.08*s+h*Math.cos(a),.50-.24*s+h*Math.sin(a)];
+ const ctl=[];const col=(g,c)=>colorize(g,c);const put2=(g,x,s,h,c)=>{const[px,py,pz]=onCP(x,s,h);g.rotateX(a);g.translate(px,py,pz);ctl.push(col(g,c))};
+ put2(new THREE.CylinderGeometry(.045,.045,.008,20),-.17,.45,.004,'#15121f');put2(new THREE.CylinderGeometry(.008,.008,.08,10),-.17,.45,.044,'#cfcfd8');put2(new THREE.SphereGeometry(.028,16,12),-.17,.45,.09,'#ff3b55');
+ [['#ff3b55',0,.6],['#ffd23b',.07,.6],['#3bb8ff',.14,.6],['#4fe36f',.035,.3],['#ff8a3b',.105,.3],['#c07bff',.175,.3]].forEach(([c,x,s])=>{put2(new THREE.CylinderGeometry(.024,.024,.014,18),x,s,.007,'#1a1726');put2(new THREE.CylinderGeometry(.019,.019,.02,18),x,s,.016,c)});
+ [[-.05,.88,'#ffffff'],[.02,.88,'#ffffff']].forEach(([x,s,c])=>put2(new THREE.CylinderGeometry(.013,.013,.016,14),x,s,.008,c));
+ const controls=mergeGeometries(ctl);
+ const tm=[];const segs=[1,2,3,4,5,6,7];for(const sx of [-1,1])for(const i of segs){const[z0,y0]=P[i],[z1,y1]=P[i+1],len=Math.hypot(z1-z0,y1-y0);const g=new THREE.BoxGeometry(.03,.022,len);g.rotateX(-Math.atan2(y1-y0,z1-z0));g.translate(sx*(Wd/2-.002),(y0+y1)/2,(z0+z1)/2);tm.push(g)}
+ const tmold=mergeGeometries(tm);
+ return{Wd,sides:mergeGeometries([sideL,sideR]),art:mergeGeometries([artL,artR]),cp,body,kick,bezel,screen,glass:glassG,marq,door,slots,controls,tmold}})();
+const CABQ=new Map();const cabM={side:phys('#241c55',{clearcoat:1,clearcoatRoughness:.08}),body:std('#120e26',.6),cp:phys('#1b1638',{clearcoat:.6}),kick:std('#07060d',.8),bezel:phys('#06050c',{roughness:.15,clearcoat:1}),
+ glass:new THREE.MeshPhysicalMaterial({color:'#ffffff',roughness:.02,transparent:true,opacity:.07,depthWrite:false,clearcoat:1}),door:std('#3a3550',.35,.8,{normalMap:brushed}),slots:glow('#ff9a3d',2.6),controls:new THREE.MeshPhysicalMaterial({vertexColors:true,roughness:.25,clearcoat:.8})};
+function cabQ(key,mat,geo,m4){let e=CABQ.get(key);if(!e){e={mat,geos:[]};CABQ.set(key,e)}e.geos.push(geo.clone().applyMatrix4(m4))}
+function cabinet(gk,x,f,z,ry){const m4=new THREE.Matrix4().makeRotationY(ry).setPosition(x,f,z);
+ for(const[k,mat]of [['sides',cabM.side],['body',cabM.body],['cp',cabM.cp],['kick',cabM.kick],['bezel',cabM.bezel],['glass',cabM.glass],['door',cabM.door],['slots',cabM.slots],['controls',cabM.controls]])cabQ(k,mat,CAB2[k],m4);
+ cabQ('scr-'+gk,attract[gk].mat,CAB2.screen,m4);cabQ('mq-'+gk,marq[gk],CAB2.marq,m4);cabQ('art-'+gk,sideArt[gk],CAB2.art,m4);cabQ('tm-'+gk,glow(GAMES[gk].col,2.4),CAB2.tmold,m4);
+ const hit=new THREE.Mesh(new THREE.BoxGeometry(CAB2.Wd,1.92,.86),M.black);hit.visible=false;hit.position.set(0,.96,.07);const grp=new THREE.Group();grp.add(hit);grp.position.set(x,f,z);grp.rotation.y=ry;scene.add(grp);camBlock.push(hit);solid(grp,f,.04);
+ const fx=Math.sin(ry),fz=Math.cos(ry);targets.push({type:'cab',game:gk,x:x+fx*1.05,z:z+fz*1.05,f,y:f+2.25,face:ry+Math.PI,label:`玩 ${GAMES[gk].name}`,cab:{x,f,z,ry}})}
+function flushCabinets(){for(const[k,e]of CABQ){const m=new THREE.Mesh(mergeGeometries(e.geos),e.mat);const tr=e.mat.transparent||e.mat.isMeshBasicMaterial;m.castShadow=!tr&&k!=='slots';m.receiveShadow=!tr;if(e.mat.side!==undefined&&k.startsWith('art-'))e.mat.side=THREE.DoubleSide;scene.add(m)}CABQ.clear()}
 // 2-player stations: one game, two sides
 function station(id,game,slots,extra={}){const st={id,game,slots,occ:[null,null],...extra};stations.set(id,st);slots.forEach((s,i)=>targets.push({type:'st',st:id,slot:i,x:s.x,z:s.z,f:s.f,y:s.f+(s.py||2),face:s.face,label:''}));return st}
 function claw(x,f,z,color,id){const g=new THREE.Group();const bm=phys(color);const base=new THREE.Mesh(RB(1.25,.95,1.25,.1),bm);base.position.y=.475;
@@ -236,7 +266,9 @@ lockers(W.x0+.26,14.4,6);
  const mat=new THREE.Mesh(new THREE.PlaneGeometry(4,1.6),std('#ff6fb1',.9));mat.rotation.x=-Math.PI/2;put(mat,0,.008,W.z1-1,{cast:false});
  for(const x of [-2.6,2.6])for(const z of [15.2,13.6]){const p=new THREE.Group();const b=new THREE.Mesh(new THREE.CylinderGeometry(.15,.18,.05,20),M.chrome);const c=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.95,10),M.chrome);c.position.y=.48;const k=new THREE.Mesh(new THREE.SphereGeometry(.05,12,8),M.chrome);k.position.y=.97;p.add(b,c,k);put(p,x,0,z);solid(p,0,.02)}
  for(const x of [-2.6,2.6]){const r=new THREE.Mesh(new THREE.TorusGeometry(.8,.025,8,24,Math.PI),fabric('#c8102e'));r.rotation.set(0,Math.PI/2,Math.PI);r.position.set(x,.92,14.4);scene.add(r)}}
-{const logo=ctex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='#ff6fb1';g.lineWidth=18;g.beginPath();g.arc(256,256,230,0,7);g.stroke();g.strokeStyle='#62c9ff';g.lineWidth=8;g.beginPath();g.arc(256,256,200,0,7);g.stroke();g.fillStyle='#ffd864';star(g,256,180,70,5);g.fillStyle='#fff';g.font='800 72px "Baloo 2",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('NEON',256,300);g.font='800 48px "Baloo 2",sans-serif';g.fillStyle='#ffd864';g.fillText('ARCADE',256,360)});
+{const logo=textTex(1024,1024,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='#c9a35a';g.lineWidth=14;g.beginPath();g.arc(512,512,480,0,7);g.stroke();g.lineWidth=4;g.beginPath();g.arc(512,512,446,0,7);g.stroke();
+  for(let i=0;i<24;i++){const a=i/24*Math.PI*2;g.save();g.translate(512+Math.cos(a)*463,512+Math.sin(a)*463);g.rotate(a);g.fillStyle='#c9a35a';g.fillRect(-3,-9,6,18);g.restore()}
+  g.fillStyle='#ffd27a';star(g,512,330,70,4);drawWordmark(g,512,520,150,{blur:.12});g.fillStyle='#e9dcff';g.font='700 46px "Noto Sans TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('Q 版 3D 遊戲場',512,680);g.font='700 30px "Unbounded",sans-serif';g.fillStyle='#c9a35a';g.fillText('EST. 2026',512,760)});
  const m=new THREE.Mesh(new THREE.PlaneGeometry(4.2,4.2),new THREE.MeshStandardMaterial({map:logo,transparent:true,roughness:.4,emissive:'#ffffff',emissiveMap:logo,emissiveIntensity:.25}));m.rotation.x=-Math.PI/2;put(m,0,.007,7.2,{cast:false})}
 kiddieRide(5.4,8.2,'horse');kiddieRide(5.4,11.4,'car');photoBooth(-18.95,1.0);
 // snack bar
@@ -269,3 +301,4 @@ const floorTiles=(()=>{const n=5,m=4,s=.98,g=new THREE.InstancedMesh(RB(s-.04,.0
  for(const x of [10.3,15.3]){const s=new THREE.Mesh(RB(.8,1.8,.7,.08),M.dark);put(s,x,F2+.9,17.3);solid(s,F2,.02);for(const y of [.5,1.25]){const c=new THREE.Mesh(new THREE.CircleGeometry(.22,24),std('#333',.6));c.position.set(x,F2+y,17.66);scene.add(c);const r=new THREE.Mesh(new THREE.RingGeometry(.22,.26,24),glow('#55eeb4',2));r.position.set(x,F2+y,17.67);scene.add(r)}}}
 {const bb=[[-18.2,6.0,'#ffd864'],[-16.7,6.5,'#ff9cc9'],[-17.6,7.7,'#7fd9ff']];bb.forEach(([x,z,c])=>{const b=new THREE.Mesh(new THREE.SphereGeometry(.55,28,20),fabric(c));b.scale.set(1,.62,1);put(b,x,F2+.34,z);solid(b,F2,0)})}
 plant(-19,F2,16.9);plant(14.8,F2,5.2);plant(-8.6,F2,5);
+flushCabinets();

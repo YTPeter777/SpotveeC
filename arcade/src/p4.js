@@ -70,7 +70,7 @@ $('menu-x').onclick=()=>togglePop('menu',false);$('b-help').onclick=()=>{toggleP
 document.querySelectorAll('#qseg button').forEach(b=>b.onclick=()=>{QUAL=b.dataset.q;store.set('q',QUAL);applyQuality()});
 $('t-sfx').onclick=()=>{SFX.on=!SFX.on;store.set('sfx',SFX.on);$('t-sfx').setAttribute('aria-pressed',SFX.on);sfx('click')};$('t-sfx').setAttribute('aria-pressed',SFX.on);
 function applyQuality(){const ultra=QUAL==='ultra',lo=QUAL==='low';const pr=Math.min(devicePixelRatio,lo?1:2);renderer.setPixelRatio(pr);composer.setPixelRatio(pr);renderer.shadowMap.enabled=!lo;key.castShadow=!lo;
- key.shadow.mapSize.set(ultra?4096:2048,ultra?4096:2048);if(key.shadow.map){key.shadow.map.dispose();key.shadow.map=null}gtao.enabled=ultra;resize();
+ key.shadow.mapSize.set(ultra?4096:2048,ultra?4096:2048);if(key.shadow.map){key.shadow.map.dispose();key.shadow.map=null}gtao.enabled=ultra;setReflection(ultra&&!isTouch);resize();
  scene.traverse(o=>{if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate=true)});document.querySelectorAll('#qseg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.q===QUAL))}
 applyQuality();
 

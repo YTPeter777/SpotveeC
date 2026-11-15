@@ -8,6 +8,6 @@ function siteCam(t,dt){const per=13,n=SHOTS.length,k=(t/per)%n,i=Math.floor(k),f
  const w=innerWidth,h=innerHeight,home=APP.page==='home'&&!document.body.classList.contains('creating');if(home&&w>760)camera.setViewOffset(w,h,-w*.17,0,w,h);else if(home)camera.setViewOffset(w,h,0,h*.14,w,h);else camera.clearViewOffset()}
 // venue lighting themes: world code registers hooks that recolour LEDs / neon / accent lights
 const themeHooks=[];let THEME=THEMES.neon,themeKey='neon';
-function applyTheme(k){if(!THEMES[k])k='neon';themeKey=k;THEME=THEMES[k];for(const f of themeHooks)try{f(THEME,k)}catch(e){console.warn(e)}}
+function applyTheme(k){if(!THEMES[k])k='neon';themeKey=k;THEME=THEMES[k];worldTheme(THEME);for(const f of themeHooks)try{f(THEME,k)}catch(e){console.warn(e)}}
 function applyEquip(av,eq){}
 function onAdminTV(op){}
