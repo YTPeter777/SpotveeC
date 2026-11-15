@@ -119,7 +119,7 @@ onNet('rm',(d,from)=>{if(!ROOM.id)return;
  if(d.t==='closing'&&fromOwner(from)&&!ROOM.isOwner){startClosing(Math.max(5,Math.min(60,d.sec|0)),'版主已離開，包廂將在 {s} 秒後關閉')}
  else if(d.t==='cfg'&&fromOwner(from)){for(const k of ['name','cap','pub','locked','hasPw'])if(d[k]!=null)ROOM[k]=k==='cap'?Math.max(2,Math.min(40,d.cap|0)):k==='name'?cleanName(d.name)||ROOM.name:!!d[k];if(d.theme&&THEMES[d.theme]&&d.theme!==ROOM.theme){ROOM.theme=d.theme;applyTheme(d.theme)}
   notify({key:'rcfg',tone:'info',icon:'door',text:'版主更新了包廂設定',ms:3000});renderRoomPanel(true)}
- else if(d.t==='kick'&&d.to===MYID&&fromOwner(from)){leaveRoom('kick')}
+ else if(d.t==='kick'&&d.to===MYID&&fromOwner(from)){if(isStaff()){notify({tone:'info',icon:'shield',text:'版主試著請你離開，但管理員不受包廂踢除影響',ms:3000,quiet:true});return}leaveRoom('kick')}
  else if(d.t==='theme'&&peers.get(from)?.rk&&THEMES[d.theme]){applyTheme(d.theme)}
  else if(d.t==='busy'&&d.to===MYID){notify({tone:'info',lk:peers.get(from)?.look,text:`${peerName(from)} ${String(d.why||'正在忙').slice(0,40)}，等他忙完就會看到你的邀請`,ms:6000})}});
 function startClosing(sec,text){if(APP.closingNote)return;APP.closingNote=notify({key:'closing',tone:'room',prio:true,text,count:sec,onEnd:()=>{APP.closingNote=null;leaveRoom('closed')},btns:[{t:'現在回大廳',fn:()=>{APP.closingNote=null;leaveRoom('closed',{silent:true})}}]})}
@@ -145,7 +145,7 @@ onBackEvent=ev=>{const d=ev.data||{};switch(ev.op){
 onProfile=()=>{applyMyProfile();staffUI()};
 onConfig=()=>{if(ACC.config.maintenance&&!isStaff()&&ROOM.id)gate({error:'maintenance',msg:ACC.config.maint_msg});if(!ROOM.id||ROOM.id==='main')applyTheme(ROOM.id==='main'?ACC.config.theme||'neon':ROOM.theme)};
 function applyMyProfile(){if(!ACC.exists)return;const lk=lookKey(ACC.look||look),changed=lk!==lookKey(look)||myName!==ACC.name;Object.assign(look,ACC.look||{});if(ROOM.id){myName=ACC.name;$('me-name').textContent=myName}
- if(changed){const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;if(me.mode==='site')myAv.visible=false;lastInfoKey='';pushInfo(true)}applyEquip?.(myAv,ACC.equip)}
+ if(changed){const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;if(me.mode==='site')myAv.visible=false;lastInfoKey='';pushInfo(true)}applyEquip(myAv,ACC.equip,isStaff());setProp(myAv,me.prop)}
 let gated=false;async function gate(r){if(gated)return;gated=true;if(ROOM.id){NET.emit('rm',{t:'bye'});disconnectNet();roomBeatStop();ROOM.id=null}
  document.body.classList.remove('in-room','playing');me.mode='site';myAv.visible=false;clearInterval(pollT);
  const until=r.until&&+new Date(r.until)<8e15?new Date(r.until).toLocaleString('zh-TW'):'';
@@ -186,7 +186,7 @@ function renderRoomPanel(onlyIfOpen){const w=$('roompnl');if(onlyIfOpen&&w.hidde
  for(const p of peers.values()){if(!p.look)continue;let b=null;if(ROOM.isOwner&&!p.rk){b=document.createElement('button');b.className='cb ghost sm';b.textContent='請離開';b.onclick=async()=>{const ok=await dialog({icon:'door',title:`請 ${p.name} 離開包廂？`,text:'對方會回到大廳，之後仍可以重新進來（除非你上鎖或設密碼）。',btns:[{t:'取消'},{t:'請離開',pri:true,danger:true,v:true}]});if(ok){NET.emit('rm',{t:'kick',to:p.id});notify({tone:'info',text:`已請 ${p.name} 離開`,ms:2500})}}}
   mrow(p.name,p.look,p.ro?'版主':p.rk?ROLE_NAME[p.rk]:'',b)}w.append(lst);
  const lv=document.createElement('button');lv.className='cb ghost wide';lv.innerHTML='<svg class="i"><use href="#i-exit"/></svg><span></span>';lv.querySelector('span').textContent=ROOM.isOwner&&!ROOM.perm?'離開並關閉包廂':'離開包廂';lv.onclick=()=>leaveRoom('user');w.append(lv)}
-$('b-room').onclick=()=>togglePop('roompnl');$('b-admin').onclick=()=>openAdmin();
+$('b-room').onclick=()=>togglePop('roompnl');
 onNet('adm',()=>pollNow());
 function staffUI(){$('b-admin').hidden=!isStaff()}
 

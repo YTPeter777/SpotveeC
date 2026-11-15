@@ -542,3 +542,14 @@ begin
   return jsonb_build_object('sp',sp,'fur',fur,'cl',cl,'acc',acc);
 exception when others then return '{"sp":0,"fur":0,"cl":0,"acc":0}'::jsonb;
 end $$;
+
+create or replace function public.avera_buy_prop(p_secret text, p_item text) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r avera.players; price int;
+begin r := avera._me(p_secret); if r.id is null then return jsonb_build_object('error','no_player'); end if;
+  price := case p_item when 'sparkler' then 200 when 'mic' then 300 when 'umbrella' then 250 when 'plush' then 400 when 'wand' then 500 when 'guitar' then 600 else null end;
+  if price is null then return jsonb_build_object('error','item'); end if;
+  if ('prop_' || p_item) = any(r.items) then return jsonb_build_object('ok',true,'coins',r.coins,'items',to_jsonb(r.items)); end if;
+  if r.coins < price then return jsonb_build_object('error','coins'); end if;
+  update avera.players set coins = coins - price, items = array_append(items, 'prop_' || p_item) where id = r.id returning * into r;
+  return jsonb_build_object('ok',true,'coins',r.coins,'items',to_jsonb(r.items)); end $$;
+grant execute on function public.avera_buy_prop(text,text) to anon, authenticated;

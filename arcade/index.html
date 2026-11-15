@@ -370,6 +370,14 @@ a.cb{text-decoration:none}
 #lbp{right:var(--sr);top:calc(var(--st) + 66px);width:min(380px,calc(100vw - 28px));box-sizing:border-box;padding:14px;z-index:12;display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - var(--st) - 90px);overflow-y:auto}
 .lbtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}.lbtabs button{flex:none;padding:7px 12px;border-radius:999px;font:800 12.5px var(--txt);color:var(--dim);background:rgba(255,255,255,.06)}.lbtabs button[aria-pressed=true]{background:linear-gradient(180deg,var(--lemon1),var(--lemon2));color:#3d2a00}
 .lbr .rk{width:28px;text-align:center;font:800 16px var(--disp);color:var(--dim)}.lbr .rk.r1{color:var(--gold)}.lbr .rk.r2{color:#e4e4ff}.lbr .rk.r3{color:#ffb27a}.lbr .sc{font:800 16px var(--disp);color:var(--gold)}.lbr .pf{width:32px;height:32px}
+/* ---- props / admin quick menu / staff tags ---- */
+#proppop{right:var(--sr);bottom:calc(var(--sb) + 76px);display:grid;grid-template-columns:repeat(4,78px);gap:8px;padding:10px;z-index:12;max-height:60dvh;overflow-y:auto}
+@media (pointer:coarse){#proppop{bottom:calc(var(--sb) + 172px)}}
+#proppop button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:16px;background:rgba(255,255,255,.06);font:800 11.5px var(--txt);color:var(--ink2)}
+#proppop button b{font-size:26px;line-height:1.1;font-weight:400}#proppop button small{font:800 10.5px var(--disp);color:var(--gold)}#proppop button[aria-pressed=true]{box-shadow:inset 0 0 0 2.5px var(--pink);background:rgba(255,140,196,.14)}
+#admq{right:var(--sr);top:calc(var(--st) + 66px);width:min(320px,calc(100vw - 28px));box-sizing:border-box;padding:14px;z-index:12;display:flex;flex-direction:column;gap:4px;box-shadow:0 0 0 1.5px rgba(255,210,122,.45),0 12px 30px rgba(0,0,0,.4)}
+.tag.staff .nt{background:linear-gradient(100deg,#5a3d0a,#a07421);box-shadow:0 0 0 1.5px #ffd27a,0 0 14px rgba(255,210,122,.6)}.tag.staff .n::before{content:"🛡 ";}
+.tag[data-tag=gold_tag] .nt{background:linear-gradient(100deg,#7a5410,#c9a35a)}.tag[data-tag=vip_tag] .nt{background:linear-gradient(100deg,#7b2ff7,#f107a3)}.tag[data-tag=staff_tag] .nt{background:linear-gradient(100deg,#0f5132,#20c997)}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -876,10 +884,12 @@ summary::-webkit-details-marker{display:none}
 <div class="fx h" id="feed"></div>
 <form class="fx pnl" id="chatbar" hidden><input id="msg" maxlength="80" placeholder="說點什麼…" autocomplete="off" enterkeyhint="send"><button id="send" class="cb pink round" aria-label="送出"><svg class="i"><use href="#i-send"/></svg></button></form>
 <div class="fx h nb" id="acts">
- <div class="dock pnl"><button class="db" id="a-chat" aria-label="聊天"><svg class="i"><use href="#i-chat"/></svg><i class="dot" id="unread" hidden></i></button><button class="db" id="a-emo" aria-expanded="false" aria-label="表情"><svg class="i"><use href="#i-smile"/></svg></button><button class="db" id="a-mic" aria-pressed="false" aria-label="語音"><svg class="i" id="mic-i"><use href="#i-mic"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></button></div>
+ <div class="dock pnl"><button class="db" id="a-chat" aria-label="聊天"><svg class="i"><use href="#i-chat"/></svg><i class="dot" id="unread" hidden></i></button><button class="db" id="a-emo" aria-expanded="false" aria-label="表情"><svg class="i"><use href="#i-smile"/></svg></button><button class="db" id="a-prop" aria-expanded="false" aria-label="道具"><svg class="i"><use href="#i-bag"/></svg></button><button class="db" id="a-mic" aria-pressed="false" aria-label="語音"><svg class="i" id="mic-i"><use href="#i-mic"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></button></div>
  <div class="bigrow"><button class="cb pink round" id="a-act" hidden><svg class="i" id="a-act-i"><use href="#i-hand"/></svg><span id="a-act-t">互動</span></button><button class="cb round" id="a-jump" aria-label="跳"><svg class="i"><use href="#i-jump"/></svg></button></div>
 </div>
 <div class="fx pnl h nb" id="emopop" hidden></div>
+<div class="fx pnl h nb" id="proppop" hidden></div>
+<div class="fx pnl h" id="admq" hidden></div>
 <div class="fx h nb" id="joy"><div id="knob"></div></div>
 <div class="h nb" id="prompt" hidden><span class="key">E</span><svg class="i" id="p-i"><use href="#i-hand"/></svg><span id="p-t"></span></div>
 <div class="fx pnl h" id="tv" hidden>
@@ -1878,7 +1888,7 @@ let myAv=makeAnimal(look);scene.add(myAv);myAv.position.set(me.x,0,me.z);
 let myName='',myBubble={text:'',t:-99};
 const keys={};let camYaw=0,camPitch=.3,camDist=6.2,camCur=6.2;
 const clock=new THREE.Clock();
-function jump(){if(me.mode==='sit'){standUp();return}if(me.mode==='walk'&&me.y-groundAt(me.x,me.z,me.y)<.05){me.vy=6.2;me.air=true;sfx('pop')}}
+function jump(){if(ADMP.fly)return;if(me.mode==='sit'){standUp();return}if(me.mode==='walk'&&me.y-groundAt(me.x,me.z,me.y)<.05){me.vy=6.2;me.air=true;sfx('pop')}}
 let emoteSeq=0;function doEmote(e){if(!['walk','preview','sit','bowl','cab'].includes(me.mode))return;me.emote=e;me.et=clock.elapsedTime;emoteSeq++;if(e==='heart')spawnFloat(myAv.position);if(e==='dance')spawnFloat(myAv.position,noteTex,3);togglePop('emopop',false);sendPresence(true)}
 const EMOTES=[['wave','👋','揮手'],['dance','💃','跳舞'],['cheer','🙌','歡呼'],['heart','💖','比心'],['spin','🤸','翻滾'],['laugh','😆','大笑']];
 
@@ -1888,7 +1898,7 @@ SPECIES.forEach((s,i)=>{const b=document.createElement('button');b.innerHTML=`<i
 swatches($('pk-fur'),FURS,'fur');swatches($('pk-cl'),OUTFIT,'cl');
 ACCS.forEach((a,i)=>{const b=document.createElement('button');b.innerHTML=`<img alt=""><span>${a.n}</span>`;b.onclick=()=>{look.acc=i;refreshLook()};$('pk-acc').append(b)});
 function refreshLook(){[...$('pk-sp').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===look.sp));[...$('pk-fur').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===look.fur));[...$('pk-cl').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===look.cl));[...$('pk-acc').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===look.acc));
- const r=myAv.rotation.y;scene.remove(myAv);myAv=makeAnimal(look);myAv.rotation.y=r;scene.add(myAv);myAv.position.set(me.x,me.y,me.z);if(me.mode==='preview'){me.emote='spin';me.et=clock.elapsedTime}
+ const r=myAv.rotation.y;scene.remove(myAv);myAv=makeAnimal(look);myAv.rotation.y=r;scene.add(myAv);try{applyEquip(myAv,ACC.equip,isStaff());setProp(myAv,me.prop)}catch(e){}myAv.position.set(me.x,me.y,me.z);if(me.mode==='preview'){me.emote='spin';me.et=clock.elapsedTime}
  $('me-badge').src=portrait(look);$('me-pf').style.setProperty('--pc',OUTFIT[look.cl]);updatePicks();store.set('look',look);sfx('click')}
 function updatePicks(){[...$('pk-sp').children].forEach((b,i)=>{const lk={sp:i,fur:i===look.sp?look.fur:FUR_DEFAULT[SPECIES[i].k],cl:look.cl,acc:0};b.querySelector('img').src=portrait(lk)});
  [...$('pk-acc').children].forEach((b,i)=>{b.querySelector('img').src=portrait({...look,acc:i})})}
@@ -1931,8 +1941,8 @@ function jm(e){const r=joy.getBoundingClientRect();let x=(e.clientX-r.left-r.wid
 $('a-jump').onclick=jump;$('a-act').onclick=()=>interact();$('prompt').onclick=()=>interact();
 $('a-chat').onclick=()=>openChat();$('a-mic').onclick=()=>toggleMic();$('a-emo').onclick=()=>togglePop('emopop');
 EMOTES.forEach(([k,ic,n],i)=>{const b=document.createElement('button');b.innerHTML=`<b>${ic}</b>${n}`;b.title=`${n}（${i+1}）`;b.onclick=()=>doEmote(k);$('emopop').append(b)});
-function togglePop(id,force){const el=$(id);if(!el)return;const open=force??el.hidden;el.hidden=!open;const btn={people:'me-btn',menu:'b-menu',emopop:'a-emo',roompnl:'b-room',lbp:'b-lb'}[id];if(btn)$(btn)?.setAttribute('aria-expanded',open);
- if(open){for(const o of ['people','menu','roompnl','lbp'])if(o!==id&&o!=='emopop'&&id!=='emopop')togglePop(o,false);if(id==='people')renderPeople();if(id==='roompnl')renderRoomPanel();if(id==='menu')renderSettings()}}
+function togglePop(id,force){const el=$(id);if(!el)return;const open=force??el.hidden;el.hidden=!open;const btn={people:'me-btn',menu:'b-menu',emopop:'a-emo',roompnl:'b-room',lbp:'b-lb',proppop:'a-prop',admq:'b-admin'}[id];if(btn)$(btn)?.setAttribute('aria-expanded',open);
+ if(open){for(const o of ['people','menu','roompnl','lbp','admq'])if(o!==id&&o!=='emopop'&&id!=='emopop')togglePop(o,false);if(id==='people')renderPeople();if(id==='roompnl')renderRoomPanel();if(id==='menu')renderSettings()}}
 $('me-btn').onclick=()=>togglePop('people');$('b-menu').onclick=()=>togglePop('menu');
 $('menu-x').onclick=()=>togglePop('menu',false);$('b-help').onclick=()=>{togglePop('menu',false);$('help').hidden=false};$('help-x').onclick=()=>$('help').hidden=true;$('photo-x').onclick=()=>$('photo').hidden=true;
 document.querySelectorAll('#qseg button').forEach(b=>b.onclick=()=>{QUAL=b.dataset.q;store.set('q',QUAL);applyQuality()});
@@ -1989,8 +1999,9 @@ function walkStep(dt,t){let ix=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys
  if(me.mode==='sit'){if(l>.3)standUp();else return}
  const fx=-Math.sin(camYaw),fz=-Math.cos(camYaw),mx=fx*iz-fz*ix,mz=fz*iz+fx*ix;const run=keys.ShiftLeft||keys.ShiftRight||(isTouch&&l>.92);const sp=run?7:4.4;me.speed=Math.hypot(mx,mz)*sp;
  if(me.speed>.1){const want=Math.atan2(mx,mz);let d=want-myAv.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));myAv.rotation.y+=d*Math.min(1,dt*12);if(me.emote&&!['heart','drink','eat'].includes(me.emote))me.emote=''}
- const[nx,nz]=collide(me.x+mx*sp*dt,me.z+mz*sp*dt,me.y);const g0=groundAt(me.x,me.z,me.y),g1=groundAt(nx,nz,me.y),wedge=inRamp(nx,nz)&&rampH(nz)>me.y+.6;
- if(!(g0-g1>.6||wedge)){me.x=nx;me.z=nz}
+ if(ADMP.fly){const spd=(run?9:5)*dt;me.x=THREE.MathUtils.clamp(me.x+mx*spd*1.6,W.x0+.3,W.x1-.3);me.z=THREE.MathUtils.clamp(me.z+mz*spd*1.6,W.z0+.3,W.z1-.3);me.y=THREE.MathUtils.clamp(me.y+((keys.Space?1:0)-(keys.KeyC||keys.ControlLeft?1:0)+(ADMP.up||0))*spd,0,CEIL-1.6);me.vy=0;me.air=me.y>.05;return}
+ const[nx,nz]=ADMP.noclip?[me.x+mx*sp*dt,me.z+mz*sp*dt]:collide(me.x+mx*sp*dt,me.z+mz*sp*dt,me.y);const g0=groundAt(me.x,me.z,me.y),g1=groundAt(nx,nz,me.y),wedge=inRamp(nx,nz)&&rampH(nz)>me.y+.6;
+ if(ADMP.noclip||!(g0-g1>.6||wedge)){me.x=THREE.MathUtils.clamp(nx,W.x0+.3,W.x1-.3);me.z=THREE.MathUtils.clamp(nz,W.z0+.3,W.z1-.3)}
  const g=groundAt(me.x,me.z,me.y);me.vy-=18*dt;me.y+=me.vy*dt;if(me.y<=g){me.y=g;me.vy=0;me.air=false}else if(me.vy<=0&&me.y-g<.25&&(inRamp(me.x,me.z)||g>0&&g<1)){me.y=g;me.vy=0;me.air=false}
  if(me.y<F2-.3&&me.z>MZ)me.y=Math.min(me.y,F2-1.5)}
 
@@ -2528,7 +2539,7 @@ function dropPeer(id){const p=peers.get(id);if(!p)return;if(p.av)scene.remove(p.
  for(const L of lanes){const st=L.state;if(!st||!sessionHas(st,id))continue;st.ps=st.ps.filter(q=>q[0]!==id);if(!st.ps.length){L.state=null;resetLane(L);continue}
   if(st.host===id){st.host=st.ps[0][0]}if(st.host===MYID){st.turn=Math.min(st.turn,st.ps.length-1);st.seq++;broadcastLane(L)}}
  if(MATCH&&MATCH.opp===id&&G&&!G.over){toast(`${p.name} 離開了`,[],3000);G.over=true;showLobby('result',stations.get(me.slot?.st),1)}}
-function spawnPeerAvatar(p){if(p.av||!p.look||!p.lastMv)return;p.av=makeAnimal(p.look);p.cur.copy(p.base);p.av.position.copy(p.base);p.av.rotation.y=p.yaw;scene.add(p.av)}
+function spawnPeerAvatar(p){if(p.av||!p.look||!p.lastMv)return;p.av=makeAnimal(p.look);p.hpK=null;p.eqK=null;p.cur.copy(p.base);p.av.position.copy(p.base);p.av.rotation.y=p.yaw;scene.add(p.av)}
 function syncPeers(list){const ids=new Set(),q=[];for(const[id,o]of list){if(!o||typeof o!=='object'||typeof id!=='string'||id===MYID)continue;
   if(o.pid&&o.pid===ACC.pid&&(o.jt|0)>NET.jt&&!LOCAL){onBackEvent?.({op:'replaced'});return}
   if(o.q===1){q.push({id,jt:o.jt|0,n:String(o.n||'').slice(0,12)});continue}ids.add(id);applyInfo(getPeer(id),id,o)}
@@ -2537,7 +2548,8 @@ function syncPeers(list){const ids=new Set(),q=[];for(const[id,o]of list){if(!o|
 function applyInfo(p,id,o){p.name=String(o.n||'玩家').slice(0,12);const lk=parseLook(o.lk);p.look=lk;p.color=OUTFIT[lk.cl];
  const key=lookKey(lk);if(p.lk!==key){p.lk=key;if(p.av){const pos=p.av.position.clone(),ry=p.av.rotation.y;scene.remove(p.av);p.av=makeAnimal(lk);p.av.position.copy(pos);p.av.rotation.y=ry;scene.add(p.av)}}
  spawnPeerAvatar(p);p.act=['walk','bowl','cab','sit'].includes(o.a)?o.a:'walk';p.game=typeof o.g==='string'&&GAMES[o.g]?o.g:'';p.lane=Number.isInteger(o.L)&&o.L>=0&&o.L<4?o.L:-1;
- p.sq=Number.isFinite(o.sq)?o.sq:0;p.ping=Number.isFinite(o.pg)?Math.round(o.pg):null;p.pid=typeof o.pid==='string'?o.pid.slice(0,40):null;p.ro=o.ro===1;p.rk=['mod','admin','owner'].includes(o.rk)?o.rk:'';p.eq=o.eq&&typeof o.eq==='object'?o.eq:{};p.pt=typeof o.pt==='string'&&o.pt.length<20?o.pt:null;
+ p.sq=Number.isFinite(o.sq)?o.sq:0;p.hid=o.hid===1&&!isStaff();if(p.av)p.av.visible=!p.hid;const hp=typeof o.hp==='string'&&PROPS[o.hp]?o.hp:'';const eqk=JSON.stringify(o.eq||{})+(o.rk||'');if(p.av&&(p.hpK!==hp||p.eqK!==eqk)){p.hpK=hp;p.eqK=eqk;setProp(p.av,hp);applyEquip(p.av,o.eq,!!o.rk)}
+ if(o.rk&&!p.rkSeen&&!p.hid){p.rkSeen=1;if(p.lastMv||peers.size)notify({tone:'ann',icon:'shield',title:'管理員加入了包廂',text:`${String(o.n||'管理員').slice(0,12)}（${ROLE_NAME[o.rk]||'管理員'}）來巡視了`,ms:5000})}p.tag.classList.toggle('staff',!!o.rk);p.tag.dataset.tag=(o.eq&&o.eq.tag)||'';p.ping=Number.isFinite(o.pg)?Math.round(o.pg):null;p.pid=typeof o.pid==='string'?o.pid.slice(0,40):null;p.ro=o.ro===1;p.rk=['mod','admin','owner'].includes(o.rk)?o.rk:'';p.eq=o.eq&&typeof o.eq==='object'?o.eq:{};p.pt=typeof o.pt==='string'&&o.pt.length<20?o.pt:null;
  p.sx=o.sx&&typeof o.sx==='object'&&stations.has(o.sx.s)&&(o.sx.i===0||o.sx.i===1)?{s:o.sx.s,i:o.sx.i,w:['wait','play','ai','solo'].includes(o.sx.w)?o.sx.w:'play'}:null;p.stState=p.sx?.w;
  const vc=o.vc===1;if(vc!==p.vc){p.vc=vc;if(vc)maybeConnect(id);else closePc(id)}}
 function onMove(d,id){if(typeof id!=='string'||id===MYID||!d||typeof d!=='object')return;const p=getPeer(id);p.lastMv=performance.now();
@@ -2549,7 +2561,7 @@ onNet('chat',(d,id)=>{const p=peers.get(id);const t=String(d.t||'').slice(0,80);
 onNet('ann',(d,id)=>{const p=peers.get(id);const t=String(d.t||'').slice(0,60);if(t)feed('ann','',`${p?.name||'玩家'} ${t}`)});
 // ---- presence out ----
 let lastInfoKey='',lastInfoT=-1e9,infoTimer=null;
-function infoObj(){return{sq:me.sq||0,pid:ACC.pid,q:NET.waiting?1:0,jt:NET.jt,ro:ROOM.isOwner?1:0,rk:ROLE_RANK[ACC.role]>0?ACC.role:'',eq:ACC.equip,n:myName,lk:[look.sp,look.fur,look.cl,look.acc],a:me.mode,g:me.mode==='cab'?curGame:'',L:me.mode==='bowl'?myLane:-1,vc:VOICE.joined?1:0,pg:net.self,vl:net.voice,pt:PARTY.id,sx:me.slot?{s:me.slot.st,i:me.slot.i,w:me.slot.w}:null}}
+function infoObj(){return{hp:me.prop||'',hid:ADMP.hidden?1:0,sq:me.sq||0,pid:ACC.pid,q:NET.waiting?1:0,jt:NET.jt,ro:ROOM.isOwner?1:0,rk:ROLE_RANK[ACC.role]>0?ACC.role:'',eq:ACC.equip,n:myName,lk:[look.sp,look.fur,look.cl,look.acc],a:me.mode,g:me.mode==='cab'?curGame:'',L:me.mode==='bowl'?myLane:-1,vc:VOICE.joined?1:0,pg:net.self,vl:net.voice,pt:PARTY.id,sx:me.slot?{s:me.slot.st,i:me.slot.i,w:me.slot.w}:null}}
 function pushInfo(force){if(!NET.ok||(me.mode==='preview'&&!NET.waiting)||me.mode==='site'&&!NET.waiting)return;const o=infoObj();const key=JSON.stringify({...o,pg:0,vl:0}),now=performance.now(),changed=key!==lastInfoKey;
  if(!changed&&!force&&now-lastInfoT<20000)return;const gap=NET.mode==='claude'?200:1500;
  if(now-lastInfoT<gap){clearTimeout(infoTimer);infoTimer=setTimeout(()=>pushInfo(true),gap+50-(now-lastInfoT));return}lastInfoKey=key;lastInfoT=now;NET.track(o)}
@@ -2887,8 +2899,57 @@ function siteCam(t,dt){const per=13,n=SHOTS.length,k=(t/per)%n,i=Math.floor(k),f
 // venue lighting themes: world code registers hooks that recolour LEDs / neon / accent lights
 const themeHooks=[];let THEME=THEMES.neon,themeKey='neon';
 function applyTheme(k){if(!THEMES[k])k='neon';themeKey=k;THEME=THEMES[k];worldTheme(THEME);for(const f of themeHooks)try{f(THEME,k)}catch(e){console.warn(e)}}
-function applyEquip(av,eq){}
 
+
+// ================= hold-out props (free + paid), special-item looks, admin powers =================
+const PROPS={balloon:{n:'愛心氣球',p:0,e:'🎈'},flowers:{n:'小花束',p:0,e:'💐'},glow:{n:'螢光棒',p:0,e:'🪄'},lolly:{n:'棒棒糖',p:0,e:'🍭'},
+ sparkler:{n:'仙女棒',p:200,e:'✨'},mic:{n:'麥克風',p:300,e:'🎤'},umbrella:{n:'小雨傘',p:250,e:'☂️'},plush:{n:'熊熊娃娃',p:400,e:'🧸'},wand:{n:'魔法棒',p:500,e:'🌟'},guitar:{n:'吉他',p:600,e:'🎸'},
+ staff:{n:'管理員權杖',p:-1,e:'🛡️',staffOnly:true}};
+const ADMP={hidden:false,fly:false,noclip:false,up:0};me.prop='';
+const ownsProp=k=>PROPS[k]&&(PROPS[k].p===0||(PROPS[k].staffOnly&&isStaff())||(ACC.items||[]).includes('prop_'+k));
+async function buyProp(k){const it=PROPS[k];if(BK.mode==='supa'){const r=await rpc('avera_buy_prop',{p_secret:BK.secret,p_item:k});if(r.ok){ACC.coins=r.coins;ACC.items=r.items||ACC.items}return r}
+ const cur=(await dget('players/'+BK.uid))||{};const c=cur.coins??ACC.coins;if(c<it.p)return{error:'coins'};ACC.coins=c-it.p;ACC.items=[...new Set([...(cur.items||ACC.items||[]),'prop_'+k])];await dupd('players/'+BK.uid,{coins:ACC.coins,items:ACC.items});return{ok:true}}
+function renderProps(){const w=$('proppop');w.replaceChildren();const none=document.createElement('button');none.innerHTML='<b>✋</b>收起來';none.onclick=()=>holdProp('');w.append(none);
+ for(const[k,it]of Object.entries(PROPS)){if(it.staffOnly&&!isStaff())continue;const own=ownsProp(k);const b=document.createElement('button');b.setAttribute('aria-pressed',me.prop===k);b.innerHTML=`<b>${it.e}</b><span></span><small>${own?(it.p===0?'免費':it.staffOnly?'管理員':'已擁有'):'🪙 '+it.p}</small>`;b.querySelector('span').textContent=it.n;
+  b.onclick=async()=>{if(!own){const ok=await dialog({icon:'bag',title:`購買「${it.n}」？`,text:`花 ${it.p} 代幣永久擁有（目前 ${ACC.coins|0}）`,btns:[{t:'取消'},{t:'購買',pri:true,v:true}]});if(!ok)return;const r=await buyProp(k);if(r.error){notify({tone:'err',icon:'coin',text:r.error==='coins'?'代幣不足':'購買失敗',ms:3000});return}notify({tone:'ok',icon:'gift',text:`買到 ${it.n}！`,ms:2500})}holdProp(k)};w.append(b)}}
+function holdProp(k){me.prop=k;setProp(myAv,k);togglePop('proppop',false);lastInfoKey='';pushInfo(true)}
+$('a-prop').onclick=()=>{renderProps();togglePop('proppop')};
+// ---- prop meshes held in the left hand ----
+const PM={};const pmat=(c,o={})=>new THREE.MeshPhysicalMaterial({color:c,roughness:.35,clearcoat:.6,...o});
+function propMesh(k){const g=new THREE.Group();const add=(geo,m,x,y,z)=>{const e=new THREE.Mesh(geo,m);e.position.set(x,y,z);g.add(e);return e};
+ if(k==='balloon'){add(new THREE.CylinderGeometry(.003,.003,.55,4),std('#fff',.5),0,.27,0);const b=add(new THREE.SphereGeometry(.13,20,16),pmat('#ff6fb1',{clearcoat:1}),0,.62,0);b.scale.set(1,1.12,1)}
+ else if(k==='flowers'){add(new THREE.ConeGeometry(.06,.18,12),pmat('#fff1f6'),0,.02,0).rotation.x=Math.PI;['#ff8cc4','#ffd864','#c9b4ff','#ff9a5c'].forEach((c,i)=>add(new THREE.SphereGeometry(.04,10,8),pmat(c),Math.cos(i*1.6)*.04,.14,Math.sin(i*1.6)*.04))}
+ else if(k==='glow'){const m=add(new THREE.CylinderGeometry(.018,.018,.32,10),new THREE.MeshStandardMaterial({color:'#000',emissive:'#55eeb4',emissiveIntensity:3}),0,.12,0);g.userData.glow=m}
+ else if(k==='lolly'){add(new THREE.CylinderGeometry(.006,.006,.22,6),std('#fff',.4),0,.08,0);add(new THREE.CylinderGeometry(.08,.08,.02,24),pmat('#ff8cc4'),0,.22,0).rotation.x=Math.PI/2}
+ else if(k==='sparkler'){add(new THREE.CylinderGeometry(.004,.004,.3,4),std('#888',.4,.8),0,.12,0);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glowSprite,color:'#ffd864',blending:THREE.AdditiveBlending,transparent:true,depthWrite:false}));sp.position.y=.28;sp.scale.setScalar(.25);g.add(sp);g.userData.spark=sp}
+ else if(k==='mic'){add(new THREE.CylinderGeometry(.018,.012,.16,12),std('#222',.3,.6),0,.06,0);add(new THREE.SphereGeometry(.035,14,10),std('#cfcfd8',.3,.9),0,.16,0)}
+ else if(k==='umbrella'){add(new THREE.CylinderGeometry(.006,.006,.6,6),std('#444',.4),0,.28,0);add(new THREE.SphereGeometry(.38,24,10,0,Math.PI*2,0,Math.PI/2.4),pmat('#ffb3d9',{side:THREE.DoubleSide}),0,.5,0)}
+ else if(k==='plush'){add(new THREE.SphereGeometry(.07,14,10),pmat('#d9a877',{roughness:.9,clearcoat:0}),0,.06,.03);add(new THREE.SphereGeometry(.055,14,10),pmat('#d9a877',{roughness:.9,clearcoat:0}),0,.15,.03);[-1,1].forEach(s=>add(new THREE.SphereGeometry(.022,8,6),pmat('#d9a877',{roughness:.9,clearcoat:0}),s*.04,.2,.03))}
+ else if(k==='wand'){add(new THREE.CylinderGeometry(.007,.007,.28,6),pmat('#fff6d6'),0,.1,0);const st=add(starGeo,new THREE.MeshStandardMaterial({color:'#000',emissive:'#ffd864',emissiveIntensity:2.6}),0,.27,0);st.scale.setScalar(1.6)}
+ else if(k==='guitar'){const b=add(new THREE.SphereGeometry(.12,16,12),pmat('#ff6fb1'),0,0,.05);b.scale.set(1,1.2,.35);add(new THREE.BoxGeometry(.03,.32,.02),pmat('#6b3e1f'),0,.22,.05)}
+ else if(k==='staff'){add(new THREE.CylinderGeometry(.012,.012,.7,8),goldMat,0,.25,0);const gem=add(new THREE.OctahedronGeometry(.06),new THREE.MeshStandardMaterial({color:'#000',emissive:'#ffd27a',emissiveIntensity:3}),0,.63,0);g.userData.gem=gem}
+ return g}
+function setProp(av,k){const u=av?.userData;if(!u)return;if(u.prop){u.arms[0].remove(u.prop);u.prop=null}if(!k||!PROPS[k])return;const m=propMesh(k);m.position.set(0,-.2,.05);u.arms[0].add(m);u.prop=m}
+anims.push(t=>{for(const av of [myAv,...[...peers.values()].map(p=>p.av)]){const pr=av?.userData?.prop;if(!pr)continue;if(pr.userData.glow)pr.userData.glow.material.emissive.setHSL((t*.2)%1,.9,.55);if(pr.userData.spark){pr.userData.spark.scale.setScalar(.18+Math.random()*.14)}if(pr.userData.gem)pr.userData.gem.rotation.y=t*2}
+ for(const av of [myAv,...[...peers.values()].map(p=>p.av)]){const e=av?.userData?.eqm;if(!e)continue;if(e.halo)e.halo.position.y=1.42+Math.sin(t*2)*.03;if(e.wings)e.wings.forEach((w,i)=>w.rotation.y=(i?-1:1)*(.35+Math.sin(t*6)*.18));if(e.pet){e.pet.position.set(.55,1.25+Math.sin(t*2.4)*.08,-.1);e.pet.rotation.y=t*1.5}if(e.aura)e.aura.material.color.setHSL((t*.15)%1,.8,.6)}});
+// ---- special items (equip) + admin look ----
+function applyEquip(av,eq,staff){const u=av?.userData;if(!u)return;if(u.eqm)for(const m of Object.values(u.eqm))(Array.isArray(m)?m:[m]).forEach(x=>x.parent?.remove(x));u.eqm={};eq=eq||{};
+ const hat=eq.hat,back=eq.back,pet=eq.pet,fx=eq.fx;
+ if(hat==='halo'){const h=new THREE.Mesh(new THREE.TorusGeometry(.2,.025,10,40),new THREE.MeshStandardMaterial({color:'#000',emissive:'#fff1a8',emissiveIntensity:3}));h.rotation.x=Math.PI/2;h.position.y=1.42;av.add(h);u.eqm.halo=h}
+ if(hat==='crown'||hat==='tiara'){const c=new THREE.Group();c.position.set(0,.74,0);u.head.add(c);const n=hat==='crown'?7:5;const band=new THREE.Mesh(new THREE.CylinderGeometry(hat==='crown'?.17:.2,hat==='crown'?.16:.2,hat==='crown'?.1:.03,24,1,true),goldMat);c.add(band);for(let i=0;i<n;i++){const a=i/n*Math.PI*2;const sp=new THREE.Mesh(AG.bowL,goldMat);sp.position.set(Math.cos(a)*.16,.09,Math.sin(a)*.16);sp.scale.set(.6,hat==='crown'?1.1:.7,.6);c.add(sp)}const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.035),new THREE.MeshStandardMaterial({color:'#000',emissive:'#ff6fb1',emissiveIntensity:2.4}));gem.position.set(0,.04,.17);c.add(gem);u.eqm.crown=c}
+ if(back==='wings'){const ws=[-1,1].map(s=>{const sh=new THREE.Shape();sh.moveTo(0,0);sh.bezierCurveTo(.15,.35,.5,.4,.55,.15);sh.bezierCurveTo(.45,-.05,.2,-.1,0,0);const w=new THREE.Mesh(new THREE.ShapeGeometry(sh),new THREE.MeshStandardMaterial({color:'#e9dcff',emissive:'#a77bff',emissiveIntensity:.8,transparent:true,opacity:.75,side:THREE.DoubleSide}));const p=new THREE.Group();p.position.set(s*.08,.6,-.18);if(s<0)w.scale.x=-1;p.add(w);u.root.add(p);return p});u.eqm.wings=ws}
+ if(back==='cape'){const c=new THREE.Mesh(new THREE.PlaneGeometry(.42,.6,1,4),new THREE.MeshStandardMaterial({color:'#3a2b8f',emissive:'#5a3fd0',emissiveIntensity:.3,side:THREE.DoubleSide}));c.position.set(0,.36,-.2);c.rotation.x=.12;u.root.add(c);u.eqm.cape=c}
+ if(pet){const p=new THREE.Group();if(pet==='ufo'){const d=new THREE.Mesh(new THREE.SphereGeometry(.12,16,8),pmat('#c9d1e8',{metalness:.6}));d.scale.y=.35;const dome=new THREE.Mesh(new THREE.SphereGeometry(.06,12,8,0,Math.PI*2,0,Math.PI/2),pmat('#8fe3ff',{transmission:.4}));dome.position.y=.03;p.add(d,dome)}else{const b=new THREE.Mesh(new THREE.SphereGeometry(.09,14,10),pmat('#ffe066'));const bk=new THREE.Mesh(AG.bowL,pmat('#ff9a3c'));bk.scale.setScalar(.4);bk.rotation.x=Math.PI/2;bk.position.set(0,0,.09);p.add(b,bk)}av.add(p);u.eqm.pet=p}
+ if(fx==='aura'||staff){const a=new THREE.Mesh(AG.halo,new THREE.MeshBasicMaterial({color:staff?'#ffd27a':'#ff8cc4',transparent:true,opacity:staff?.35:.4,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false}));a.rotation.x=-Math.PI/2;a.position.y=.035;a.scale.setScalar(staff?.85:1);av.add(a);if(!staff)u.eqm.aura=a;else u.eqm.saura=a}}
+// ---- admin quick menu (in game) ----
+function renderAdmq(){const w=$('admq');w.replaceChildren();const row=(ic,t,on,fn)=>{const r=document.createElement('div');r.className='mrow';r.innerHTML=`<svg class="i"><use href="#i-${ic}"/></svg><span class="grow"></span><button class="tog"></button>`;r.querySelector('span').textContent=t;r.querySelector('button').setAttribute('aria-pressed',!!on);r.querySelector('button').onclick=()=>{fn();renderAdmq()};w.append(r)};
+ const h=document.createElement('div');h.className='mh';h.innerHTML='<b>管理員</b>';w.append(h);
+ row('user','隱身（一般玩家看不到你）',ADMP.hidden,()=>{ADMP.hidden=!ADMP.hidden;lastInfoKey='';pushInfo(true);notify({tone:'info',icon:'shield',text:ADMP.hidden?'已隱身':'已現身',ms:2000,quiet:true})});
+ row('up','飛行（空白鍵上升、C 下降）',ADMP.fly,()=>{ADMP.fly=!ADMP.fly;if(!ADMP.fly){me.vy=0}});
+ row('door','穿牆',ADMP.noclip,()=>{ADMP.noclip=!ADMP.noclip});
+ if(isTouch&&ADMP.fly){const r=document.createElement('div');r.className='adm-btns';const u=document.createElement('button');u.className='cb ghost sm';u.textContent='上升';u.onpointerdown=()=>ADMP.up=1;u.onpointerup=u.onpointerleave=()=>ADMP.up=0;const d=document.createElement('button');d.className='cb ghost sm';d.textContent='下降';d.onpointerdown=()=>ADMP.up=-1;d.onpointerup=d.onpointerleave=()=>ADMP.up=0;r.append(u,d);w.append(r)}
+ const b=document.createElement('button');b.className='cb lemon wide';b.innerHTML='<svg class="i"><use href="#i-shield"/></svg><span>開啟完整後台</span>';b.onclick=()=>{togglePop('admq',false);openAdmin()};w.append(b)}
+$('b-admin').onclick=()=>{renderAdmq();togglePop('admq')};
 
 // ================= settings =================
 let setTab='gen';
@@ -3148,7 +3209,7 @@ onNet('rm',(d,from)=>{if(!ROOM.id)return;
  if(d.t==='closing'&&fromOwner(from)&&!ROOM.isOwner){startClosing(Math.max(5,Math.min(60,d.sec|0)),'版主已離開，包廂將在 {s} 秒後關閉')}
  else if(d.t==='cfg'&&fromOwner(from)){for(const k of ['name','cap','pub','locked','hasPw'])if(d[k]!=null)ROOM[k]=k==='cap'?Math.max(2,Math.min(40,d.cap|0)):k==='name'?cleanName(d.name)||ROOM.name:!!d[k];if(d.theme&&THEMES[d.theme]&&d.theme!==ROOM.theme){ROOM.theme=d.theme;applyTheme(d.theme)}
   notify({key:'rcfg',tone:'info',icon:'door',text:'版主更新了包廂設定',ms:3000});renderRoomPanel(true)}
- else if(d.t==='kick'&&d.to===MYID&&fromOwner(from)){leaveRoom('kick')}
+ else if(d.t==='kick'&&d.to===MYID&&fromOwner(from)){if(isStaff()){notify({tone:'info',icon:'shield',text:'版主試著請你離開，但管理員不受包廂踢除影響',ms:3000,quiet:true});return}leaveRoom('kick')}
  else if(d.t==='theme'&&peers.get(from)?.rk&&THEMES[d.theme]){applyTheme(d.theme)}
  else if(d.t==='busy'&&d.to===MYID){notify({tone:'info',lk:peers.get(from)?.look,text:`${peerName(from)} ${String(d.why||'正在忙').slice(0,40)}，等他忙完就會看到你的邀請`,ms:6000})}});
 function startClosing(sec,text){if(APP.closingNote)return;APP.closingNote=notify({key:'closing',tone:'room',prio:true,text,count:sec,onEnd:()=>{APP.closingNote=null;leaveRoom('closed')},btns:[{t:'現在回大廳',fn:()=>{APP.closingNote=null;leaveRoom('closed',{silent:true})}}]})}
@@ -3174,7 +3235,7 @@ onBackEvent=ev=>{const d=ev.data||{};switch(ev.op){
 onProfile=()=>{applyMyProfile();staffUI()};
 onConfig=()=>{if(ACC.config.maintenance&&!isStaff()&&ROOM.id)gate({error:'maintenance',msg:ACC.config.maint_msg});if(!ROOM.id||ROOM.id==='main')applyTheme(ROOM.id==='main'?ACC.config.theme||'neon':ROOM.theme)};
 function applyMyProfile(){if(!ACC.exists)return;const lk=lookKey(ACC.look||look),changed=lk!==lookKey(look)||myName!==ACC.name;Object.assign(look,ACC.look||{});if(ROOM.id){myName=ACC.name;$('me-name').textContent=myName}
- if(changed){const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;if(me.mode==='site')myAv.visible=false;lastInfoKey='';pushInfo(true)}applyEquip?.(myAv,ACC.equip)}
+ if(changed){const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;if(me.mode==='site')myAv.visible=false;lastInfoKey='';pushInfo(true)}applyEquip(myAv,ACC.equip,isStaff());setProp(myAv,me.prop)}
 let gated=false;async function gate(r){if(gated)return;gated=true;if(ROOM.id){NET.emit('rm',{t:'bye'});disconnectNet();roomBeatStop();ROOM.id=null}
  document.body.classList.remove('in-room','playing');me.mode='site';myAv.visible=false;clearInterval(pollT);
  const until=r.until&&+new Date(r.until)<8e15?new Date(r.until).toLocaleString('zh-TW'):'';
@@ -3215,7 +3276,7 @@ function renderRoomPanel(onlyIfOpen){const w=$('roompnl');if(onlyIfOpen&&w.hidde
  for(const p of peers.values()){if(!p.look)continue;let b=null;if(ROOM.isOwner&&!p.rk){b=document.createElement('button');b.className='cb ghost sm';b.textContent='請離開';b.onclick=async()=>{const ok=await dialog({icon:'door',title:`請 ${p.name} 離開包廂？`,text:'對方會回到大廳，之後仍可以重新進來（除非你上鎖或設密碼）。',btns:[{t:'取消'},{t:'請離開',pri:true,danger:true,v:true}]});if(ok){NET.emit('rm',{t:'kick',to:p.id});notify({tone:'info',text:`已請 ${p.name} 離開`,ms:2500})}}}
   mrow(p.name,p.look,p.ro?'版主':p.rk?ROLE_NAME[p.rk]:'',b)}w.append(lst);
  const lv=document.createElement('button');lv.className='cb ghost wide';lv.innerHTML='<svg class="i"><use href="#i-exit"/></svg><span></span>';lv.querySelector('span').textContent=ROOM.isOwner&&!ROOM.perm?'離開並關閉包廂':'離開包廂';lv.onclick=()=>leaveRoom('user');w.append(lv)}
-$('b-room').onclick=()=>togglePop('roompnl');$('b-admin').onclick=()=>openAdmin();
+$('b-room').onclick=()=>togglePop('roompnl');
 onNet('adm',()=>pollNow());
 function staffUI(){$('b-admin').hidden=!isStaff()}
 
@@ -3294,7 +3355,7 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
  myAv.position.set(me.x,me.y,me.z);animAvatar(myAv,t,dt,me.speed,me.emote,me.et,me.air,me.talk,me.pose);
  if(me.mode!=='preview'){placeTag(myTag,myAv,myName,myBubble,t,me.talk,PARTY.id&&partyMates().length)}else myTag.hidden=true;
  voiceTick(t,frameN);NETH.fn++;if(t-NETH.ft>=1){NETH.fps=NETH.fn/(t-NETH.ft);NETH.ft=t;NETH.fn=0}
- for(const p of peers.values()){if(!p.av){p.tag.hidden=true;continue}const age=Math.min((performance.now()-p.lastMv)/1000,.6);p.tgt.copy(p.base).addScaledVector(p.vel,age);p.cur.lerp(p.tgt,1-Math.exp(-dt*12));p.talk=p.talkNet||p.talkLocal>t;
+ for(const p of peers.values()){if(!p.av||p.hid){p.tag.hidden=true;if(p.av)p.av.visible=false;continue}const age=Math.min((performance.now()-p.lastMv)/1000,.6);p.tgt.copy(p.base).addScaledVector(p.vel,age);p.cur.lerp(p.tgt,1-Math.exp(-dt*12));p.talk=p.talkNet||p.talkLocal>t;
   const d=p.av.position.distanceTo(p.cur);p.speed=THREE.MathUtils.lerp(p.speed,d/Math.max(dt,1e-3),.2);p.av.position.copy(p.cur);let dy=p.yaw-p.av.rotation.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));p.av.rotation.y+=dy*Math.min(1,dt*12);
   const pose=p.pose||(p.act==='cab'&&['racer','c4'].includes(p.game)?'sit':'');animAvatar(p.av,t,dt,p.speed,p.act==='cab'&&!p.emote?'play':p.emote,p.act==='cab'?t-1:p.et,p.air,p.talk,pose);placeTag(p.tag,p.av,p.name,p.bubble,t,p.talk,PARTY.id&&p.pt===PARTY.id)}
  animNPCs(t,dt);for(const f of anims)f(t,dt);

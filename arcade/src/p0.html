@@ -370,6 +370,14 @@ a.cb{text-decoration:none}
 #lbp{right:var(--sr);top:calc(var(--st) + 66px);width:min(380px,calc(100vw - 28px));box-sizing:border-box;padding:14px;z-index:12;display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - var(--st) - 90px);overflow-y:auto}
 .lbtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}.lbtabs button{flex:none;padding:7px 12px;border-radius:999px;font:800 12.5px var(--txt);color:var(--dim);background:rgba(255,255,255,.06)}.lbtabs button[aria-pressed=true]{background:linear-gradient(180deg,var(--lemon1),var(--lemon2));color:#3d2a00}
 .lbr .rk{width:28px;text-align:center;font:800 16px var(--disp);color:var(--dim)}.lbr .rk.r1{color:var(--gold)}.lbr .rk.r2{color:#e4e4ff}.lbr .rk.r3{color:#ffb27a}.lbr .sc{font:800 16px var(--disp);color:var(--gold)}.lbr .pf{width:32px;height:32px}
+/* ---- props / admin quick menu / staff tags ---- */
+#proppop{right:var(--sr);bottom:calc(var(--sb) + 76px);display:grid;grid-template-columns:repeat(4,78px);gap:8px;padding:10px;z-index:12;max-height:60dvh;overflow-y:auto}
+@media (pointer:coarse){#proppop{bottom:calc(var(--sb) + 172px)}}
+#proppop button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:16px;background:rgba(255,255,255,.06);font:800 11.5px var(--txt);color:var(--ink2)}
+#proppop button b{font-size:26px;line-height:1.1;font-weight:400}#proppop button small{font:800 10.5px var(--disp);color:var(--gold)}#proppop button[aria-pressed=true]{box-shadow:inset 0 0 0 2.5px var(--pink);background:rgba(255,140,196,.14)}
+#admq{right:var(--sr);top:calc(var(--st) + 66px);width:min(320px,calc(100vw - 28px));box-sizing:border-box;padding:14px;z-index:12;display:flex;flex-direction:column;gap:4px;box-shadow:0 0 0 1.5px rgba(255,210,122,.45),0 12px 30px rgba(0,0,0,.4)}
+.tag.staff .nt{background:linear-gradient(100deg,#5a3d0a,#a07421);box-shadow:0 0 0 1.5px #ffd27a,0 0 14px rgba(255,210,122,.6)}.tag.staff .n::before{content:"🛡 ";}
+.tag[data-tag=gold_tag] .nt{background:linear-gradient(100deg,#7a5410,#c9a35a)}.tag[data-tag=vip_tag] .nt{background:linear-gradient(100deg,#7b2ff7,#f107a3)}.tag[data-tag=staff_tag] .nt{background:linear-gradient(100deg,#0f5132,#20c997)}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -876,10 +884,12 @@ summary::-webkit-details-marker{display:none}
 <div class="fx h" id="feed"></div>
 <form class="fx pnl" id="chatbar" hidden><input id="msg" maxlength="80" placeholder="說點什麼…" autocomplete="off" enterkeyhint="send"><button id="send" class="cb pink round" aria-label="送出"><svg class="i"><use href="#i-send"/></svg></button></form>
 <div class="fx h nb" id="acts">
- <div class="dock pnl"><button class="db" id="a-chat" aria-label="聊天"><svg class="i"><use href="#i-chat"/></svg><i class="dot" id="unread" hidden></i></button><button class="db" id="a-emo" aria-expanded="false" aria-label="表情"><svg class="i"><use href="#i-smile"/></svg></button><button class="db" id="a-mic" aria-pressed="false" aria-label="語音"><svg class="i" id="mic-i"><use href="#i-mic"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></button></div>
+ <div class="dock pnl"><button class="db" id="a-chat" aria-label="聊天"><svg class="i"><use href="#i-chat"/></svg><i class="dot" id="unread" hidden></i></button><button class="db" id="a-emo" aria-expanded="false" aria-label="表情"><svg class="i"><use href="#i-smile"/></svg></button><button class="db" id="a-prop" aria-expanded="false" aria-label="道具"><svg class="i"><use href="#i-bag"/></svg></button><button class="db" id="a-mic" aria-pressed="false" aria-label="語音"><svg class="i" id="mic-i"><use href="#i-mic"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></button></div>
  <div class="bigrow"><button class="cb pink round" id="a-act" hidden><svg class="i" id="a-act-i"><use href="#i-hand"/></svg><span id="a-act-t">互動</span></button><button class="cb round" id="a-jump" aria-label="跳"><svg class="i"><use href="#i-jump"/></svg></button></div>
 </div>
 <div class="fx pnl h nb" id="emopop" hidden></div>
+<div class="fx pnl h nb" id="proppop" hidden></div>
+<div class="fx pnl h" id="admq" hidden></div>
 <div class="fx h nb" id="joy"><div id="knob"></div></div>
 <div class="h nb" id="prompt" hidden><span class="key">E</span><svg class="i" id="p-i"><use href="#i-hand"/></svg><span id="p-t"></span></div>
 <div class="fx pnl h" id="tv" hidden>

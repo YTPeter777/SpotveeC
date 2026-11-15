@@ -67,13 +67,13 @@ B. Economy & fairness
 C. Characters
  [x] C1 cuter, girl-appealing, refined (lashes, sparkly eyes, softer pastel palette, blush)
  [x] C2 more accessories; fix accessories that clip
- [ ] C3 hold-out items (free + paid with coins); admins have special items; admins look cooler
+ [x] C3 hold-out items (free + paid with coins); admins have special items; admins look cooler
 D. Chat & reports
  [ ] D1 anti-spam rate limit, profanity / 18+ filter
  [ ] D2 report a chat message; report player behaviour; reports auto-capture device; malicious reporters flagged (admin sees who reported)
 E. Admin
- [ ] E1 admin hidden mode, fly + noclip, invincible (room owner cannot kick admins)
- [ ] E2 admin joins room → everyone notified
+ [x] E1 admin hidden mode, fly + noclip, invincible (room owner cannot kick admins)
+ [x] E2 admin joins room → everyone notified
  [ ] E3 every backend setting applies live (no refresh); feature toggles (disable bowling/games/TV/shop/chat/voice/booth...)
  [ ] E4 clear-everyone's-cache button
  [ ] E5 backend sees: rooms status (count, music now, players), player activity logs, all chat logs, reports, login logs (IP, device, time), security alerts (signups, bot/crack attempts)
@@ -93,4 +93,5 @@ J. [ ] legal terms (Taiwan PDPA etc.), credit "由僑泰匿名牆團隊製作"; 
 
 SQL: sql/avera_init.sql + sql/avera_r3.sql (round-3 additions). Both shipped in repo arcade/supabase/.
 
-NEXT (in order): C3 hold items + applyEquip (pW stub) ; D chat filter/report msg ; E admin powers/logs/admin.html ; F photos ; G grip+claw adv ; H themes ; I notif settings ; J legal+credit "由僑泰匿名牆團隊製作".
+NEXT (in order): D chat filter/report msg ; E admin powers/logs/admin.html ; F photos ; G grip+claw adv ; H themes ; I notif settings ; J legal+credit "由僑泰匿名牆團隊製作".
+pP.js = props (PROPS, buyProp, setProp), applyEquip (halo/crown/tiara/wings/cape/pet/aura, staff gold aura), admin quick menu (ADMP hidden/fly/noclip). p7 applyInfo handles hp/hid/eq/rk + admin-join notice.

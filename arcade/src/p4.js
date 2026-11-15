@@ -15,7 +15,7 @@ let myAv=makeAnimal(look);scene.add(myAv);myAv.position.set(me.x,0,me.z);
 let myName='',myBubble={text:'',t:-99};
 const keys={};let camYaw=0,camPitch=.3,camDist=6.2,camCur=6.2;
 const clock=new THREE.Clock();
-function jump(){if(me.mode==='sit'){standUp();return}if(me.mode==='walk'&&me.y-groundAt(me.x,me.z,me.y)<.05){me.vy=6.2;me.air=true;sfx('pop')}}
+function jump(){if(ADMP.fly)return;if(me.mode==='sit'){standUp();return}if(me.mode==='walk'&&me.y-groundAt(me.x,me.z,me.y)<.05){me.vy=6.2;me.air=true;sfx('pop')}}
 let emoteSeq=0;function doEmote(e){if(!['walk','preview','sit','bowl','cab'].includes(me.mode))return;me.emote=e;me.et=clock.elapsedTime;emoteSeq++;if(e==='heart')spawnFloat(myAv.position);if(e==='dance')spawnFloat(myAv.position,noteTex,3);togglePop('emopop',false);sendPresence(true)}
 const EMOTES=[['wave','👋','揮手'],['dance','💃','跳舞'],['cheer','🙌','歡呼'],['heart','💖','比心'],['spin','🤸','翻滾'],['laugh','😆','大笑']];
 
@@ -25,7 +25,7 @@ SPECIES.forEach((s,i)=>{const b=document.createElement('button');b.innerHTML=`<i
 swatches($('pk-fur'),FURS,'fur');swatches($('pk-cl'),OUTFIT,'cl');
 ACCS.forEach((a,i)=>{const b=document.createElement('button');b.innerHTML=`<img alt=""><span>${a.n}</span>`;b.onclick=()=>{look.acc=i;refreshLook()};$('pk-acc').append(b)});
 function refreshLook(){[...$('pk-sp').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===look.sp));[...$('pk-fur').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===look.fur));[...$('pk-cl').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===look.cl));[...$('pk-acc').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===look.acc));
- const r=myAv.rotation.y;scene.remove(myAv);myAv=makeAnimal(look);myAv.rotation.y=r;scene.add(myAv);myAv.position.set(me.x,me.y,me.z);if(me.mode==='preview'){me.emote='spin';me.et=clock.elapsedTime}
+ const r=myAv.rotation.y;scene.remove(myAv);myAv=makeAnimal(look);myAv.rotation.y=r;scene.add(myAv);try{applyEquip(myAv,ACC.equip,isStaff());setProp(myAv,me.prop)}catch(e){}myAv.position.set(me.x,me.y,me.z);if(me.mode==='preview'){me.emote='spin';me.et=clock.elapsedTime}
  $('me-badge').src=portrait(look);$('me-pf').style.setProperty('--pc',OUTFIT[look.cl]);updatePicks();store.set('look',look);sfx('click')}
 function updatePicks(){[...$('pk-sp').children].forEach((b,i)=>{const lk={sp:i,fur:i===look.sp?look.fur:FUR_DEFAULT[SPECIES[i].k],cl:look.cl,acc:0};b.querySelector('img').src=portrait(lk)});
  [...$('pk-acc').children].forEach((b,i)=>{b.querySelector('img').src=portrait({...look,acc:i})})}
@@ -68,8 +68,8 @@ function jm(e){const r=joy.getBoundingClientRect();let x=(e.clientX-r.left-r.wid
 $('a-jump').onclick=jump;$('a-act').onclick=()=>interact();$('prompt').onclick=()=>interact();
 $('a-chat').onclick=()=>openChat();$('a-mic').onclick=()=>toggleMic();$('a-emo').onclick=()=>togglePop('emopop');
 EMOTES.forEach(([k,ic,n],i)=>{const b=document.createElement('button');b.innerHTML=`<b>${ic}</b>${n}`;b.title=`${n}（${i+1}）`;b.onclick=()=>doEmote(k);$('emopop').append(b)});
-function togglePop(id,force){const el=$(id);if(!el)return;const open=force??el.hidden;el.hidden=!open;const btn={people:'me-btn',menu:'b-menu',emopop:'a-emo',roompnl:'b-room',lbp:'b-lb'}[id];if(btn)$(btn)?.setAttribute('aria-expanded',open);
- if(open){for(const o of ['people','menu','roompnl','lbp'])if(o!==id&&o!=='emopop'&&id!=='emopop')togglePop(o,false);if(id==='people')renderPeople();if(id==='roompnl')renderRoomPanel();if(id==='menu')renderSettings()}}
+function togglePop(id,force){const el=$(id);if(!el)return;const open=force??el.hidden;el.hidden=!open;const btn={people:'me-btn',menu:'b-menu',emopop:'a-emo',roompnl:'b-room',lbp:'b-lb',proppop:'a-prop',admq:'b-admin'}[id];if(btn)$(btn)?.setAttribute('aria-expanded',open);
+ if(open){for(const o of ['people','menu','roompnl','lbp','admq'])if(o!==id&&o!=='emopop'&&id!=='emopop')togglePop(o,false);if(id==='people')renderPeople();if(id==='roompnl')renderRoomPanel();if(id==='menu')renderSettings()}}
 $('me-btn').onclick=()=>togglePop('people');$('b-menu').onclick=()=>togglePop('menu');
 $('menu-x').onclick=()=>togglePop('menu',false);$('b-help').onclick=()=>{togglePop('menu',false);$('help').hidden=false};$('help-x').onclick=()=>$('help').hidden=true;$('photo-x').onclick=()=>$('photo').hidden=true;
 document.querySelectorAll('#qseg button').forEach(b=>b.onclick=()=>{QUAL=b.dataset.q;store.set('q',QUAL);applyQuality()});
@@ -126,7 +126,8 @@ function walkStep(dt,t){let ix=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys
  if(me.mode==='sit'){if(l>.3)standUp();else return}
  const fx=-Math.sin(camYaw),fz=-Math.cos(camYaw),mx=fx*iz-fz*ix,mz=fz*iz+fx*ix;const run=keys.ShiftLeft||keys.ShiftRight||(isTouch&&l>.92);const sp=run?7:4.4;me.speed=Math.hypot(mx,mz)*sp;
  if(me.speed>.1){const want=Math.atan2(mx,mz);let d=want-myAv.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));myAv.rotation.y+=d*Math.min(1,dt*12);if(me.emote&&!['heart','drink','eat'].includes(me.emote))me.emote=''}
- const[nx,nz]=collide(me.x+mx*sp*dt,me.z+mz*sp*dt,me.y);const g0=groundAt(me.x,me.z,me.y),g1=groundAt(nx,nz,me.y),wedge=inRamp(nx,nz)&&rampH(nz)>me.y+.6;
- if(!(g0-g1>.6||wedge)){me.x=nx;me.z=nz}
+ if(ADMP.fly){const spd=(run?9:5)*dt;me.x=THREE.MathUtils.clamp(me.x+mx*spd*1.6,W.x0+.3,W.x1-.3);me.z=THREE.MathUtils.clamp(me.z+mz*spd*1.6,W.z0+.3,W.z1-.3);me.y=THREE.MathUtils.clamp(me.y+((keys.Space?1:0)-(keys.KeyC||keys.ControlLeft?1:0)+(ADMP.up||0))*spd,0,CEIL-1.6);me.vy=0;me.air=me.y>.05;return}
+ const[nx,nz]=ADMP.noclip?[me.x+mx*sp*dt,me.z+mz*sp*dt]:collide(me.x+mx*sp*dt,me.z+mz*sp*dt,me.y);const g0=groundAt(me.x,me.z,me.y),g1=groundAt(nx,nz,me.y),wedge=inRamp(nx,nz)&&rampH(nz)>me.y+.6;
+ if(ADMP.noclip||!(g0-g1>.6||wedge)){me.x=THREE.MathUtils.clamp(nx,W.x0+.3,W.x1-.3);me.z=THREE.MathUtils.clamp(nz,W.z0+.3,W.z1-.3)}
  const g=groundAt(me.x,me.z,me.y);me.vy-=18*dt;me.y+=me.vy*dt;if(me.y<=g){me.y=g;me.vy=0;me.air=false}else if(me.vy<=0&&me.y-g<.25&&(inRamp(me.x,me.z)||g>0&&g<1)){me.y=g;me.vy=0;me.air=false}
  if(me.y<F2-.3&&me.z>MZ)me.y=Math.min(me.y,F2-1.5)}

@@ -40,7 +40,7 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
  myAv.position.set(me.x,me.y,me.z);animAvatar(myAv,t,dt,me.speed,me.emote,me.et,me.air,me.talk,me.pose);
  if(me.mode!=='preview'){placeTag(myTag,myAv,myName,myBubble,t,me.talk,PARTY.id&&partyMates().length)}else myTag.hidden=true;
  voiceTick(t,frameN);NETH.fn++;if(t-NETH.ft>=1){NETH.fps=NETH.fn/(t-NETH.ft);NETH.ft=t;NETH.fn=0}
- for(const p of peers.values()){if(!p.av){p.tag.hidden=true;continue}const age=Math.min((performance.now()-p.lastMv)/1000,.6);p.tgt.copy(p.base).addScaledVector(p.vel,age);p.cur.lerp(p.tgt,1-Math.exp(-dt*12));p.talk=p.talkNet||p.talkLocal>t;
+ for(const p of peers.values()){if(!p.av||p.hid){p.tag.hidden=true;if(p.av)p.av.visible=false;continue}const age=Math.min((performance.now()-p.lastMv)/1000,.6);p.tgt.copy(p.base).addScaledVector(p.vel,age);p.cur.lerp(p.tgt,1-Math.exp(-dt*12));p.talk=p.talkNet||p.talkLocal>t;
   const d=p.av.position.distanceTo(p.cur);p.speed=THREE.MathUtils.lerp(p.speed,d/Math.max(dt,1e-3),.2);p.av.position.copy(p.cur);let dy=p.yaw-p.av.rotation.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));p.av.rotation.y+=dy*Math.min(1,dt*12);
   const pose=p.pose||(p.act==='cab'&&['racer','c4'].includes(p.game)?'sit':'');animAvatar(p.av,t,dt,p.speed,p.act==='cab'&&!p.emote?'play':p.emote,p.act==='cab'?t-1:p.et,p.air,p.talk,pose);placeTag(p.tag,p.av,p.name,p.bubble,t,p.talk,PARTY.id&&p.pt===PARTY.id)}
  animNPCs(t,dt);for(const f of anims)f(t,dt);
