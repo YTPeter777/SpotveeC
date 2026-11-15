@@ -27,7 +27,7 @@ function disconnectNet(){NET.gen++;NET.ok=false;NET.emit=()=>{};NET.track=()=>{}
  if(NET.ch&&NET.sb){try{NET.sb.removeChannel(NET.ch)}catch(e){}}NET.ch=null;if(NET.room&&NET.room!==NET.lobby){NET.room.leave?.().catch(()=>{})}NET.room=null;
  for(const id of [...peers.keys()])dropPeer(id);NET.queue=[];lastInfoKey='';$('n-on').textContent='1'}
 let lobbyP=null;function getLobby(){if(!lobbyP)lobbyP=window.claude.use('room').catch(()=>null).then(r=>{NET.lobby=r;return r});return lobbyP}
-function onConnected(){if(NET.waiting)return;NET.emit('ytq',{});requeryLanes();renderPeople()}
+function onConnected(){if(NET.waiting)return;NET.emit('ytq',{t:'sync'});requeryLanes();renderPeople()}
 function requeryLanes(){NET.emit('ln',{t:'q'})}
 function connectLocal(chan){const gen=NET.gen;const bc=new BroadcastChannel('avera-'+chan),seen=new Map();let info=null;
  NET.emit=(ev,data)=>{if(gen!==NET.gen)return;if(NET.waiting&&ev!=='rm')return;data.i=MYID;bc.postMessage({k:'ev',ev,data})};NET.track=o=>{info=o;bc.postMessage({k:'pr',id:MYID,o})};
@@ -63,7 +63,7 @@ function syncPeers(list){const ids=new Set(),q=[];for(const[id,o]of list){if(!o|
 function applyInfo(p,id,o){p.name=String(o.n||'玩家').slice(0,12);const lk=parseLook(o.lk);p.look=lk;p.color=OUTFIT[lk.cl];
  const key=lookKey(lk);if(p.lk!==key){p.lk=key;if(p.av){const pos=p.av.position.clone(),ry=p.av.rotation.y;scene.remove(p.av);p.av=makeAnimal(lk);p.av.position.copy(pos);p.av.rotation.y=ry;scene.add(p.av)}}
  spawnPeerAvatar(p);p.act=['walk','bowl','cab','sit'].includes(o.a)?o.a:'walk';p.game=typeof o.g==='string'&&GAMES[o.g]?o.g:'';p.lane=Number.isInteger(o.L)&&o.L>=0&&o.L<4?o.L:-1;
- p.ping=Number.isFinite(o.pg)?Math.round(o.pg):null;p.pid=typeof o.pid==='string'?o.pid.slice(0,40):null;p.ro=o.ro===1;p.rk=['mod','admin','owner'].includes(o.rk)?o.rk:'';p.eq=o.eq&&typeof o.eq==='object'?o.eq:{};p.pt=typeof o.pt==='string'&&o.pt.length<20?o.pt:null;
+ p.sq=Number.isFinite(o.sq)?o.sq:0;p.ping=Number.isFinite(o.pg)?Math.round(o.pg):null;p.pid=typeof o.pid==='string'?o.pid.slice(0,40):null;p.ro=o.ro===1;p.rk=['mod','admin','owner'].includes(o.rk)?o.rk:'';p.eq=o.eq&&typeof o.eq==='object'?o.eq:{};p.pt=typeof o.pt==='string'&&o.pt.length<20?o.pt:null;
  p.sx=o.sx&&typeof o.sx==='object'&&stations.has(o.sx.s)&&(o.sx.i===0||o.sx.i===1)?{s:o.sx.s,i:o.sx.i,w:['wait','play','ai','solo'].includes(o.sx.w)?o.sx.w:'play'}:null;p.stState=p.sx?.w;
  const vc=o.vc===1;if(vc!==p.vc){p.vc=vc;if(vc)maybeConnect(id);else closePc(id)}}
 function onMove(d,id){if(typeof id!=='string'||id===MYID||!d||typeof d!=='object')return;const p=getPeer(id);p.lastMv=performance.now();
@@ -75,7 +75,7 @@ onNet('chat',(d,id)=>{const p=peers.get(id);const t=String(d.t||'').slice(0,80);
 onNet('ann',(d,id)=>{const p=peers.get(id);const t=String(d.t||'').slice(0,60);if(t)feed('ann','',`${p?.name||'玩家'} ${t}`)});
 // ---- presence out ----
 let lastInfoKey='',lastInfoT=-1e9,infoTimer=null;
-function infoObj(){return{pid:ACC.pid,q:NET.waiting?1:0,jt:NET.jt,ro:ROOM.isOwner?1:0,rk:ROLE_RANK[ACC.role]>0?ACC.role:'',eq:ACC.equip,n:myName,lk:[look.sp,look.fur,look.cl,look.acc],a:me.mode,g:me.mode==='cab'?curGame:'',L:me.mode==='bowl'?myLane:-1,vc:VOICE.joined?1:0,pg:net.self,vl:net.voice,pt:PARTY.id,sx:me.slot?{s:me.slot.st,i:me.slot.i,w:me.slot.w}:null}}
+function infoObj(){return{sq:me.sq||0,pid:ACC.pid,q:NET.waiting?1:0,jt:NET.jt,ro:ROOM.isOwner?1:0,rk:ROLE_RANK[ACC.role]>0?ACC.role:'',eq:ACC.equip,n:myName,lk:[look.sp,look.fur,look.cl,look.acc],a:me.mode,g:me.mode==='cab'?curGame:'',L:me.mode==='bowl'?myLane:-1,vc:VOICE.joined?1:0,pg:net.self,vl:net.voice,pt:PARTY.id,sx:me.slot?{s:me.slot.st,i:me.slot.i,w:me.slot.w}:null}}
 function pushInfo(force){if(!NET.ok||(me.mode==='preview'&&!NET.waiting)||me.mode==='site'&&!NET.waiting)return;const o=infoObj();const key=JSON.stringify({...o,pg:0,vl:0}),now=performance.now(),changed=key!==lastInfoKey;
  if(!changed&&!force&&now-lastInfoT<20000)return;const gap=NET.mode==='claude'?200:1500;
  if(now-lastInfoT<gap){clearTimeout(infoTimer);infoTimer=setTimeout(()=>pushInfo(true),gap+50-(now-lastInfoT));return}lastInfoKey=key;lastInfoT=now;NET.track(o)}

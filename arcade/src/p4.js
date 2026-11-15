@@ -40,6 +40,8 @@ addEventListener('keydown',e=>{if(typing()){if(e.key==='Escape')document.activeE
  keys[e.code]=true;
  if(e.key==='Escape'){if(!$('help').hidden){$('help').hidden=true;return}if(!$('photo').hidden){$('photo').hidden=true;return}togglePop('people',false);togglePop('menu',false);togglePop('emopop',false);togglePop('roompnl',false)}
  if(me.mode==='preview'||me.mode==='site')return;
+ if(me.mode==='queue'){if(e.key==='Escape')leaveShopQueue();return}
+ if(me.mode==='booth'){if(e.key==='Escape')leaveBooth();else if(e.code==='Space'){e.preventDefault();boothShoot()}return}
  if((me.mode==='walk'||me.mode==='bowl'||me.mode==='sit')&&e.code==='KeyV'&&!e.repeat){toggleMic();return}
  if(me.mode==='walk'||me.mode==='sit'){if(e.code==='Space'){e.preventDefault();jump()}else if(e.code==='KeyE')interact();else if(e.code==='Enter'){e.preventDefault();openChat()}
   else if(/^Digit[1-6]$/.test(e.code))doEmote(EMOTES[+e.code[5]-1][0])}
@@ -97,9 +99,9 @@ function interact(){if(me.mode==='sit'){standUp();return}if(me.mode!=='walk'||!n
  if(t.face!=null)myAv.rotation.y=t.face;
  if(t.type==='bowl')enterLane(t.lane);else if(t.type==='cab')openGame(t.game,{target:t});else if(t.type==='st')stationInteract(t);
  else if(t.type==='tv')openTV();else if(t.type==='sit'||t.type==='ride')sitDown(t);
- else if(t.type==='vend'){heldItem(myAv,'drink');doEmote('drink');sfx('coin');feed('sys','','🥤 買了一瓶汽水')}
- else if(t.type==='snack'){heldItem(myAv,'eat');doEmote('eat');sfx('coin');feed('sys','','🍿 買了一份爆米花')}
- else if(t.type==='photo')takePhoto()}
+ else if(t.type==='vend'){buyItem('cola').then(r=>{if(r.error){notify({tone:'err',icon:'coin',text:r.error==='coins'?'代幣不夠喔！玩遊戲可以賺代幣':'販賣機故障中',ms:3000});return}heldItem(myAv,'drink');doEmote('drink');sfx('coin');notify({tone:'ok',icon:'bag',text:`買了一瓶霓虹可樂（剩 ${ACC.coins} 代幣）`,ms:2500,quiet:true})})}
+ else if(t.type==='snack'){joinShopQueue()}
+ else if(t.type==='photo')enterBooth()}
 function sitDown(t){me.mode='sit';me.seat=t;me.pose=t.type==='ride'?'ride':'sit';me.x=t.seat.x;me.z=t.seat.z;me.y=t.seat.y;me.vy=0;myAv.rotation.y=t.seat.face??t.face??0;if(t.obj)t.obj.userData.ride=true;sendPresence(true)}
 function standUp(){const t=me.seat;me.mode='walk';me.pose='';if(t){if(t.obj)t.obj.userData.ride=false;me.x=t.x;me.z=t.z;me.y=0}me.seat=null;sendPresence(true)}
 function takePhoto(){sfx('flash');const pos=camera.position.clone(),q=camera.quaternion.clone();const f=new THREE.Vector3(Math.sin(myAv.rotation.y),0,Math.cos(myAv.rotation.y));

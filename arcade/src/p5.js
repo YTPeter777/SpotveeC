@@ -132,7 +132,7 @@ function applyLaneState(L,st,instant,prevO){const prev=prevO||L.state,firstSeen=
    if(st.fx==='STRIKE!'&&st.ps.find(p=>p[0]===MYID)&&L.sim&&L.sim.by===MYID){me.emote='cheer';me.et=clock.elapsedTime;emoteSeq++;NET.emit('ann',{t:`在第 ${L.i+1} 道打出 STRIKE！`})}}}
  if(instant){L.sim=null;rack(L,st.stand);L.ball.visible=false;L.ret.visible=true}
  else if(prev&&st.seq>prev.seq&&rollCount(st)!==rollCount(prev)){L.sim=null;L.ball.visible=false;startPinsetter(L,st.stand,st.rr)}
- if(st.phase==='done'&&prev&&prev.phase!=='done'&&sessionHas(st,MYID)){const sc=st.ps.map(p=>[p[1],total(st.rolls[p[0]]||[])]).sort((a,b)=>b[1]-a[1]);if(sc.length>1)feed('ann','',`🎳 第 ${L.i+1} 道結束：${sc.map(s=>s[0]+' '+s[1]).join('、')}`);else announce(`保齡球拿到 ${sc[0][1]} 分`);sfx('win')}
+ if(st.phase==='done'&&prev&&prev.phase!=='done'&&sessionHas(st,MYID)){rewardGame('bowl',total(st.rolls[MYID]||[])*3);const sc=st.ps.map(p=>[p[1],total(st.rolls[p[0]]||[])]).sort((a,b)=>b[1]-a[1]);if(sc.length>1)feed('ann','',`🎳 第 ${L.i+1} 道結束：${sc.map(s=>s[0]+' '+s[1]).join('、')}`);else announce(`保齡球拿到 ${sc[0][1]} 分`);sfx('win')}
  renderLaneHUD()}
 // ---- pinsetter animation ----
 function startPinsetter(L,stand,rerack){L.ps={t:0,stand,rerack,lift:rerack?0:stand};L.ballRetT=clock.elapsedTime+1.6}

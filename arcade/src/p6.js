@@ -24,7 +24,7 @@ function setGame(ng){G=ng;buildPad(G.pad,G.padCols);setStats()}
 function openGame(k,opt={}){curGame=k;curTarget=opt.target||null;me.mode='cab';document.body.classList.add('busy');$('cab').hidden=false;setTitle(k,opt.ctx?.mode);
  $('cabhint').textContent=GAMES[k].hint;$('lobby').hidden=true;G=makeGame(k,opt.ctx||{mode:'solo'});buildPad(G.pad,G.padCols);setStats();me.emote=G.pose||'play';me.et=clock.elapsedTime;emoteSeq++;
  if(curTarget?.obj)curTarget.obj.userData.busy=true;if(curTarget?.slotRef?.stand)me.y=curTarget.f+curTarget.slotRef.stand;sendPresence(true)}
-function closeGame(){if(me.mode!=='cab')return;setTimeout(flushInvites,700);if(G?.vs&&!G.over)G.link?.send({k:'bye'});if(MATCH)endMatch();if(curTarget?.obj)curTarget.obj.userData.busy=false;
+function closeGame(){if(me.mode!=='cab')return;setTimeout(flushInvites,700);try{if(G&&G.score>0&&!G.rewarded){G.rewarded=true;rewardGame(curGame,G.score)}}catch(e){}if(G?.vs&&!G.over)G.link?.send({k:'bye'});if(MATCH)endMatch();if(curTarget?.obj)curTarget.obj.userData.busy=false;
  me.mode='walk';me.pose='';document.body.classList.remove('busy');$('cab').hidden=true;G=null;me.emote='';if(me.slot){leaveStation()}me.y=groundAt(me.x,me.z,me.y+1);sendPresence(true)}
 $('cabx').onclick=closeGame;
 function gameTick(dt){if(!G||me.mode!=='cab')return;G.t+=dt;if(G.cd>0){G.cd-=dt;if(Math.ceil(G.cd)!==Math.ceil(G.cd+dt)&&G.cd>0)sfx('beep');if(G.cd<=0)sfx('go')}else G.update(dt);G.draw(gx);

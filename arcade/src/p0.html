@@ -311,6 +311,30 @@ body.chatting #feed .m.gone{opacity:1}
 .adm-ph{display:flex;align-items:center;gap:14px}.adm-ph .pf{width:64px;height:64px}.adm-ph small{color:var(--dim);font:700 12.5px var(--txt)}
 .rep{padding:14px;border-radius:16px;background:rgba(255,255,255,.04);display:flex;flex-direction:column;gap:8px;align-items:flex-start;color:var(--ink)}.rep .rh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.rep .rh small{color:var(--dim)}.rep p{margin:0;font:500 14.5px/1.6 var(--txt);white-space:pre-wrap;color:var(--ink2)}.rep .ctx{font:600 11.5px var(--txt);color:var(--dim)}
 @media (max-width:760px){.adm{grid-template-columns:1fr;grid-template-rows:auto 1fr;height:calc(100dvh - 20px)}#admin{padding:10px}.adm aside{padding:12px;gap:8px}#adm-nav{flex-direction:row;overflow-x:auto}#adm-nav button{white-space:nowrap;padding:8px 10px}#adm-nav button span{font-size:13px}.adm-stats{grid-template-columns:1fr 1fr}#adm-main{padding:16px}}
+/* ---- snack bar ---- */
+#shopq{left:50%;bottom:calc(var(--sb) + 84px);transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:10px 12px 10px 14px;border-radius:20px;z-index:12}
+#shopq b{display:block;font:800 16px var(--txt)}#shopq small{font:700 12.5px var(--txt);color:var(--dim)}
+.si-ic{font-size:26px;line-height:1}
+#shopm{position:fixed;inset:0;z-index:43;display:grid;place-items:center;padding:16px;background:rgba(6,3,18,.35)}
+.shopb{width:min(520px,100%);align-items:stretch;text-align:left;gap:12px}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.sitem{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);text-align:left;transition:transform .1s,background .15s}
+.sitem:hover:not(:disabled){background:rgba(255,140,196,.14);transform:translateY(-2px)}.sitem:disabled{opacity:.45}
+.sitem b{flex:1;font:800 14.5px var(--txt)}.si-p{display:inline-flex;align-items:center;gap:4px;font:800 14px var(--disp);color:var(--gold)}
+@media (max-width:560px){.sgrid{grid-template-columns:1fr}}
+/* ---- photo booth ---- */
+#b-bar{left:50%;bottom:var(--sb);transform:translateX(-50%);display:flex;align-items:center;gap:16px;padding:12px 14px;border-radius:24px;z-index:41;flex-wrap:wrap;justify-content:center;width:max-content;max-width:calc(100vw - 28px);box-sizing:border-box}
+.bgrp{display:flex;flex-direction:column;gap:6px}.bgrp small{font:800 11.5px var(--txt);color:var(--dim)}
+#b-poses{display:flex;gap:6px}.bpose{width:42px;height:42px;border-radius:12px;font-size:22px;background:rgba(255,255,255,.06)}.bpose[aria-pressed=true]{box-shadow:inset 0 0 0 2.5px var(--pink);background:rgba(255,140,196,.16)}
+#b-count{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);z-index:41;font:800 180px/1 var(--brand);color:#fff;text-shadow:0 0 40px var(--pink),0 8px 0 var(--pinkL);pointer-events:none}
+#b-count.pop{animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+#b-flash{position:fixed;inset:0;z-index:42;background:#fff;opacity:0;pointer-events:none}#b-flash.on{animation:flash .6s ease-out}@keyframes flash{0%{opacity:.95}100%{opacity:0}}
+#b-res{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:16px;background:rgba(6,3,18,.6);overflow-y:auto}
+#b-res .dlg-b{width:min(380px,100%)}#b-img{width:100%;max-height:62dvh;object-fit:contain;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#tvnow b{display:block;font:800 14.5px var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#tvnow small{font:700 12px var(--txt);color:var(--dim)}
+#tvql{display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto}
+.tvi{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:12px;background:rgba(255,255,255,.04)}.tvi .n{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:#3a2b70;font:800 13px var(--disp)}.tvi:first-child .n{background:var(--pink)}
+.tvi .tt{flex:1;min-width:0}.tvi b{display:block;font:800 13.5px var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tvi small{font:700 11.5px var(--txt);color:var(--dim)}.tvi .ib{width:30px;height:30px}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -746,6 +770,12 @@ summary::-webkit-details-marker{display:none}
 <div id="docm" hidden><div class="pnl docm-b"><button class="ib" id="docm-x" aria-label="關閉"><svg class="i"><use href="#i-close"/></svg></button><div id="docm-b" class="pg doc"></div></div></div>
 <div id="tut" hidden><div id="tut-ring" hidden></div><div class="pnl" id="tut-card" role="dialog" aria-live="polite"><div class="tut-h"><span class="eyebrow sm">新手教學 <b id="tut-n"></b></span><button class="cb ghost sm" id="tut-skip">略過</button></div><h3 id="tut-t"></h3><p id="tut-d"></p><div class="tut-f"><span id="tut-dots"></span><button class="cb ghost sm" id="tut-prev">上一步</button><button class="cb pink sm" id="tut-next">下一步</button></div></div></div>
 <div id="admin" hidden><div class="adm" role="dialog" aria-modal="true" aria-label="AVÉRA 後台"><aside><div class="adm-brand"><span class="wm">AV<em>É</em>RA</span><small>後台 · <b id="adm-role"></b></small></div><nav id="adm-nav"></nav></aside><main id="adm-main"></main><button class="ib" id="adm-x" aria-label="關閉後台"><svg class="i"><use href="#i-close"/></svg></button></div></div>
+<div class="fx pnl h" id="shopq" hidden><span class="si-ic">🍿</span><div><b id="shopq-pos">排隊中</b><small id="shopq-n"></small></div><button class="cb ghost sm" id="shopq-x">離開隊伍</button></div>
+<div id="shopm" hidden><div class="pnl dlg-b shopb" role="dialog" aria-modal="true" aria-label="點心吧菜單"><div class="mh" style="width:100%"><b>AVÉRA 點心吧</b><span class="coinchip"><svg class="i"><use href="#i-coin"/></svg><span id="shopm-c">0</span></span></div>
+ <p class="note" style="margin:0">輪到你了！<b id="shopm-t">25</b> 秒內選好要買的東西。</p><div class="sgrid" id="shopm-l"></div><button class="cb ghost wide" id="shopm-x">不買了，離開隊伍</button></div></div>
+<div id="booth" hidden><div class="fx pnl" id="b-bar"><div class="bgrp"><small>相框</small><div class="thms" id="b-frames"></div></div><div class="bgrp"><small>第一張的姿勢</small><div id="b-poses"></div></div><button class="cb pink" id="b-go"><svg class="i"><use href="#i-camera"/></svg><span>開始拍（4 張）</span></button><button class="cb ghost" id="b-x"><svg class="i"><use href="#i-exit"/></svg><span>離開</span></button></div>
+ <div id="b-count" hidden>3</div><div id="b-flash"></div>
+ <div id="b-res" hidden><div class="pnl dlg-b"><h3>拍好了！</h3><img id="b-img" alt="拍貼照片"><div class="dlg-btns"><a class="cb pink" id="b-dl" download="avera-photo.png"><svg class="i"><use href="#i-arrow"/></svg><span>下載</span></a><button class="cb ghost" id="b-again">再拍一次</button><button class="cb ghost" id="b-done">離開</button></div></div></div></div>
 <div id="dlg" hidden><div class="pnl dlg-b" role="dialog" aria-modal="true"><div class="dlg-ic" id="dlg-ic"></div><h3 id="dlg-t"></h3><p id="dlg-p"></p><div id="dlg-x"></div><div class="dlg-btns" id="dlg-btns"></div></div></div>
 
 <div class="fx h" id="tl">
@@ -815,9 +845,11 @@ summary::-webkit-details-marker{display:none}
  <div id="tvbody">
   <div id="tvwrap"><div id="ytp"></div><div id="tvempty">貼上 YouTube 連結，所有人會一起看同一支影片</div></div>
   <div id="tvnow">還沒有影片</div>
-  <div class="tvrow"><button class="cb ghost" id="tv-play" disabled><svg class="i"><use href="#i-playpause"/></svg>一起播放／暫停</button><button class="cb ghost" id="tv-sync" disabled><svg class="i"><use href="#i-sync"/></svg>同步我的進度</button></div>
-  <form id="tvform"><input id="tvq" placeholder="貼上 YouTube 連結，或輸入關鍵字" autocomplete="off"><button id="tvgo" class="cb pink">播放</button></form>
+  <div class="tvrow"><button class="cb ghost sm" id="tv-play" disabled><svg class="i sm"><use href="#i-playpause"/></svg>播放／暫停</button><button class="cb ghost sm" id="tv-skip" disabled><svg class="i sm"><use href="#i-right"/></svg><span>跳過</span></button><button class="cb ghost sm" id="tv-sync"><svg class="i sm"><use href="#i-sync"/></svg>對齊進度</button></div>
+  <div class="note" id="tvlock" hidden>管理員暫時鎖定了點歌</div>
+  <form id="tvform"><input id="tvq" placeholder="貼上 YouTube 連結，或輸入關鍵字" autocomplete="off"><button id="tvgo" class="cb pink">點播</button></form>
   <div id="tvres"></div>
+  <div class="sec"><svg class="i sm"><use href="#i-clock"/></svg><span>待播清單（大家輪流）</span></div><div id="tvql"></div>
  </div>
 </div>
 

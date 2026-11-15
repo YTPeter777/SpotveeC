@@ -228,10 +228,23 @@ function kiddieRide(x,z,kind){const g=new THREE.Group();const base=new THREE.Mes
  else{const m=phys('#62c9ff');const b=new THREE.Mesh(RB(.8,.4,1.3,.18),m);b.position.y=.4;const cab=new THREE.Mesh(RB(.7,.35,.6,.15),M.glass);cab.position.set(0,.75,-.1);const wh=[];[[-.42,.4],[.42,.4],[-.42,-.4],[.42,-.4]].forEach(([a,c])=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.1,16),std('#222',.6));w.rotation.z=Math.PI/2;w.position.set(a,.2,c);body.add(w)});const l=new THREE.Mesh(new THREE.SphereGeometry(.07,10,8),glow('#ffd864',2));l.position.set(.25,.45,.66);const l2=l.clone();l2.position.x=-.25;body.add(b,cab,l,l2)}
  put(g,x,0,z);solid(base,0,.05);anims.push(t=>{const k=g.userData.ride?1:.15;body.rotation.x=Math.sin(t*3)*.12*k;body.position.y=.3+Math.abs(Math.sin(t*3))*.05*k});
  targets.push({type:'ride',x:x+1.1,z,f:0,y:1.9,face:-Math.PI/2,label:'騎上去搖一搖',obj:g,seat:{x,z,y:kind==='horse'?.95:.75,face:0}})}
-function photoBooth(x,z){const g=new THREE.Group();const b=new THREE.Mesh(RB(1.6,2.3,1.6,.08),phys('#ad93ff'));b.position.y=1.15;const cur=new THREE.Mesh(new THREE.PlaneGeometry(1,1.7,8,1),new THREE.MeshStandardMaterial({color:'#ff6fb1',roughness:.9,side:THREE.DoubleSide}));
- const pos=cur.geometry.attributes.position;for(let i=0;i<pos.count;i++)pos.setZ(i,Math.sin(pos.getX(i)*18)*.03);cur.geometry.computeVertexNormals();cur.position.set(.81,1.05,0);cur.rotation.y=Math.PI/2;
- const sg=new THREE.Mesh(new THREE.PlaneGeometry(1.4,.35),new THREE.MeshBasicMaterial({map:signTex('PHOTO','#ffd864'),transparent:true,toneMapped:false}));sg.position.set(.81,2.1,0);sg.rotation.y=Math.PI/2;g.add(b,cur,sg);put(g,x,0,z);solid(b,0,.03);camBlock.push(b);
- targets.push({type:'photo',x:x+1.4,z,f:0,y:2.4,face:-Math.PI/2,label:'拍一張拍貼'})}
+// walk-in photo booth: open front, bench at the back, camera unit with ring light facing the bench
+const BOOTH={x:0,z:0,slots:[-.6,-.06,.48]};
+function photoBooth(x,z){BOOTH.x=x;BOOTH.z=z;const g=new THREE.Group();const shell=phys('#7d5cff',{clearcoat:1});const inner=std('#2a1d55',.8);
+ const bd=textTex(512,512,(c,w,h)=>{const gr=c.createLinearGradient(0,0,w,h);gr.addColorStop(0,'#ff8cc4');gr.addColorStop(1,'#8d6bff');c.fillStyle=gr;c.fillRect(0,0,w,h);for(let i=0;i<40;i++){c.fillStyle=`rgba(255,255,255,${.15+rnd()*.35})`;star(c,rnd()*w,rnd()*h,6+rnd()*14,4)}drawWordmark(c,w/2,h*.2,64,{flat:'#ffffff',glow:false})});
+ const wall=(w,h,d,px,py,pz,mat)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(px,py,pz);g.add(m);return m};
+ const back=wall(.08,2.4,1.84,-.88,1.2,0,shell),wl=wall(1.84,2.4,.08,0,1.2,-.88,shell),wr=wall(1.84,2.4,.08,0,1.2,.88,shell);wall(1.84,.1,1.84,0,2.45,0,shell);
+ const bdrop=new THREE.Mesh(new THREE.PlaneGeometry(1.7,2.2),new THREE.MeshStandardMaterial({map:bd,roughness:.8}));bdrop.position.set(0,1.15,-.835);g.add(bdrop);
+ const bench=new THREE.Mesh(RB(1.5,.45,.4,.08),fabric('#ff6fb1'));bench.position.set(-.05,.225,-.62);g.add(bench);
+ const unit=new THREE.Mesh(RB(.7,.9,.12,.05),std('#121022',.3,.5));unit.position.set(-.05,1.3,.79);g.add(unit);
+ const lens=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,.06,24),M.chrome);lens.rotation.x=Math.PI/2;lens.position.set(-.05,1.55,.72);g.add(lens);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(.17,.02,8,40),glow('#ffffff',3));ring.position.set(-.05,1.55,.72);g.add(ring);
+ const scr=new THREE.Mesh(new THREE.PlaneGeometry(.5,.32),new THREE.MeshBasicMaterial({map:textTex(256,160,(c,w,h)=>{c.fillStyle='#160f38';c.fillRect(0,0,w,h);c.fillStyle='#ffd27a';c.font='800 34px "Noto Sans TC",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('看鏡頭 ✦',w/2,h*.42);c.fillStyle='#fff';c.font='700 20px "Unbounded",sans-serif';c.fillText('AVÉRA PHOTO',w/2,h*.78)}),toneMapped:false}));scr.position.set(-.05,1.12,.725);scr.rotation.y=Math.PI;g.add(scr);
+ const cur=new THREE.Mesh(new THREE.PlaneGeometry(.9,2.1,10,1),new THREE.MeshStandardMaterial({color:'#ff6fb1',roughness:.9,side:THREE.DoubleSide}));const pos=cur.geometry.attributes.position;for(let i=0;i<pos.count;i++)pos.setZ(i,Math.sin(pos.getX(i)*20)*.035);cur.geometry.computeVertexNormals();cur.position.set(.9,1.12,.46);cur.rotation.y=Math.PI/2;g.add(cur);const cur2=cur.clone();cur2.position.set(.9,1.12,-.42);g.add(cur2);
+ const sg=new THREE.Mesh(new THREE.PlaneGeometry(1.7,.36),new THREE.MeshBasicMaterial({map:signTex('PHOTO','#ffd864','AVÉRA 拍貼機'),transparent:true,toneMapped:false}));sg.position.set(.93,2.62,0);sg.rotation.y=Math.PI/2;g.add(sg);
+ const strip=new THREE.Mesh(new THREE.PlaneGeometry(.32,1),new THREE.MeshBasicMaterial({map:bd}));strip.position.set(.25,1.4,.925);g.add(strip);
+ g.scale.set(1.22,1,1.22);put(g,x,0,z);for(const w of [back,wl,wr]){solid(w,0,.02);camBlock.push(w)}
+ targets.push({type:'photo',x:x+1.75,z,f:0,y:2.6,face:-Math.PI/2,label:'走進拍貼機'})}
 function lockers(x,z,n){const g=[],d=[];for(let i=0;i<n;i++){g.push(tg(RB(.5,1.9,.5,.03),0,.95,i*.52));d.push(tg(new THREE.BoxGeometry(.04,.03,.12),.26,1.2,i*.52));d.push(tg(new THREE.BoxGeometry(.01,.4,.3),.255,1.55,i*.52))}
  const m=merged(g,phys(['#ff9cc9','#7fd9ff'][0])),m2=merged(d,M.chrome);const grp=new THREE.Group();grp.add(m,m2);put(grp,x,0,z);solid(grp,0,.02)}
 
@@ -270,7 +283,7 @@ lockers(W.x0+.26,14.4,6);
   for(let i=0;i<24;i++){const a=i/24*Math.PI*2;g.save();g.translate(512+Math.cos(a)*463,512+Math.sin(a)*463);g.rotate(a);g.fillStyle='#c9a35a';g.fillRect(-3,-9,6,18);g.restore()}
   g.fillStyle='#ffd27a';star(g,512,330,70,4);drawWordmark(g,512,520,150,{blur:.12});g.fillStyle='#e9dcff';g.font='700 46px "Noto Sans TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('Q 版 3D 遊戲場',512,680);g.font='700 30px "Unbounded",sans-serif';g.fillStyle='#c9a35a';g.fillText('EST. 2026',512,760)});
  const m=new THREE.Mesh(new THREE.PlaneGeometry(4.2,4.2),new THREE.MeshStandardMaterial({map:logo,transparent:true,roughness:.4,emissive:'#ffffff',emissiveMap:logo,emissiveIntensity:.25}));m.rotation.x=-Math.PI/2;put(m,0,.007,7.2,{cast:false})}
-kiddieRide(5.4,8.2,'horse');kiddieRide(5.4,11.4,'car');photoBooth(-18.95,1.0);
+kiddieRide(5.4,8.2,'horse');kiddieRide(5.4,11.4,'car');photoBooth(-18.85,1.0);
 // snack bar
 {const g=new THREE.Group();const c=new THREE.Mesh(RB(1,1.05,4.4,.1),phys('#ff9a5c'));c.position.y=.525;const top=new THREE.Mesh(RB(1.25,.08,4.6,.04),M.white);top.position.y=1.09;const st=new THREE.Mesh(new THREE.BoxGeometry(.05,.05,4.4),glow('#ffd864',2.2));st.position.set(-.52,.2,0);g.add(c,top,st);
  const pop=new THREE.Group();const pb=new THREE.Mesh(RB(.55,.6,.45,.04),M.glass);pb.position.y=.3;const pr=new THREE.Mesh(RB(.6,.12,.5,.03),phys('#c8102e'));pr.position.y=.66;const pf=new THREE.Mesh(RB(.6,.06,.5,.03),phys('#c8102e'));pf.position.y=.03;pop.add(pb,pr,pf);

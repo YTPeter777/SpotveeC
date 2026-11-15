@@ -28,11 +28,13 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
   if(near){const s=toScreen(near.px??near.x,near.py??near.y,near.pz??near.z);if(s){$('prompt').hidden=false;const lb=targetLabel(near);if($('p-t').textContent!==lb)$('p-t').textContent=lb;const x=THREE.MathUtils.clamp(s[0],120,innerWidth-120),y=THREE.MathUtils.clamp(s[1],110,innerHeight-130);$('prompt').style.transform=`translate(${x.toFixed(1)}px,${(y+Math.sin(t*4)*3).toFixed(1)}px) translate(-50%,-100%)`}else $('prompt').hidden=true}else $('prompt').hidden=true;
   camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt);arrow.visible=false}
  else if(me.mode==='bowl'){$('prompt').hidden=true;laneCamera(dt,t)}
+ else if(me.mode==='booth'){$('prompt').hidden=true;boothCam()}
+ else if(me.mode==='queue'){$('prompt').hidden=true;$('a-act').hidden=true;updShop();camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt)}
  else if(me.mode==='site'){siteCam(t,dt)}
  else if(me.mode==='preview'){const a=Math.sin(t*.35)*.45;camT.set(me.x,.72,me.z);camera.position.set(me.x+Math.sin(a)*2.9,1.15,me.z+Math.cos(a)*2.9);camera.lookAt(camT);
   const wide=innerWidth>760;camera.setViewOffset(innerWidth,innerHeight,wide?-innerWidth*.2:0,wide?0:innerHeight*.26,innerWidth,innerHeight);myAv.rotation.y=Math.sin(t*.6)*.25}
  else{me.speed=0;camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt)}
- if(me.mode==='walk'){me.vx=(me.x-ox)/Math.max(dt,1e-3);me.vz=(me.z-oz)/Math.max(dt,1e-3);if(Math.hypot(me.vx,me.vz)<.05)me.vx=me.vz=0}else{me.vx=me.vz=0;if(me.mode!=='preview')me.speed=0}
+ if(me.mode==='walk'){me.vx=(me.x-ox)/Math.max(dt,1e-3);me.vz=(me.z-oz)/Math.max(dt,1e-3);if(Math.hypot(me.vx,me.vz)<.05)me.vx=me.vz=0}else{me.vx=me.vz=0;if(me.mode!=='preview'&&me.mode!=='queue')me.speed=0}
  laneTick(dt,t);
  myAv.position.set(me.x,me.y,me.z);animAvatar(myAv,t,dt,me.speed,me.emote,me.et,me.air,me.talk,me.pose);
  if(me.mode!=='preview'){placeTag(myTag,myAv,myName,myBubble,t,me.talk,PARTY.id&&partyMates().length)}else myTag.hidden=true;
