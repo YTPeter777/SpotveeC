@@ -74,7 +74,7 @@ $('rf-go').onclick=async()=>{const o={name:$('rf-name').value,cap:+$('rf-cap').v
  $('roomf').hidden=true;if(o.perm){notify({tone:'ok',text:'已建立官方包廂'});renderLobby();return}const room=r.room;if(o.pw)ROOM.pwCache=o.pw;tryJoin(room.id,o.pw||null)};
 
 // ---------- joining ----------
-async function ensureSession(){if(APP.entered)return true;const r=await enterGame();if(r.error){gate(r);return false}APP.entered=true;if(ACC.daily)notify({tone:'ok',icon:'gift',title:'每日登入獎勵',text:`獲得 ${ACC.daily} 枚 AVÉRA 代幣（共 ${ACC.coins}）`,ms:6000});return true}
+async function ensureSession(){if(APP.entered)return true;const r=await enterGame();if(r.error){gate(r);return false}APP.entered=true;logLogin();if(ACC.daily)notify({tone:'ok',icon:'gift',title:'每日登入獎勵',text:`獲得 ${ACC.daily} 枚 AVÉRA 代幣（共 ${ACC.coins}）`,ms:6000});return true}
 async function tryJoin(id,pw,hint){if(!ACC.exists){APP.pendingRoom=id;openCreator();return}if(!(await ensureSession()))return;
  if(id==='main'){enterRoom(MAIN_ROOM(),false);return}
  const r=await joinRoom(id,pw);
@@ -143,7 +143,8 @@ onBackEvent=ev=>{const d=ev.data||{};switch(ev.op){
  case 'config':loadProfile();break;
  case 'tv':onAdminTV?.(d.op);break}};
 onProfile=()=>{applyMyProfile();staffUI()};
-onConfig=()=>{if(ACC.config.maintenance&&!isStaff()&&ROOM.id)gate({error:'maintenance',msg:ACC.config.maint_msg});if(!ROOM.id||ROOM.id==='main')applyTheme(ROOM.id==='main'?ACC.config.theme||'neon':ROOM.theme)};
+onConfig=()=>{const cv=ACC.config.cachev;if(cv&&store.get('cachev',0)!==cv){const was=store.get('cachev',0);store.set('cachev',cv);if(was){const keep=['av-secret','na3-lid','na3-tut2','na3-look','na3-nick','na3-cachev'];try{for(const k of Object.keys(localStorage))if(!keep.includes(k)&&!k.startsWith('avdb:'))localStorage.removeItem(k)}catch(e){}try{caches?.keys().then(ks=>ks.forEach(k=>caches.delete(k)))}catch(e){}notify({tone:'warn',icon:'sync',text:'管理員更新了 AVÉRA，正在重新載入…',ms:3000});setTimeout(()=>location.reload(),1800);return}}
+ featureUI();if(ACC.config.maintenance&&!isStaff()&&ROOM.id)gate({error:'maintenance',msg:ACC.config.maint_msg});if(!ROOM.id||ROOM.id==='main')applyTheme(ROOM.id==='main'?ACC.config.theme||'neon':ROOM.theme)};
 function applyMyProfile(){if(!ACC.exists)return;const lk=lookKey(ACC.look||look),changed=lk!==lookKey(look)||myName!==ACC.name;Object.assign(look,ACC.look||{});if(ROOM.id){myName=ACC.name;$('me-name').textContent=myName}
  if(changed){const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;if(me.mode==='site')myAv.visible=false;lastInfoKey='';pushInfo(true)}applyEquip(myAv,ACC.equip,isStaff());setProp(myAv,me.prop)}
 let gated=false;async function gate(r){if(gated)return;gated=true;if(ROOM.id){NET.emit('rm',{t:'bye'});disconnectNet();roomBeatStop();ROOM.id=null}
@@ -200,3 +201,5 @@ $('contact-f').addEventListener('submit',async e=>{e.preventDefault();const body
  const r=await sendReport($('cf-kind').value,$('cf-target').value.trim(),body,{from:'website',ua:navigator.userAgent.slice(0,120)});
  if(r.ok){$('cf-body').value='';$('cf-target').value='';$('cf-cnt').textContent='0 / 1000';dialog({icon:'check',title:'已送出',text:'謝謝你！管理員會在後台查看並處理。',color:'var(--mint)'})}else notify({tone:'err',text:{rate:'送出太頻繁了，請一小時後再試',length:'內容太短或太長',net:'連線失敗，請稍後再試'}[r.error]||'送出失敗'})});
 $('cf-body').oninput=()=>$('cf-cnt').textContent=$('cf-body').value.length+' / 1000';
+
+function featureUI(){$('b-tv').hidden=!featureOn('tv');$('a-chat').hidden=!featureOn('chat');$('a-mic').hidden=!featureOn('voice');$('lb-new').hidden=!featureOn('rooms');if(!featureOn('chat')&&!$('chatbar').hidden)closeChat()}

@@ -148,7 +148,8 @@ function renderPeople(){updateMeBar();const w=$('people');if(w.hidden)return;w.r
  sec('users',`在線 ${peers.size+1} 人`);
  row(myName+'（你）',look,statusText(me.mode,me.y,myLane,curGame),net.self,net.voice,me.talk,VOICE.joined,null,PARTY.id&&mates.length);
  for(const p of peers.values()){if(!p.look)continue;const mate=!!(PARTY.id&&p.pt===PARTY.id);let btn=null;if(!mate){btn=document.createElement('button');btn.className='cb pink sm';btn.innerHTML='<svg class="i sm"><use href="#i-userplus"/></svg>組隊';btn.onclick=()=>inviteParty(p.id)}
-  row(p.name,p.look,statusText(p.act,p.cur.y,p.lane,p.game),p.ping,p.vlat,p.talk,p.vc,btn,mate)}
+  const wrap=document.createElement('span');wrap.className='rbtns';if(btn)wrap.append(btn);const rb=document.createElement('button');rb.className='ib rep-p';rb.title='檢舉玩家行為';rb.setAttribute('aria-label','檢舉 '+p.name);rb.innerHTML='<svg class="i sm"><use href="#i-flagr"/></svg>';rb.onclick=()=>openReport('player',p.name,'',{from:p.pid});wrap.append(rb);
+  row(p.name,p.look,statusText(p.act,p.cur.y,p.lane,p.game),p.ping,p.vlat,p.talk,p.vc,wrap,mate)}
  if(!peers.size){const e=document.createElement('div');e.className='empty';e.textContent=!NET.ok&&NET.mode!=='local'?(IN_CLAUDE?'分享這個頁面給朋友，大家同時打開就能一起玩。':'正在連線多人伺服器…'):'現在只有你在這裡。把網址傳給朋友，一起來玩吧！';w.append(e)}}
 function updateMeBar(){const v=net.self;$('me-bars').className='sig '+lvlOf(v);$('me-net').className='netp '+qc(v);$('me-ms').textContent=v==null?(NET.ok?'…':'離線'):v+'ms';$('me-btn').title=`網路延遲 ${latTxt(v)}`;$('me-pf').classList.toggle('talk',!!me.talk);
  const mates=partyMates();const ps=$('party-strip');ps.hidden=!mates.length;if(mates.length){ps.replaceChildren();ps.insertAdjacentHTML('beforeend','<svg class="i f sm"><use href="#i-star"/></svg>');ps.append(pfEl(look,me.talk));for(const id of mates){const p=peers.get(id);if(p?.look)ps.append(pfEl(p.look,p.talk))}const t=document.createElement('span');t.textContent='隊伍';ps.append(t)}}

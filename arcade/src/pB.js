@@ -2,7 +2,7 @@
 // ================= photo booth: walk in, pose, 4-shot strip =================
 const BTH={slot:0,busy:false,frame:0,pose:'heart',fov:0,shots:[]};
 const BFRAMES=[['粉紅','#ff8cc4','#ffd1e8'],['星空','#5a3fd0','#a98bff'],['金色','#c9a35a','#fff1c4']],BPOSES=[['heart','💖'],['wave','👋'],['cheer','🙌'],['laugh','😆']];
-function enterBooth(){if(me.mode!=='walk')return;const taken=new Set();for(const p of peers.values()){if(!p.av)continue;const x=p.av.position.x,z=p.av.position.z;if(Math.abs(x-BOOTH.x)<.9&&Math.abs(z-BOOTH.z)<.9){let bi=0,bd=9;BOOTH.slots.forEach((s,i)=>{const d=Math.abs(x-(BOOTH.x+s));if(d<bd){bd=d;bi=i}});taken.add(bi)}}
+function enterBooth(){if(me.mode!=='walk')return;if(!featureOn('booth')){notify({tone:'warn',icon:'gear',text:'拍貼機目前維護中',ms:3000});return}const taken=new Set();for(const p of peers.values()){if(!p.av)continue;const x=p.av.position.x,z=p.av.position.z;if(Math.abs(x-BOOTH.x)<.9&&Math.abs(z-BOOTH.z)<.9){let bi=0,bd=9;BOOTH.slots.forEach((s,i)=>{const d=Math.abs(x-(BOOTH.x+s));if(d<bd){bd=d;bi=i}});taken.add(bi)}}
  const slot=[1,0,2].find(i=>!taken.has(i));if(slot==null){notify({tone:'warn',icon:'camera',text:'拍貼機裡已經擠滿了，等一下再來',ms:3000});return}
  BTH.slot=slot;me.mode='booth';me.booth=true;me.pose='sit';me.x=BOOTH.x+BOOTH.slots[slot];me.z=BOOTH.z-.74;me.y=.43;me.vy=0;myAv.rotation.y=0;BTH.fov=camera.fov;camera.fov=56;camera.updateProjectionMatrix();
  document.body.classList.add('busy');$('booth').hidden=false;$('b-res').hidden=true;renderBoothUI();sendPresence(true);sfx('pop')}

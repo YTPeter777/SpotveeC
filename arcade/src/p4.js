@@ -83,7 +83,7 @@ applyQuality();
 function openChat(){if(me.mode==='preview')return;$('chatbar').hidden=false;document.body.classList.add('chatting');$('unread').hidden=true;showFeed();$('msg').focus()}
 function closeChat(){$('chatbar').hidden=true;document.body.classList.remove('chatting');showFeed()}
 $('msg').addEventListener('blur',()=>setTimeout(()=>{if(!typing())closeChat()},150));
-$('chatbar').addEventListener('submit',e=>{e.preventDefault();const t=$('msg').value.trim();if(!t){$('msg').blur();return}if(ACC.mutedUntil>Date.now()){notify({key:'muted',tone:'warn',icon:'volx',text:`你目前被禁言，${Math.ceil((ACC.mutedUntil-Date.now())/6e4)} 分鐘後才能聊天`});return}$('msg').value='';if(isTouch)$('msg').blur();
+$('chatbar').addEventListener('submit',e=>{e.preventDefault();const t=$('msg').value.trim();if(!t){$('msg').blur();return}if(ACC.mutedUntil>Date.now()){notify({key:'muted',tone:'warn',icon:'volx',text:`你目前被禁言，${Math.ceil((ACC.mutedUntil-Date.now())/6e4)} 分鐘後才能聊天`});return}{const why=chatCheck(t);if(why){notify({key:'chatblock',tone:'warn',icon:'shield',text:why,ms:3500});return}}logChat(t);$('msg').value='';if(isTouch)$('msg').blur();
  feed('',myName,t,OUTFIT[look.cl],look);myBubble={text:t,t:clock.elapsedTime};NET.emit('chat',{t});sfx('click')});
 function showFeed(){const open=document.body.classList.contains('chatting');const ch=[...$('feed').children];ch.forEach((c,i)=>c.hidden=!open&&i<ch.length-4);if(open)$('feed').scrollTop=1e9}
 function feed(cls,name,text,color,lk){const d=document.createElement('div');d.className='m'+(cls?' '+cls:'');if(cls==='sys'||cls==='ann'){text=String(text).replace(/^[\p{Extended_Pictographic}️‍\s]+/u,'');d.innerHTML=`<svg class="i"><use href="#i-${cls==='ann'?'trophy':'info'}"/></svg>`}else if(lk)d.append(pfEl(lk));

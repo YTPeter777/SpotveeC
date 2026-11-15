@@ -378,6 +378,8 @@ a.cb{text-decoration:none}
 #admq{right:var(--sr);top:calc(var(--st) + 66px);width:min(320px,calc(100vw - 28px));box-sizing:border-box;padding:14px;z-index:12;display:flex;flex-direction:column;gap:4px;box-shadow:0 0 0 1.5px rgba(255,210,122,.45),0 12px 30px rgba(0,0,0,.4)}
 .tag.staff .nt{background:linear-gradient(100deg,#5a3d0a,#a07421);box-shadow:0 0 0 1.5px #ffd27a,0 0 14px rgba(255,210,122,.6)}.tag.staff .n::before{content:"🛡 ";}
 .tag[data-tag=gold_tag] .nt{background:linear-gradient(100deg,#7a5410,#c9a35a)}.tag[data-tag=vip_tag] .nt{background:linear-gradient(100deg,#7b2ff7,#f107a3)}.tag[data-tag=staff_tag] .nt{background:linear-gradient(100deg,#0f5132,#20c997)}
+.rep-b{margin-left:6px;width:22px;height:22px;border-radius:7px;display:inline-grid;place-items:center;color:var(--dim);background:rgba(255,255,255,.06);pointer-events:auto;opacity:.55;vertical-align:middle}.rep-b:hover{opacity:1;color:var(--red)}
+#feed .m{pointer-events:auto}.rbtns{display:flex;gap:4px;align-items:center}.rep-p{width:32px!important;height:32px!important;color:var(--dim)}.rep-p:hover{color:var(--red)}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -1956,7 +1958,7 @@ applyQuality();
 function openChat(){if(me.mode==='preview')return;$('chatbar').hidden=false;document.body.classList.add('chatting');$('unread').hidden=true;showFeed();$('msg').focus()}
 function closeChat(){$('chatbar').hidden=true;document.body.classList.remove('chatting');showFeed()}
 $('msg').addEventListener('blur',()=>setTimeout(()=>{if(!typing())closeChat()},150));
-$('chatbar').addEventListener('submit',e=>{e.preventDefault();const t=$('msg').value.trim();if(!t){$('msg').blur();return}if(ACC.mutedUntil>Date.now()){notify({key:'muted',tone:'warn',icon:'volx',text:`你目前被禁言，${Math.ceil((ACC.mutedUntil-Date.now())/6e4)} 分鐘後才能聊天`});return}$('msg').value='';if(isTouch)$('msg').blur();
+$('chatbar').addEventListener('submit',e=>{e.preventDefault();const t=$('msg').value.trim();if(!t){$('msg').blur();return}if(ACC.mutedUntil>Date.now()){notify({key:'muted',tone:'warn',icon:'volx',text:`你目前被禁言，${Math.ceil((ACC.mutedUntil-Date.now())/6e4)} 分鐘後才能聊天`});return}{const why=chatCheck(t);if(why){notify({key:'chatblock',tone:'warn',icon:'shield',text:why,ms:3500});return}}logChat(t);$('msg').value='';if(isTouch)$('msg').blur();
  feed('',myName,t,OUTFIT[look.cl],look);myBubble={text:t,t:clock.elapsedTime};NET.emit('chat',{t});sfx('click')});
 function showFeed(){const open=document.body.classList.contains('chatting');const ch=[...$('feed').children];ch.forEach((c,i)=>c.hidden=!open&&i<ch.length-4);if(open)$('feed').scrollTop=1e9}
 function feed(cls,name,text,color,lk){const d=document.createElement('div');d.className='m'+(cls?' '+cls:'');if(cls==='sys'||cls==='ann'){text=String(text).replace(/^[\p{Extended_Pictographic}️‍\s]+/u,'');d.innerHTML=`<svg class="i"><use href="#i-${cls==='ann'?'trophy':'info'}"/></svg>`}else if(lk)d.append(pfEl(lk));
@@ -2633,7 +2635,8 @@ function renderPeople(){updateMeBar();const w=$('people');if(w.hidden)return;w.r
  sec('users',`在線 ${peers.size+1} 人`);
  row(myName+'（你）',look,statusText(me.mode,me.y,myLane,curGame),net.self,net.voice,me.talk,VOICE.joined,null,PARTY.id&&mates.length);
  for(const p of peers.values()){if(!p.look)continue;const mate=!!(PARTY.id&&p.pt===PARTY.id);let btn=null;if(!mate){btn=document.createElement('button');btn.className='cb pink sm';btn.innerHTML='<svg class="i sm"><use href="#i-userplus"/></svg>組隊';btn.onclick=()=>inviteParty(p.id)}
-  row(p.name,p.look,statusText(p.act,p.cur.y,p.lane,p.game),p.ping,p.vlat,p.talk,p.vc,btn,mate)}
+  const wrap=document.createElement('span');wrap.className='rbtns';if(btn)wrap.append(btn);const rb=document.createElement('button');rb.className='ib rep-p';rb.title='檢舉玩家行為';rb.setAttribute('aria-label','檢舉 '+p.name);rb.innerHTML='<svg class="i sm"><use href="#i-flagr"/></svg>';rb.onclick=()=>openReport('player',p.name,'',{from:p.pid});wrap.append(rb);
+  row(p.name,p.look,statusText(p.act,p.cur.y,p.lane,p.game),p.ping,p.vlat,p.talk,p.vc,wrap,mate)}
  if(!peers.size){const e=document.createElement('div');e.className='empty';e.textContent=!NET.ok&&NET.mode!=='local'?(IN_CLAUDE?'分享這個頁面給朋友，大家同時打開就能一起玩。':'正在連線多人伺服器…'):'現在只有你在這裡。把網址傳給朋友，一起來玩吧！';w.append(e)}}
 function updateMeBar(){const v=net.self;$('me-bars').className='sig '+lvlOf(v);$('me-net').className='netp '+qc(v);$('me-ms').textContent=v==null?(NET.ok?'…':'離線'):v+'ms';$('me-btn').title=`網路延遲 ${latTxt(v)}`;$('me-pf').classList.toggle('talk',!!me.talk);
  const mates=partyMates();const ps=$('party-strip');ps.hidden=!mates.length;if(mates.length){ps.replaceChildren();ps.insertAdjacentHTML('beforeend','<svg class="i f sm"><use href="#i-star"/></svg>');ps.append(pfEl(look,me.talk));for(const id of mates){const p=peers.get(id);if(p?.look)ps.append(pfEl(p.look,p.talk))}const t=document.createElement('span');t.textContent='隊伍';ps.append(t)}}
@@ -2794,7 +2797,7 @@ const SHOP={spot0:{x:12.55,z:11},step:.85,dir:{x:-1,z:0},serving:false,menuOpen:
 me.sq=0;
 function shopLine(){const l=[];if(me.sq)l.push({id:MYID,sq:me.sq,me:true});for(const p of peers.values())if(p.sq)l.push({id:p.id,sq:p.sq,name:p.name});l.sort((a,b)=>a.sq-b.sq||(a.id<b.id?-1:1));return l}
 function shopSpot(i){return{x:SHOP.spot0.x+SHOP.dir.x*SHOP.step*i,z:SHOP.spot0.z+SHOP.dir.z*SHOP.step*i}}
-function joinShopQueue(){if(me.sq)return;me.sq=Date.now();me.mode='queue';pushInfo(true);sfx('click');$('shopq').hidden=false;updShop(true)}
+function joinShopQueue(){if(me.sq)return;if(!featureOn('shop')){notify({tone:'warn',icon:'gear',text:'點心吧目前維護中',ms:3000});return}me.sq=Date.now();me.mode='queue';pushInfo(true);sfx('click');$('shopq').hidden=false;updShop(true)}
 function leaveShopQueue(quiet){if(!me.sq)return;me.sq=0;SHOP.menuOpen=false;$('shopm').hidden=true;$('shopq').hidden=true;clearTimeout(SHOP.timer);if(me.mode==='queue')me.mode='walk';pushInfo(true);if(!quiet)notify({tone:'info',icon:'bag',text:'已離開點心吧的隊伍',ms:2500,quiet:true})}
 function updShop(force){if(!me.sq)return;const l=shopLine(),i=l.findIndex(x=>x.me);if(i<0)return;const s=shopSpot(i);
  // walk to my spot in line
@@ -2862,7 +2865,7 @@ $('b-lb').onclick=()=>$('lbp').hidden?openBoard():togglePop('lbp',false);$('lbp-
 // ================= photo booth: walk in, pose, 4-shot strip =================
 const BTH={slot:0,busy:false,frame:0,pose:'heart',fov:0,shots:[]};
 const BFRAMES=[['粉紅','#ff8cc4','#ffd1e8'],['星空','#5a3fd0','#a98bff'],['金色','#c9a35a','#fff1c4']],BPOSES=[['heart','💖'],['wave','👋'],['cheer','🙌'],['laugh','😆']];
-function enterBooth(){if(me.mode!=='walk')return;const taken=new Set();for(const p of peers.values()){if(!p.av)continue;const x=p.av.position.x,z=p.av.position.z;if(Math.abs(x-BOOTH.x)<.9&&Math.abs(z-BOOTH.z)<.9){let bi=0,bd=9;BOOTH.slots.forEach((s,i)=>{const d=Math.abs(x-(BOOTH.x+s));if(d<bd){bd=d;bi=i}});taken.add(bi)}}
+function enterBooth(){if(me.mode!=='walk')return;if(!featureOn('booth')){notify({tone:'warn',icon:'gear',text:'拍貼機目前維護中',ms:3000});return}const taken=new Set();for(const p of peers.values()){if(!p.av)continue;const x=p.av.position.x,z=p.av.position.z;if(Math.abs(x-BOOTH.x)<.9&&Math.abs(z-BOOTH.z)<.9){let bi=0,bd=9;BOOTH.slots.forEach((s,i)=>{const d=Math.abs(x-(BOOTH.x+s));if(d<bd){bd=d;bi=i}});taken.add(bi)}}
  const slot=[1,0,2].find(i=>!taken.has(i));if(slot==null){notify({tone:'warn',icon:'camera',text:'拍貼機裡已經擠滿了，等一下再來',ms:3000});return}
  BTH.slot=slot;me.mode='booth';me.booth=true;me.pose='sit';me.x=BOOTH.x+BOOTH.slots[slot];me.z=BOOTH.z-.74;me.y=.43;me.vy=0;myAv.rotation.y=0;BTH.fov=camera.fov;camera.fov=56;camera.updateProjectionMatrix();
  document.body.classList.add('busy');$('booth').hidden=false;$('b-res').hidden=true;renderBoothUI();sendPresence(true);sfx('pop')}
@@ -2993,11 +2996,11 @@ function renderAcct(){const w=$('st-acct');w.replaceChildren();w.append(profCard
  if(isStaff()){const a=document.createElement('button');a.className='cb lemon wide';a.innerHTML='<svg class="i"><use href="#i-shield"/></svg><span>開啟後台</span>';a.onclick=()=>{togglePop('menu',false);openAdmin()};w.append(a)}}
 document.querySelectorAll('[data-doc]').forEach(b=>b.onclick=()=>showDocModal(b.dataset.doc));
 // report form
-function openReport(kind,target){const f=$('repf');f.hidden=false;$('rp-kind').value=kind||'bug';$('repf-t').textContent=kind==='contact'?'聯絡我們':'回報問題';const s=$('rp-tgt');s.replaceChildren(new Option('（不指定）',''));for(const p of peers.values())if(p.look)s.append(new Option(p.name,p.name));if(target)s.value=target;$('rp-tgt-l').hidden=$('rp-kind').value!=='player';$('rp-body').value='';togglePop('menu',false)}
+let repCtx=null;function openReport(kind,target,body,ctx){repCtx=ctx||null;const f=$('repf');f.hidden=false;if(kind==='chat'&&![...$('rp-kind').options].some(o=>o.value==='chat'))$('rp-kind').add(new Option('檢舉聊天訊息','chat'),1);$('rp-kind').value=kind||'bug';$('repf-t').textContent=kind==='contact'?'聯絡我們':'回報問題';const s=$('rp-tgt');s.replaceChildren(new Option('（不指定）',''));for(const p of peers.values())if(p.look)s.append(new Option(p.name,p.name));if(target)s.value=target;$('rp-tgt-l').hidden=!['player','chat'].includes($('rp-kind').value);$('rp-body').value=body||'';togglePop('menu',false)}
 $('rp-kind').onchange=()=>$('rp-tgt-l').hidden=$('rp-kind').value!=='player';
 $('b-report').onclick=()=>openReport('bug');$('b-contact').onclick=()=>openReport('contact');$('repf-x').onclick=()=>$('repf').hidden=true;
 $('repf-f').addEventListener('submit',async e=>{e.preventDefault();const body=$('rp-body').value.trim();if(body.length<5){notify({tone:'warn',text:'內容至少 5 個字'});return}
- const r=await sendReport($('rp-kind').value,$('rp-tgt').value,body,{room:ROOM.id,roomName:ROOM.name,mode:me.mode,game:me.mode==='cab'?curGame:'',ping:net.self,fps:Math.round(NETH.fps),ua:navigator.userAgent.slice(0,120)});
+ const r=await sendReport($('rp-kind').value,$('rp-tgt').value,body,{...(repCtx||{}),room:ROOM.id,roomName:ROOM.name,mode:me.mode,game:me.mode==='cab'?curGame:'',ping:net.self,fps:Math.round(NETH.fps),ua:navigator.userAgent.slice(0,120)});
  if(r.ok){$('repf').hidden=true;notify({tone:'ok',title:'已送出',text:'謝謝你！管理員會在後台查看並處理。',ms:5000})}else notify({tone:'err',text:{rate:'送出太頻繁了，請一小時後再試',length:'內容太短或太長',net:'連線失敗'}[r.error]||'送出失敗'})});
 
 $('s-sens').value=Math.round(VIEW.sens*100);$('s-sens').oninput=()=>{VIEW.sens=$('s-sens').value/100;store.set('vsens',VIEW.sens)};
@@ -3025,12 +3028,12 @@ addEventListener('resize',()=>tutPlace());
 
 // ================= admin panel (後台) =================
 const ADM={tab:'home',busy:false};
-const ADM_TABS=[['home','chart','總覽',1],['players','users','玩家',1],['rooms','door','包廂',1],['reports','flagr','回報',1],['announce','megaphone','公告',1],['venue','palette','場館設定',2],['shop','bag','商店',2],['tv','tv','電視',1],['audit','clock','操作紀錄',2]];
+let ADM_TABS=[['home','chart','總覽',1],['players','users','玩家',1],['rooms','door','包廂',1],['reports','flagr','回報',1],['announce','megaphone','公告',1],['venue','palette','場館設定',2],['shop','bag','商店',2],['tv','tv','電視',1],['audit','clock','操作紀錄',2]];
 function openAdmin(){if(!isStaff()){notify({tone:'err',text:'沒有後台權限'});return}$('admin').hidden=false;$('adm-role').textContent=ROLE_NAME[ACC.role];const nav=$('adm-nav');nav.replaceChildren();
  for(const[k,ic,n,lv]of ADM_TABS){if(ROLE_RANK[ACC.role]<lv)continue;const b=document.createElement('button');b.dataset.k=k;b.innerHTML=`<svg class="i"><use href="#i-${ic}"/></svg><span>${n}</span>`;b.onclick=()=>admTab(k);nav.append(b)}admTab(ADM.tab)}
 $('adm-x').onclick=()=>$('admin').hidden=true;
-function admTab(k){ADM.tab=k;document.querySelectorAll('#adm-nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.k===k));const m=$('adm-main');m.replaceChildren();const h=document.createElement('h2');h.textContent=ADM_TABS.find(t=>t[0]===k)?.[2]||'';m.append(h);
- ({home:admHome,players:admPlayers,rooms:admRooms,reports:admReports,announce:admAnnounce,venue:admVenue,shop:admShop,tv:admTV,audit:admAudit}[k]||admHome)(m)}
+let admTab=function(k){ADM.tab=k;document.querySelectorAll('#adm-nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.k===k));const m=$('adm-main');m.replaceChildren();const h=document.createElement('h2');h.textContent=ADM_TABS.find(t=>t[0]===k)?.[2]||'';m.append(h);
+ ({home:admHome,players:admPlayers,rooms:admRooms,reports:admReports,announce:admAnnounce,venue:admVenue,shop:admShop,tv:admTV,audit:admAudit}[k]||admHome)(m)};
 const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
 const btn=(t,cls,fn,ic)=>{const b=el('button','cb sm '+(cls||'ghost'));b.innerHTML=ic?`<svg class="i sm"><use href="#i-${ic}"/></svg>`:'';b.append(t);b.onclick=fn;return b};
 async function admDo(op,a,okText){const r=await adminOp(op,a);if(r.error){notify({tone:'err',text:'操作失敗：'+({forbidden:'權限不足',rank:'無法對同級或更高權限的人操作',self:'不能對自己這樣做',net:'連線失敗',no_target:'找不到玩家'}[r.error]||r.error)});return null}if(okText)notify({tone:'ok',text:okText,ms:2500});return r}
@@ -3075,11 +3078,11 @@ async function admReports(m){const bar=el('div','adm-bar');let st='open';const t
    if(x.status==='open')c.append(btn('標記已處理','pink',async()=>{const note=await dialog({icon:'check',title:'標記已處理',input:{ph:'處理備註（選填）',max:300},btns:[{t:'取消'},{t:'完成',pri:true}]});if(note!=null&&await admDo('resolve',{rid:x.id??x.rid,status:'done',note},'已標記'))load()},'check'));l.append(c)}};load()}
 function admAnnounce(m){const c=el('div','adm-card');c.append(el('h3',null,'發送即時公告'),el('p','note','所有包廂裡的玩家都會立刻看到。'));const t=el('textarea','fld');t.maxLength=200;t.rows=3;t.placeholder='例如：今晚 9 點保齡球比賽，冠軍送金色皇冠！';c.append(t,btn('發送公告','pink',async()=>{if(!t.value.trim())return;if(await admDo('announce',{text:t.value.trim()},'公告已發送'))t.value=''},'megaphone'));m.append(c);
  if(ROLE_RANK[ACC.role]>=2){const d=el('div','adm-card');d.append(el('h3',null,'進場公告（MOTD）'),el('p','note','玩家每次進入包廂時顯示，留空就不顯示。'));const f=el('textarea','fld');f.maxLength=200;f.rows=2;f.value=ACC.config.motd||'';d.append(f,btn('儲存','pink',()=>admDo('config',{k:'motd',v:f.value.trim()},'已儲存'),'check'));m.append(d)}}
-function admVenue(m){const c=el('div','adm-card');c.append(el('h3',null,'燈光主題（官方大廳）'),el('p','note','切換整個場館的燈條、霓虹與照明顏色。包廂版主也可以在自己的包廂換主題。'));const tp=el('div','thms');c.append(tp);renderThemePick(tp,ACC.config.theme||'neon');
+let admVenue=function(m){const c=el('div','adm-card');c.append(el('h3',null,'燈光主題（官方大廳）'),el('p','note','切換整個場館的燈條、霓虹與照明顏色。包廂版主也可以在自己的包廂換主題。'));const tp=el('div','thms');c.append(tp);renderThemePick(tp,ACC.config.theme||'neon');
  c.append(btn('套用到官方大廳','pink',async()=>{const k=tp.dataset.v;if(await admDo('config',{k:'theme',v:k},'主題已更新')){ACC.config.theme=k;if(ROOM.id==='main'||!ROOM.id)applyTheme(k);if(ROOM.id&&ROOM.isOwner===false&&ROOM.perm)NET.emit('rm',{t:'theme',theme:k})}},'palette'),btn('只在這個包廂預覽','ghost',()=>applyTheme(tp.dataset.v),'sparkle'));m.append(c);
  const d=el('div','adm-card');d.append(el('h3',null,'人數上限（官方大廳）'));const cap=el('input','fld');cap.type='number';cap.min=2;cap.max=200;cap.value=ACC.config.capacity||40;cap.style.maxWidth='120px';d.append(cap,btn('儲存','pink',()=>admDo('config',{k:'capacity',v:Math.max(2,Math.min(200,+cap.value||40))},'已儲存'),'check'),el('p','note','超過上限的人會自動排隊。'));m.append(d);
  const e=el('div','adm-card');e.append(el('h3',null,'維護模式'),el('p','note','開啟後一般玩家無法進入，已在線上的會看到維護訊息。'));const msg=el('input','fld');msg.maxLength=120;msg.value=ACC.config.maint_msg||'AVÉRA 正在維護中，請稍後再回來。';const on=!!ACC.config.maintenance;
- e.append(msg,btn(on?'關閉維護模式':'開啟維護模式',on?'pink':'ghost',async()=>{await admDo('config',{k:'maint_msg',v:msg.value});const r=await admDo('config',{k:'maintenance',v:!on},on?'已關閉維護':'已開啟維護');if(r){ACC.config.maintenance=!on;admTab('venue')}},'gear'));m.append(e)}
+ e.append(msg,btn(on?'關閉維護模式':'開啟維護模式',on?'pink':'ghost',async()=>{await admDo('config',{k:'maint_msg',v:msg.value});const r=await admDo('config',{k:'maintenance',v:!on},on?'已關閉維護':'已開啟維護');if(r){ACC.config.maintenance=!on;admTab('venue')}},'gear'));m.append(e)};
 function admShop(m){const shop=JSON.parse(JSON.stringify(ACC.config.shop||DEFAULT_SHOP));const c=el('div','adm-card');c.append(el('h3',null,'點心吧菜單'),el('p','note','調整價格或暫停販售，儲存後所有玩家立即生效。'));const l=el('div','adm-list');
  for(const[k,it]of Object.entries(shop)){const r=el('div','arow');r.append(el('b','sname',it.n));const p=el('input','fld');p.type='number';p.min=0;p.max=999;p.value=it.p;p.style.maxWidth='90px';p.oninput=()=>it.p=Math.max(0,Math.min(999,+p.value|0));
   const t=el('button','tog');t.setAttribute('aria-pressed',!it.off);t.onclick=()=>{it.off=!it.off;t.setAttribute('aria-pressed',!it.off)};r.append(p,el('small',null,'代幣'),t);l.append(r)}
@@ -3088,6 +3091,26 @@ function admTV(m){const c=el('div','adm-card');c.append(el('h3',null,'放映室�
  r.append(btn('跳過目前影片','ghost',()=>admDo('tv',{op:'skip'},'已跳過'),'right'),btn('清空待播清單','ghost',()=>admDo('tv',{op:'clear'},'已清空'),'trash'),btn(ACC.config.tv_lock?'解除點歌鎖定':'鎖定點歌（只有管理員能點）','ghost',async()=>{const lock=!ACC.config.tv_lock;if(await admDo('tv',{op:lock?'lock':'unlock'},lock?'已鎖定':'已解除')){ACC.config.tv_lock=lock;admTab('tv')}},'lock'));c.append(r);m.append(c)}
 async function admAudit(m){const l=el('div','adm-list');m.append(l);l.textContent='讀取中…';const r=await adminOp('audit');l.replaceChildren();if(!r.ok){l.textContent='讀取失敗';return}if(!r.audit.length){l.textContent=BK.mode==='supa'?'沒有紀錄':'預覽版不保存操作紀錄（正式網站會保存）';return}
  for(const a of r.audit){const row=el('div','arow');row.append(el('small','tm',fmtT(a.at)),el('b',null,a.by_name||'—'),el('span',null,a.op),el('small','ctx',JSON.stringify(a.data||{}).slice(0,120)));l.append(row)}}
+// ---- logs, security, live room status, feature switches ----
+ADM_TABS.splice(4,0,['roomstat','signal','即時包廂',1],['chatlog','chat','聊天紀錄',1],['logins','user','登入紀錄',2],['security','alert','安全警示',2]);
+async function admLogs(kind){if(BK.mode==='supa'){const r=await rpc('avera_admin_logs',{p_secret:BK.secret,p_kind:kind});return r.rows||[]}
+ const col={chat:'chat',logins:'logins',rooms:'rstat',act:'act'}[kind];if(kind==='rooms'){const q=await BK.db.collection('rstat').get().catch(()=>({docs:[]}));return q.docs.map(d=>d.data()).filter(x=>Date.now()-x.t<120000)}
+ if(kind==='signups'){const q=await BK.db.collection('players').get().catch(()=>({docs:[]}));return q.docs.map(d=>({name:d.data().name,created_at:d.data().created,id:d.id})).sort((a,b)=>b.created_at-a.created_at).slice(0,100)}
+ if(kind==='flags'){const q=await BK.db.collection('reports').get().catch(()=>({docs:[]}));const out=[];for(const d of q.docs)for(const x of d.data().items||[])if(x.kind==='cheat')out.push({at:x.t,kind:'cheat',data:x.ctx,name:x.name});return out.sort((a,b)=>b.at-a.at)}
+ const q=await BK.db.collection(col).get().catch(()=>({docs:[]}));const out=[];for(const d of q.docs){const v=d.data();for(const x of v.items||[])out.push({...x,name:v.name,id:d.id,at:x.t})}return out.sort((a,b)=>b.at-a.at).slice(0,300)}
+const tbl=(m,rows,cols)=>{const l=el('div','adm-list');m.append(l);if(!rows.length){l.textContent='沒有資料';return}for(const r of rows){const row=el('div','arow');for(const[k,f]of cols){const v=f?f(r):r[k];row.append(el(k==='msg'||k==='dev'?'span':'small',k==='msg'||k==='dev'?'ctx':'tm',v==null?'—':String(v)))}l.append(row)}};
+async function admRoomstat(m){m.append(el('p','note','每 20 秒更新：各包廂的人數、正在播放的音樂與待播數量。'));const rows=await admLogs('rooms');const c=el('div','adm-stats');const s=el('div','stat');s.append(el('b',null,String(rows.length)),el('small',null,'目前開著的包廂'));c.append(s);m.append(c);
+ tbl(m,rows.map(r=>r.stat||r),[['name'],['count',r=>`${r.count}/${r.cap} 人`],['music',r=>r.music?`♪ ${r.music}（${r.by}）`:'沒有播放'],['queue',r=>`待播 ${r.queue}`],['t',r=>fmtT(r.t)]])}
+async function admChatlog(m){m.append(el('p','note','最近的聊天內容（含已被過濾的違規嘗試會另列在安全警示）。'));tbl(m,await admLogs('chat'),[['at',r=>fmtT(r.at)],['name'],['room',r=>r.rn||r.room||'—'],['msg'],['ip',r=>r.ip||'']])}
+async function admLogins(m){m.append(el('p','note','誰在什麼時候登入，使用什麼裝置。正式網站會記錄 IP。'));tbl(m,await admLogs('logins'),[['at',r=>fmtT(r.at)],['name'],['ip',r=>r.ip||'（預覽不記錄 IP）'],['dev',r=>{const d=r.dev||{};return`${d.plat||''} ${d.scr||''} ${d.gpu||''} ${d.net||''}`.trim()||d.ua||''}]])}
+async function admSecurity(m){m.append(el('h3',null,'外掛、連點、異常分數、檢舉濫用、後台入侵嘗試'));tbl(m,await admLogs('flags'),[['at',r=>fmtT(r.at)],['name',r=>r.name||'未知'],['kind'],['data',r=>JSON.stringify(r.data||{}).slice(0,140)],['ip',r=>r.ip||'']]);
+ m.append(el('h3',null,'最新註冊'));tbl(m,await admLogs('signups'),[['created_at',r=>fmtT(r.created_at)],['name'],['id',r=>String(r.id).slice(0,8)]])}
+const FEATURES=[['games','街機與小遊戲'],['bowling','保齡球'],['tv','放映室點歌'],['shop','點心吧'],['booth','拍貼機'],['chat','聊天室'],['voice','語音'],['rooms','建立新包廂']];
+const _admVenue=admVenue;admVenue=function(m){_admVenue(m);const c=el('div','adm-card');c.append(el('h3',null,'部分維護（關掉單一功能）'),el('p','note','關掉後一般玩家立刻無法使用，管理員不受影響。不需要重新整理。'));const f={...(ACC.config.features||{})};
+ for(const[k,n]of FEATURES){const r=el('div','mrow');r.append(el('span','grow',n));const t=el('button','tog');t.setAttribute('aria-pressed',f[k]!==false);t.onclick=()=>{f[k]=!(f[k]!==false);t.setAttribute('aria-pressed',f[k]!==false)};r.append(t);c.append(r)}
+ c.append(btn('套用','pink',async()=>{if(await admDo('config',{k:'features',v:f},'已更新功能開關'))ACC.config.features=f},'check'));m.append(c);
+ const k=el('div','adm-card');k.append(el('h3',null,'清除所有玩家的快取'),el('p','note','所有在線玩家會清掉本機快取並重新載入（帳號不會被登出）。用在更新版本或資料異常時。'));k.append(btn('清除全部快取','ghost',async()=>{const ok=await dialog({icon:'trash',title:'清除所有人的快取？',text:'在線玩家會立刻重新載入。',btns:[{t:'取消'},{t:'清除',pri:true,danger:true,v:true}]});if(ok)admDo('config',{k:'cachev',v:Date.now()},'已通知所有玩家清除快取')},'trash'));m.append(k)};
+const _admTab=admTab;admTab=function(k){if(['roomstat','chatlog','logins','security'].includes(k)){ADM.tab=k;document.querySelectorAll('#adm-nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.k===k));const m=$('adm-main');m.replaceChildren();m.append(el('h2',null,ADM_TABS.find(t=>t[0]===k)[2]));({roomstat:admRoomstat,chatlog:admChatlog,logins:admLogins,security:admSecurity}[k])(m);return}_admTab(k)};
 
 // ================= website, lobby & room flow =================
 const PAGES=['home','about','rooms','faq','contact','terms','privacy','rules'];
@@ -3164,7 +3187,7 @@ $('rf-go').onclick=async()=>{const o={name:$('rf-name').value,cap:+$('rf-cap').v
  $('roomf').hidden=true;if(o.perm){notify({tone:'ok',text:'已建立官方包廂'});renderLobby();return}const room=r.room;if(o.pw)ROOM.pwCache=o.pw;tryJoin(room.id,o.pw||null)};
 
 // ---------- joining ----------
-async function ensureSession(){if(APP.entered)return true;const r=await enterGame();if(r.error){gate(r);return false}APP.entered=true;if(ACC.daily)notify({tone:'ok',icon:'gift',title:'每日登入獎勵',text:`獲得 ${ACC.daily} 枚 AVÉRA 代幣（共 ${ACC.coins}）`,ms:6000});return true}
+async function ensureSession(){if(APP.entered)return true;const r=await enterGame();if(r.error){gate(r);return false}APP.entered=true;logLogin();if(ACC.daily)notify({tone:'ok',icon:'gift',title:'每日登入獎勵',text:`獲得 ${ACC.daily} 枚 AVÉRA 代幣（共 ${ACC.coins}）`,ms:6000});return true}
 async function tryJoin(id,pw,hint){if(!ACC.exists){APP.pendingRoom=id;openCreator();return}if(!(await ensureSession()))return;
  if(id==='main'){enterRoom(MAIN_ROOM(),false);return}
  const r=await joinRoom(id,pw);
@@ -3233,7 +3256,8 @@ onBackEvent=ev=>{const d=ev.data||{};switch(ev.op){
  case 'config':loadProfile();break;
  case 'tv':onAdminTV?.(d.op);break}};
 onProfile=()=>{applyMyProfile();staffUI()};
-onConfig=()=>{if(ACC.config.maintenance&&!isStaff()&&ROOM.id)gate({error:'maintenance',msg:ACC.config.maint_msg});if(!ROOM.id||ROOM.id==='main')applyTheme(ROOM.id==='main'?ACC.config.theme||'neon':ROOM.theme)};
+onConfig=()=>{const cv=ACC.config.cachev;if(cv&&store.get('cachev',0)!==cv){const was=store.get('cachev',0);store.set('cachev',cv);if(was){const keep=['av-secret','na3-lid','na3-tut2','na3-look','na3-nick','na3-cachev'];try{for(const k of Object.keys(localStorage))if(!keep.includes(k)&&!k.startsWith('avdb:'))localStorage.removeItem(k)}catch(e){}try{caches?.keys().then(ks=>ks.forEach(k=>caches.delete(k)))}catch(e){}notify({tone:'warn',icon:'sync',text:'管理員更新了 AVÉRA，正在重新載入…',ms:3000});setTimeout(()=>location.reload(),1800);return}}
+ featureUI();if(ACC.config.maintenance&&!isStaff()&&ROOM.id)gate({error:'maintenance',msg:ACC.config.maint_msg});if(!ROOM.id||ROOM.id==='main')applyTheme(ROOM.id==='main'?ACC.config.theme||'neon':ROOM.theme)};
 function applyMyProfile(){if(!ACC.exists)return;const lk=lookKey(ACC.look||look),changed=lk!==lookKey(look)||myName!==ACC.name;Object.assign(look,ACC.look||{});if(ROOM.id){myName=ACC.name;$('me-name').textContent=myName}
  if(changed){const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;if(me.mode==='site')myAv.visible=false;lastInfoKey='';pushInfo(true)}applyEquip(myAv,ACC.equip,isStaff());setProp(myAv,me.prop)}
 let gated=false;async function gate(r){if(gated)return;gated=true;if(ROOM.id){NET.emit('rm',{t:'bye'});disconnectNet();roomBeatStop();ROOM.id=null}
@@ -3291,6 +3315,8 @@ $('contact-f').addEventListener('submit',async e=>{e.preventDefault();const body
  if(r.ok){$('cf-body').value='';$('cf-target').value='';$('cf-cnt').textContent='0 / 1000';dialog({icon:'check',title:'已送出',text:'謝謝你！管理員會在後台查看並處理。',color:'var(--mint)'})}else notify({tone:'err',text:{rate:'送出太頻繁了，請一小時後再試',length:'內容太短或太長',net:'連線失敗，請稍後再試'}[r.error]||'送出失敗'})});
 $('cf-body').oninput=()=>$('cf-cnt').textContent=$('cf-body').value.length+' / 1000';
 
+function featureUI(){$('b-tv').hidden=!featureOn('tv');$('a-chat').hidden=!featureOn('chat');$('a-mic').hidden=!featureOn('voice');$('lb-new').hidden=!featureOn('rooms');if(!featureOn('chat')&&!$('chatbar').hidden)closeChat()}
+
 // ================= NPC greetings, now-playing chip, loading screen, performance panel =================
 const NPCSAY={clerk:['歡迎光臨 AVÉRA！','需要幫忙嗎？設定裡可以重看新手教學喔','每天登入都會送 1000 枚代幣！'],snack:['要來點什麼嗎？按 E 排隊點餐','今天的珍珠奶茶特別好喝！','爆米花剛爆好喔～'],shoes:['打保齡球前記得換鞋！','四條球道都開放中','組隊可以全隊輪流打喔'],dj:['一起跳舞吧！','想點歌？到 1F 放映室打開點歌平板']};
 const npcBub=new Map();
@@ -3313,6 +3339,33 @@ function perfTick(){if(!PERF.on)return;const now=performance.now();if(now-PERF.t
  $('perf').innerHTML=`<b>${Math.round(NETH.fps)}</b><small>FPS</small><span>畫質 ${{ultra:'極致',high:'高',low:'省電'}[QUAL]}</span><span>繪製 ${i.render.calls}</span><span>三角形 ${(i.render.triangles/1000).toFixed(0)}k</span><span>貼圖 ${i.memory.textures}</span>${m?`<span>記憶體 ${(m.usedJSHeapSize/1048576).toFixed(0)} MB</span>`:''}<span>延遲 ${net.self??'—'} ms</span><span>解析度 ×${renderer.getPixelRatio().toFixed(2)}</span>`}
 function setPerf(on){PERF.on=on;store.set('perf',on);$('perf').hidden=!on;$('t-perf')?.setAttribute('aria-pressed',on)}
 setPerf(PERF.on);$('t-perf').onclick=()=>setPerf(!PERF.on);
+
+// ================= chat safety, reports with device info, logs for admins =================
+const BADW=['幹你','幹妳','幹他','幹死','幹拎','靠北','靠腰','操你','操妳','他媽的','你媽的','媽的','雞掰','機掰','肏','屌你','賤人','婊子','白癡','智障','腦殘','去死','廢物','垃圾人','陰莖','陰道','性交','做愛','約炮','約砲','色情','裸照','口交','強姦','奶子','屁眼','打手槍','自慰','援交','18禁','成人片','a片','fuck','shit','bitch','cunt','dick','pussy','porn','nude','rape','slut','whore','asshole','motherfucker','nsfw','xxx'];
+const normC=t=>String(t).toLowerCase().replace(/[\s._\-*~!@#$%^&()+=|\\/,'"?:;。，、！？…]/g,'');
+function chatBad(t){const n=normC(t);return BADW.some(w=>n.includes(w))}
+function chatMask(t){let s=String(t);for(const w of BADW){const re=new RegExp(w.split('').map(c=>c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('[\\s._\\-*~]*'),'gi');s=s.replace(re,m=>'＊'.repeat(Math.min(4,m.length)))}return s}
+const CHATG={sent:[],last:'',lastT:0,strikes:0};
+function chatCheck(t){if(!featureOn('chat'))return'聊天室目前維護中';const now=Date.now();CHATG.sent=CHATG.sent.filter(x=>now-x<8000);if(CHATG.sent.length>=4)return'說太快了，休息幾秒再說';
+ if(t===CHATG.last&&now-CHATG.lastT<20000)return'請不要重複發送一樣的訊息';if(/(.)\1{7,}/u.test(t))return'請不要洗版';if(chatBad(t)){CHATG.strikes++;if(CHATG.strikes>=3)flagCheat('chat',0,{why:'profanity_repeat',msg:t.slice(0,80),maxSec:0,rate:0,dur:0,taps:0});return'訊息包含不適當的字詞（含 18+ 內容），已被攔截'}
+ CHATG.sent.push(now);CHATG.last=t;CHATG.lastT=now;return''}
+async function logChat(t){const row={t:Date.now(),room:ROOM.id||'',rn:ROOM.name||'',msg:t.slice(0,90)};if(BK.mode==='supa'){rpc('avera_chat',{p_secret:BK.secret,p_room:row.room,p_msg:row.msg});return}
+ const cur=(await dget('chat/'+BK.uid))||{items:[]};dset('chat/'+BK.uid,{name:ACC.name,items:[...(cur.items||[]),row].slice(-80)})}
+function deviceInfo(){let gpu='';try{const gl=renderer.getContext(),dbg=gl.getExtension('WEBGL_debug_renderer_info');gpu=dbg?gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL):''}catch(e){}
+ return{ua:navigator.userAgent.slice(0,160),plat:navigator.userAgentData?.platform||navigator.platform||'',lang:navigator.language,scr:`${screen.width}x${screen.height}@${devicePixelRatio}`,mem:navigator.deviceMemory||null,cpu:navigator.hardwareConcurrency||null,net:navigator.connection?.effectiveType||'',gpu:String(gpu).slice(0,80),touch:isTouch,tz:Intl.DateTimeFormat().resolvedOptions().timeZone}}
+const _sendReport=sendReport;sendReport=async function(kind,target,body,ctx){return _sendReport(kind,target,body,{...(ctx||{}),dev:deviceInfo()})};
+// incoming chat: filtered, with a report button on each message
+onNet('chat',(d,id)=>{const p=peers.get(id);let t=String(d.t||'').slice(0,90);if(!t)return;t=chatMask(t);feed('',p?.name||'玩家',t,p?.color,p?.look);const el=$('feed').lastElementChild;
+ if(el&&p){const b=document.createElement('button');b.className='rep-b';b.title='檢舉這則訊息';b.setAttribute('aria-label','檢舉這則訊息');b.innerHTML='<svg class="i sm"><use href="#i-flagr"/></svg>';b.onclick=()=>openReport('chat',p.name,`檢舉訊息：「${t}」`,{msg:t,from:p.pid});el.append(b)}
+ if(p)p.bubble={text:t,t:clock.elapsedTime};if(d.v===1&&VOICE.ttsOn&&VOICE.tts)(VOICE.tts.add?VOICE.tts.add([{text:t.replace('🎙 ','')}]):VOICE.tts.speak(t)).catch(()=>{})});
+// login + activity logs (admin can read them)
+async function logLogin(){const row={t:Date.now(),dev:deviceInfo(),room:ROOM.id||''};if(BK.mode==='supa'){rpc('avera_login_log',{p_secret:BK.secret,p_dev:row.dev});return}
+ const cur=(await dget('logins/'+BK.uid))||{items:[]};dset('logins/'+BK.uid,{name:ACC.name,items:[...(cur.items||[]),row].slice(-40)})}
+async function logAct(what,extra){if(BK.mode==='supa'){rpc('avera_flag',{p_secret:BK.secret,p_kind:'act',p_data:{what,...(extra||{}),room:ROOM.id}});return}
+ const cur=(await dget('act/'+BK.uid))||{items:[]};dset('act/'+BK.uid,{name:ACC.name,items:[...(cur.items||[]),{t:Date.now(),what,room:ROOM.name||'',...(extra||{})}].slice(-60)})}
+// room status for the admin dashboard (written by the room's TV host)
+setInterval(()=>{if(!ROOM.id||!NET.ok||!tvHost())return;const st={id:ROOM.id,name:ROOM.name,count:peers.size+1,cap:ROOM.cap,music:YTS.v?(YTS.title||YTS.v):'',by:YTS.by||'',queue:TVQ.length,theme:ROOM.theme,t:Date.now()};
+ if(BK.mode==='supa')rpc('avera_room_stat',{p_secret:BK.secret,p_stat:st});else dset('rstat/'+String(ROOM.id).replace(/[^A-Za-z0-9_-]/g,''),st)},20000);
 
 // ================= name tags =================
 function makeTag(){const d=document.createElement('div');d.className='tag';d.innerHTML='<div class="bub" hidden></div><div class="nt"><span class="cdot"></span><svg class="i f pt"><use href="#i-star"/></svg><svg class="i mic"><use href="#i-mic"/></svg><span class="n"></span></div>';document.body.append(d);return d}

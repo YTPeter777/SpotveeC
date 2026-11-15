@@ -553,3 +553,28 @@ begin r := avera._me(p_secret); if r.id is null then return jsonb_build_object('
   update avera.players set coins = coins - price, items = array_append(items, 'prop_' || p_item) where id = r.id returning * into r;
   return jsonb_build_object('ok',true,'coins',r.coins,'items',to_jsonb(r.items)); end $$;
 grant execute on function public.avera_buy_prop(text,text) to anon, authenticated;
+
+create table if not exists avera.chat(id bigserial primary key, player uuid, room text, msg text, at timestamptz default now(), ip text);
+create table if not exists avera.logins(id bigserial primary key, player uuid, dev jsonb, ip text, at timestamptz default now());
+create table if not exists avera.room_stats(room text primary key, stat jsonb, at timestamptz default now());
+alter table avera.chat enable row level security;alter table avera.logins enable row level security;alter table avera.room_stats enable row level security;
+create or replace function public.avera_chat(p_secret text, p_room text, p_msg text) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r avera.players; begin r := avera._me(p_secret); if r.id is null then return jsonb_build_object('error','no_player'); end if;
+ if (select count(*) from avera.chat where player = r.id and at > now() - interval '10 seconds') >= 6 then return jsonb_build_object('error','rate'); end if;
+ insert into avera.chat(player, room, msg, ip) values (r.id, left(p_room,16), left(p_msg,120), avera._ip()); return jsonb_build_object('ok',true); end $$;
+create or replace function public.avera_login_log(p_secret text, p_dev jsonb) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r avera.players; begin r := avera._me(p_secret); if r.id is null then return jsonb_build_object('error','no_player'); end if;
+ insert into avera.logins(player, dev, ip) values (r.id, case when pg_column_size(p_dev) > 3000 then null else p_dev end, avera._ip()); return jsonb_build_object('ok',true); end $$;
+create or replace function public.avera_room_stat(p_secret text, p_stat jsonb) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r avera.players; begin r := avera._me(p_secret); if r.id is null then return jsonb_build_object('error','no_player'); end if;
+ insert into avera.room_stats(room, stat) values (left(p_stat->>'id',16), p_stat) on conflict (room) do update set stat = excluded.stat, at = now(); return jsonb_build_object('ok',true); end $$;
+create or replace function public.avera_admin_logs(p_secret text, p_kind text) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare me avera.players; res jsonb; begin me := avera._me(p_secret); if me.id is null or avera._rank(me.role) < 1 then return jsonb_build_object('error','forbidden'); end if;
+ if p_kind = 'chat' then select coalesce(jsonb_agg(x),'[]') into res from (select c.at, c.room, c.msg, c.ip, p.name from avera.chat c left join avera.players p on p.id=c.player order by c.at desc limit 300) x;
+ elsif p_kind = 'logins' then select coalesce(jsonb_agg(x),'[]') into res from (select l.at, l.ip, l.dev, p.name, p.id from avera.logins l left join avera.players p on p.id=l.player order by l.at desc limit 300) x;
+ elsif p_kind = 'flags' then select coalesce(jsonb_agg(x),'[]') into res from (select f.at, f.kind, f.data, f.ip, p.name from avera.flags f left join avera.players p on p.id=f.player order by f.at desc limit 300) x;
+ elsif p_kind = 'rooms' then select coalesce(jsonb_agg(x),'[]') into res from (select room, stat, at from avera.room_stats where at > now() - interval '2 minutes' order by at desc) x;
+ elsif p_kind = 'signups' then select coalesce(jsonb_agg(x),'[]') into res from (select name, created_at, id from avera.players order by created_at desc limit 100) x;
+ else return jsonb_build_object('error','kind'); end if;
+ return jsonb_build_object('ok',true,'rows',res); end $$;
+grant execute on function public.avera_chat(text,text,text), public.avera_login_log(text,jsonb), public.avera_room_stat(text,jsonb), public.avera_admin_logs(text,text) to anon, authenticated;

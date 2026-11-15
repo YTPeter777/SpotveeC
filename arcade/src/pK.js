@@ -5,7 +5,7 @@ const SHOP={spot0:{x:12.55,z:11},step:.85,dir:{x:-1,z:0},serving:false,menuOpen:
 me.sq=0;
 function shopLine(){const l=[];if(me.sq)l.push({id:MYID,sq:me.sq,me:true});for(const p of peers.values())if(p.sq)l.push({id:p.id,sq:p.sq,name:p.name});l.sort((a,b)=>a.sq-b.sq||(a.id<b.id?-1:1));return l}
 function shopSpot(i){return{x:SHOP.spot0.x+SHOP.dir.x*SHOP.step*i,z:SHOP.spot0.z+SHOP.dir.z*SHOP.step*i}}
-function joinShopQueue(){if(me.sq)return;me.sq=Date.now();me.mode='queue';pushInfo(true);sfx('click');$('shopq').hidden=false;updShop(true)}
+function joinShopQueue(){if(me.sq)return;if(!featureOn('shop')){notify({tone:'warn',icon:'gear',text:'點心吧目前維護中',ms:3000});return}me.sq=Date.now();me.mode='queue';pushInfo(true);sfx('click');$('shopq').hidden=false;updShop(true)}
 function leaveShopQueue(quiet){if(!me.sq)return;me.sq=0;SHOP.menuOpen=false;$('shopm').hidden=true;$('shopq').hidden=true;clearTimeout(SHOP.timer);if(me.mode==='queue')me.mode='walk';pushInfo(true);if(!quiet)notify({tone:'info',icon:'bag',text:'已離開點心吧的隊伍',ms:2500,quiet:true})}
 function updShop(force){if(!me.sq)return;const l=shopLine(),i=l.findIndex(x=>x.me);if(i<0)return;const s=shopSpot(i);
  // walk to my spot in line

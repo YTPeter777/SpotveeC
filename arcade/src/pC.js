@@ -41,11 +41,11 @@ function renderAcct(){const w=$('st-acct');w.replaceChildren();w.append(profCard
  if(isStaff()){const a=document.createElement('button');a.className='cb lemon wide';a.innerHTML='<svg class="i"><use href="#i-shield"/></svg><span>開啟後台</span>';a.onclick=()=>{togglePop('menu',false);openAdmin()};w.append(a)}}
 document.querySelectorAll('[data-doc]').forEach(b=>b.onclick=()=>showDocModal(b.dataset.doc));
 // report form
-function openReport(kind,target){const f=$('repf');f.hidden=false;$('rp-kind').value=kind||'bug';$('repf-t').textContent=kind==='contact'?'聯絡我們':'回報問題';const s=$('rp-tgt');s.replaceChildren(new Option('（不指定）',''));for(const p of peers.values())if(p.look)s.append(new Option(p.name,p.name));if(target)s.value=target;$('rp-tgt-l').hidden=$('rp-kind').value!=='player';$('rp-body').value='';togglePop('menu',false)}
+let repCtx=null;function openReport(kind,target,body,ctx){repCtx=ctx||null;const f=$('repf');f.hidden=false;if(kind==='chat'&&![...$('rp-kind').options].some(o=>o.value==='chat'))$('rp-kind').add(new Option('檢舉聊天訊息','chat'),1);$('rp-kind').value=kind||'bug';$('repf-t').textContent=kind==='contact'?'聯絡我們':'回報問題';const s=$('rp-tgt');s.replaceChildren(new Option('（不指定）',''));for(const p of peers.values())if(p.look)s.append(new Option(p.name,p.name));if(target)s.value=target;$('rp-tgt-l').hidden=!['player','chat'].includes($('rp-kind').value);$('rp-body').value=body||'';togglePop('menu',false)}
 $('rp-kind').onchange=()=>$('rp-tgt-l').hidden=$('rp-kind').value!=='player';
 $('b-report').onclick=()=>openReport('bug');$('b-contact').onclick=()=>openReport('contact');$('repf-x').onclick=()=>$('repf').hidden=true;
 $('repf-f').addEventListener('submit',async e=>{e.preventDefault();const body=$('rp-body').value.trim();if(body.length<5){notify({tone:'warn',text:'內容至少 5 個字'});return}
- const r=await sendReport($('rp-kind').value,$('rp-tgt').value,body,{room:ROOM.id,roomName:ROOM.name,mode:me.mode,game:me.mode==='cab'?curGame:'',ping:net.self,fps:Math.round(NETH.fps),ua:navigator.userAgent.slice(0,120)});
+ const r=await sendReport($('rp-kind').value,$('rp-tgt').value,body,{...(repCtx||{}),room:ROOM.id,roomName:ROOM.name,mode:me.mode,game:me.mode==='cab'?curGame:'',ping:net.self,fps:Math.round(NETH.fps),ua:navigator.userAgent.slice(0,120)});
  if(r.ok){$('repf').hidden=true;notify({tone:'ok',title:'已送出',text:'謝謝你！管理員會在後台查看並處理。',ms:5000})}else notify({tone:'err',text:{rate:'送出太頻繁了，請一小時後再試',length:'內容太短或太長',net:'連線失敗'}[r.error]||'送出失敗'})});
 
 $('s-sens').value=Math.round(VIEW.sens*100);$('s-sens').oninput=()=>{VIEW.sens=$('s-sens').value/100;store.set('vsens',VIEW.sens)};

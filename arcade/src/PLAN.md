@@ -69,14 +69,14 @@ C. Characters
  [x] C2 more accessories; fix accessories that clip
  [x] C3 hold-out items (free + paid with coins); admins have special items; admins look cooler
 D. Chat & reports
- [ ] D1 anti-spam rate limit, profanity / 18+ filter
- [ ] D2 report a chat message; report player behaviour; reports auto-capture device; malicious reporters flagged (admin sees who reported)
+ [x] D1 anti-spam rate limit, profanity / 18+ filter
+ [x] D2 report a chat message; report player behaviour; reports auto-capture device; malicious reporters flagged (admin sees who reported)
 E. Admin
  [x] E1 admin hidden mode, fly + noclip, invincible (room owner cannot kick admins)
  [x] E2 admin joins room → everyone notified
- [ ] E3 every backend setting applies live (no refresh); feature toggles (disable bowling/games/TV/shop/chat/voice/booth...)
- [ ] E4 clear-everyone's-cache button
- [ ] E5 backend sees: rooms status (count, music now, players), player activity logs, all chat logs, reports, login logs (IP, device, time), security alerts (signups, bot/crack attempts)
+ [x] E3 every backend setting applies live (no refresh); feature toggles (disable bowling/games/TV/shop/chat/voice/booth...)
+ [x] E4 clear-everyone's-cache button
+ [x] E5 backend sees: rooms status (count, music now, players), player activity logs, all chat logs, reports, login logs (IP, device, time), security alerts (signups, bot/crack attempts)
  [ ] E6 separate admin web page (admin.html): unauthorized → fake 404 + attempt logged; admin password set first time; re-login every 8h
  [ ] E7 Supabase: pg_cron 20:00 Asia/Taipei backup snapshot + VACUUM ANALYZE; IP via request.headers
 F. Photos
@@ -95,3 +95,4 @@ SQL: sql/avera_init.sql + sql/avera_r3.sql (round-3 additions). Both shipped in 
 
 NEXT (in order): D chat filter/report msg ; E admin powers/logs/admin.html ; F photos ; G grip+claw adv ; H themes ; I notif settings ; J legal+credit "由僑泰匿名牆團隊製作".
 pP.js = props (PROPS, buyProp, setProp), applyEquip (halo/crown/tiara/wings/cape/pet/aura, staff gold aura), admin quick menu (ADMP hidden/fly/noclip). p7 applyInfo handles hp/hid/eq/rk + admin-join notice.
+pQ.js = chat filter/rate limit, message & player reports, deviceInfo in reports, chat/login/act logs, room status (rstat). pD admin tabs roomstat/chatlog/logins/security + features + cache clear (config.cachev).
