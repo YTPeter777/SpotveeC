@@ -25,3 +25,6 @@ function composeStrip(){const[ , a,b]=BFRAMES[BTH.frame],W=420,PH=300,pad=22,H=p
  const names=[myName,...[...peers.values()].filter(p=>p.av&&Math.abs(p.av.position.x-BOOTH.x)<.9&&Math.abs(p.av.position.z-BOOTH.z)<.9).map(p=>p.name)].join('・');g.fillText(names.slice(0,30),W/2,fy+78);g.font='700 15px "Unbounded",sans-serif';g.fillText(new Date().toLocaleDateString('zh-TW')+' · '+(ROOM.name||'AVÉRA'),W/2,fy+106);
  try{return c.toDataURL('image/png')}catch(e){return''}}
 $('b-go').onclick=()=>boothShoot();$('b-x').onclick=()=>leaveBooth();$('b-again').onclick=()=>{$('b-res').hidden=true};$('b-done').onclick=()=>leaveBooth();
+// in the claude.ai preview a plain download link does nothing; hand the file over through the downloads capability
+$('b-dl').addEventListener('click',async e=>{if(!IN_CLAUDE)return;e.preventDefault();try{const dl=await window.claude.use('downloads');if(!dl){notify({tone:'warn',text:'這個預覽不能下載檔案，可以長按圖片另存',ms:4000});return}
+ const blob=await (await fetch($('b-img').src)).blob();const r=await dl.save({filename:'avera-photo.png',data:blob});if(r?.status==='saved')notify({tone:'ok',text:'拍貼已儲存',ms:2500})}catch(x){if(x?.code&&x.code!=='dismissed'&&x.code!=='declined')notify({tone:'warn',text:'下載沒有完成',ms:3000})}});

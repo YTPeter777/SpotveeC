@@ -5,29 +5,29 @@ const GW=360,GH=540;
 function gbg(g,a,b){const gr=g.createLinearGradient(0,0,0,GH);gr.addColorStop(0,a);gr.addColorStop(1,b);g.fillStyle=gr;g.fillRect(0,0,GW,GH)}
 function gtext(g,t,x,y,size=20,col='#fff',w=800){g.font=`${w} ${size}px "Baloo 2","Noto Sans TC",sans-serif`;g.fillStyle=col;g.textAlign='center';g.textBaseline='middle';g.fillText(t,x,y)}
 function setStats(){const box=$('cabs');if(!G)return;box.replaceChildren();
- if(G.vs){const v=document.createElement('div');v.className='vsb';v.append(pfEl(look));v.insertAdjacentHTML('beforeend',`<b>${G.score|0}</b><i>:</i><b>${G.oppScore|0}</b>`);const op=MATCH&&peers.get(MATCH.opp);if(op?.look)v.append(pfEl(op.look));box.append(v)}
+ if(G.vs||G.cpu||G.ai){const v=document.createElement('div');v.className='vsb';v.append(pfEl(look));v.insertAdjacentHTML('beforeend',`<b>${G.score|0}</b><i>:</i><b>${G.oppScore|0}</b>`);const op=MATCH&&peers.get(MATCH.opp);if(op?.look)v.append(pfEl(op.look));else if(G.cpu||G.ai){const c=document.createElement('span');c.className='cpu';c.textContent='CPU';v.append(c)}box.append(v)}
  else box.insertAdjacentHTML('beforeend',`<div class="led"><small>SCORE</small><b>${String(G.score|0).padStart(4,'0')}</b></div><div class="led"><small>BEST</small><b>${String(best[curGame]||0).padStart(4,'0')}</b></div>`)}
 function setTitle(k,mode){$('cabbox').style.setProperty('--gcol',GAMES[k].col);$('cabt').innerHTML=`${esc(GAMES[k].name)}<small>${mode==='vs'?'VERSUS · 雙人對戰':mode==='ai'?'VS CPU · 和電腦玩':mode==='lobby'?'2 PLAYERS':'ARCADE'}</small>`}
 const PAD_ICON={'◀':'left','▶':'right','▲':'up','▼':'down'};
 function buildPad(list,cols){const p=$('pad');p.replaceChildren();const rows=list?Math.ceil(list.length/(cols||list.length)):0;$('cabbox').style.setProperty('--padh',rows*68+'px');if(!list){p.hidden=true;return}p.hidden=false;p.style.gridTemplateColumns=`repeat(${cols||list.length},auto)`;
- for(const b of list){if(!b){p.append(document.createElement('span'));continue}const e=document.createElement('button');const ic=PAD_ICON[b.t];e.className='ab'+(ic?'':' go')+(/^l[0-3]$/.test(b.code)?' c'+b.code[1]:'');e.innerHTML=ic?`<svg class="i"><use href="#i-${ic}"/></svg>`:esc(b.t);e.setAttribute('aria-label',b.t);
+ for(const b of list){if(!b){p.append(document.createElement('span'));continue}const e=document.createElement('button');const ic=PAD_ICON[b.t];e.className='ab'+(ic?'':' go')+(/^l[0-3]$/.test(b.code)?' c'+b.code[1]:'');e.innerHTML=ic?`<svg class="i"><use href="#i-${ic}"/></svg>`:esc(b.t);e.setAttribute('aria-label',b.t);if(b.span){e.style.gridColumn='1 / -1';e.style.justifySelf='center'}
   const dn=ev=>{ev.preventDefault();e.classList.add('down');G?.key?.(b.code,true)},up=()=>{e.classList.remove('down');G?.key?.(b.code,false)};e.addEventListener('pointerdown',dn);e.addEventListener('pointerup',up);e.addEventListener('pointerleave',up);e.addEventListener('pointercancel',up);p.append(e)}}
-function gameOverSolo(score){if(score>(best[curGame]||0)){best[curGame]=score;store.set('best',best)}setStats();if(score>0)announce(`在${GAMES[curGame].name}拿到 ${score} 分`);sfx(score>0?'win':'lose')}
+function gameOverSolo(score){if(score>(best[curGame]||0)){best[curGame]=score;store.set('best',best)}if(G?.cpu){G.oppScore=Math.max(G.oppScore|0,Math.round(score*G.cpuF));const r=score>G.oppScore?1:score<G.oppScore?-1:0;setTimeout(()=>{if(G?.cpu)showLobby('result',G.cpuSt,r)},900)}setStats();if(score>0)announce(`在${GAMES[curGame].name}拿到 ${score} 分`);sfx(score>0?'win':'lose')}
 function drawOver(g,lines,sub='點一下再玩一次'){g.fillStyle='rgba(10,6,30,.7)';g.fillRect(0,0,GW,GH);g.shadowColor='#ff6fb1';g.shadowBlur=20;gtext(g,lines,GW/2,GH/2-30,lines.length>6?38:50,'#ff6fb1');g.shadowBlur=0;gtext(g,sub,GW/2,GH/2+26,18,'#fff',700)}
 let swipe=null;const toG=e=>{const r=gc.getBoundingClientRect();return[(e.clientX-r.left)/r.width*GW,(e.clientY-r.top)/r.height*GH]};
 gc.addEventListener('pointerdown',e=>{e.preventDefault();gc.setPointerCapture(e.pointerId);const[x,y]=toG(e);swipe={x:e.clientX,y:e.clientY};G?.down?.(x,y)});
 gc.addEventListener('pointermove',e=>{if(!swipe&&e.pointerType!=='mouse')return;const[x,y]=toG(e);G?.move?.(x,y,!!swipe)});
 gc.addEventListener('pointerup',e=>{const[x,y]=toG(e);G?.up?.(x,y);if(!swipe)return;const dx=e.clientX-swipe.x,dy=e.clientY-swipe.y;swipe=null;if(Math.hypot(dx,dy)<24)return;G?.dir?.(Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)])});
 function gameKey(code,down){G?.key?.(code,down)}
-function setGame(ng){G=ng;buildPad(G.pad,G.padCols);setStats()}
+function setGame(ng){try{if(G&&G!==ng)G.cleanup?.()}catch(e){}G=ng;buildPad(G.pad,G.padCols);setStats()}
 // ---- opening / closing ----
 function openGame(k,opt={}){curGame=k;curTarget=opt.target||null;me.mode='cab';document.body.classList.add('busy');$('cab').hidden=false;setTitle(k,opt.ctx?.mode);
  $('cabhint').textContent=GAMES[k].hint;$('lobby').hidden=true;G=makeGame(k,opt.ctx||{mode:'solo'});buildPad(G.pad,G.padCols);setStats();me.emote=G.pose||'play';me.et=clock.elapsedTime;emoteSeq++;
- if(curTarget?.obj)curTarget.obj.userData.busy=true;if(curTarget?.slotRef?.stand)me.y=curTarget.f+curTarget.slotRef.stand;sendPresence(true)}
+ if(curTarget?.obj)curTarget.obj.userData.busy=true;if(curTarget?.slotRef?.stand)me.y=curTarget.f+curTarget.slotRef.stand;sendPresence(true);mvOpen(k,curTarget)}
 function closeGame(){if(me.mode!=='cab')return;setTimeout(flushInvites,700);try{if(G&&G.score>0&&!G.rewarded){G.rewarded=true;rewardGame(curGame,G.score)}}catch(e){}if(G?.vs&&!G.over)G.link?.send({k:'bye'});if(MATCH)endMatch();if(curTarget?.obj)curTarget.obj.userData.busy=false;
- me.mode='walk';me.pose='';document.body.classList.remove('busy');$('cab').hidden=true;G=null;me.emote='';if(me.slot){leaveStation()}me.y=groundAt(me.x,me.z,me.y+1);sendPresence(true)}
+ me.mode='walk';me.pose='';document.body.classList.remove('busy');$('cab').hidden=true;mvClose();try{G?.cleanup?.()}catch(e){}G=null;me.emote='';if(me.slot){leaveStation()}me.y=groundAt(me.x,me.z,me.y+1);sendPresence(true)}
 $('cabx').onclick=closeGame;
-function gameTick(dt){if(!G||me.mode!=='cab')return;G.t+=dt;if(G.cd>0){G.cd-=dt;if(Math.ceil(G.cd)!==Math.ceil(G.cd+dt)&&G.cd>0)sfx('beep');if(G.cd<=0)sfx('go')}else G.update(dt);G.draw(gx);
+function gameTick(dt){if(!G||me.mode!=='cab')return;G.t+=dt;cpuTick(dt);if(G.cd>0){G.cd-=dt;if(Math.ceil(G.cd)!==Math.ceil(G.cd+dt)&&G.cd>0)sfx('beep');if(G.cd<=0)sfx('go')}else G.update(dt);G.draw(gx);
  if(G.cd>0){gx.fillStyle='rgba(10,6,30,.55)';gx.fillRect(0,0,GW,GH);gtext(gx,Math.ceil(G.cd),GW/2,GH/2,120,'#ffd864')}if(G.vs)vsTick(dt)}
 // ---- factory ----
 function makeGame(k,ctx){const G={k,score:0,over:false,t:0,cd:0,vs:ctx.mode==='vs',ai:ctx.mode==='ai',link:ctx.link,host:!!ctx.host,oppName:ctx.oppName,oppScore:0,rng:mulberry(ctx.seed||((Math.random()*1e9)|0)),pose:'play'};
@@ -158,7 +158,8 @@ function makeGame(k,ctx){const G={k,score:0,over:false,t:0,cd:0,vs:ctx.mode==='v
    for(let c=0;c<C;c++)for(let r=0;r<R;r++){const v=bd[c][r];let y=oy+(R-1-r)*cs+24;if(drop&&drop.c===c&&drop.r===r&&drop.t<.3){y=oy-30+(y-oy+30)*Math.min(1,(drop.t/.3)**2)}g.fillStyle=v==null?'#0e1440':cols[v];g.beginPath();g.arc(ox+c*cs+24,v==null?oy+(R-1-r)*cs+24:y,19,0,7);g.fill()}
    if(win&&win.cells){g.strokeStyle='#fff';g.lineWidth=4;win.cells.forEach(([c,r])=>{g.beginPath();g.arc(ox+c*cs+24,oy+(R-1-r)*cs+24,21,0,7);g.stroke()})}
    gtext(g,G.vs?`你是 ${meP?'黃':'粉紅'}色`:'你是粉紅色，先下',GW/2,470,15,'#d8d0ff',700);if(G.over&&!G.vs)gtext(g,'點一下再玩一次',GW/2,505,16,'#fff',700)}}
- if(k==='claw'){let cx=180,cy=60,state='move',tries=3,won=0,prizes=[],held=null,hint='',time=20,kl=0,kr=0;for(let i=0;i<16;i++)prizes.push({x:70+Math.random()*250,y:400+Math.random()*60,c:prizeCols[i%7],g:false});
+ if(k==='claw'&&curTarget?.obj?.userData?.claw){claw3D(G,setS,restart,finish)}
+ else if(k==='claw'){let cx=180,cy=60,state='move',tries=3,won=0,prizes=[],held=null,hint='',time=20,kl=0,kr=0;for(let i=0;i<16;i++)prizes.push({x:70+Math.random()*250,y:400+Math.random()*60,c:prizeCols[i%7],g:false});
   const grab=()=>{if(G.over){restart();return}if(state==='move')state='down'};G.key=(c,dn)=>{if(c==='ArrowLeft'||c==='KeyA')kl=dn;else if(c==='ArrowRight'||c==='KeyD')kr=dn;else if(dn&&(c==='Space'||c==='go'))grab()};
   G.down=(x)=>{if(state==='move'&&Math.abs(x-cx)<40)grab();else if(state==='move'){kl=x<cx;kr=x>cx}};G.up=()=>{kl=kr=0};G.pad=[{t:'◀',code:'ArrowLeft'},{t:'抓！',code:'go',w:110},{t:'▶',code:'ArrowRight'}];
   G.update=dt=>{if(G.over)return;if(state==='move'){cx=THREE.MathUtils.clamp(cx+((kr?1:0)-(kl?1:0))*150*dt,70,330);time-=dt;if(time<=0)state='down'}
@@ -196,12 +197,16 @@ function showLobby(kind,st,other){const L=$('lobby');L.hidden=false;L.replaceChi
  const btn=(t,cls,fn,icon)=>{const b=document.createElement('button');b.className='cb wide '+cls;b.innerHTML=(icon?`<svg class="i"><use href="#i-${icon}"/></svg>`:'')+`<span>${esc(t)}</span>`;b.onclick=fn;stack.append(b);return b};
  const opp=other&&peers.get(other)||(MATCH&&peers.get(MATCH.opp));
  if(kind==='wait'){L.append(vsrow(pfEl(look),waitEl()));h.textContent='等待對手';p.textContent=`請朋友走到${g.name}的另一邊按 E，就會開始對戰。`;L.append(h,p,stack);
-  if(g.ai)btn('先和電腦玩','pink',()=>startLocal('ai',st),'game');else btn('自己先玩','pink',()=>startLocal('solo',st),'game');
+  btn('和電腦對戰','pink',()=>startLocal('ai',st),'game');if(!g.ai)btn('自己練習','ghost',()=>startLocal('solo',st),'user');
   const mates=partyMates().filter(id=>peers.has(id));if(mates.length)btn('邀請隊友來對戰','ghost',()=>{mates.forEach(id=>NET.emit('mt',{t:'call',st:st.id,to:id}));toast('已邀請隊友',[],2500)},'userplus')}
  else if(kind==='connect'){L.append(vsrow(pfEl(look),opp?.look?pfEl(opp.look):waitEl()));h.textContent='連線中…';p.textContent=`正在加入 ${peerName(other)} 的對戰`;L.append(h,p)}
  else if(kind==='result'){L.append(vsrow(pfEl(look),opp?.look?pfEl(opp.look):waitEl()));h.textContent=other>0?'你贏了！':other<0?'輸了，再接再厲':'平手';if(other>0)h.style.color='var(--lemon)';p.textContent=`${G?.score??0} : ${G?.oppScore??0}`;p.style.font='800 28px var(--disp)';L.append(h,p,stack);
+  if(G?.cpu&&st)btn('再來一局','pink',()=>startLocal('ai',st),'sync');
   if(MATCH){const b=btn('再來一局','pink',()=>{MATCH.link.send({k:'again'});MATCH.again=true;b.querySelector('span').textContent='等對方確認…';if(MATCH.oppAgain)rematch()},'sync')}}}
-function startLocal(mode,st){$('lobby').hidden=true;me.slot.w=mode==='ai'?'ai':'solo';G=makeGame(st.game,{mode});buildPad(G.pad,G.padCols);setStats();setTitle(st.game,mode);pushInfo(true)}
+function startLocal(mode,st){$('lobby').hidden=true;me.slot.w=mode==='ai'?'ai':'solo';const cpu=mode==='ai'&&!GAMES[st.game].ai;G=makeGame(st.game,{mode:cpu?'solo':mode});
+ if(cpu){G.cpu=true;G.oppName='電腦';G.cpuF=.8+Math.random()*.42;G.cpuSt=st}buildPad(G.pad,G.padCols);setStats();setTitle(st.game,mode);pushInfo(true)}
+// CPU rival for score-race games (racer, hoops, dance): its score chases yours with a random skill factor
+function cpuTick(dt){if(!G||!G.cpu||G.over)return;const tgt=G.score*G.cpuF+(G.t>3?Math.sin(G.t*.7)*1.5:0);G.oppScore=Math.max(G.oppScore||0,Math.round((G.oppScore||0)+(tgt-(G.oppScore||0))*Math.min(1,dt*.8)));if((G.t*4|0)!==((G.t-dt)*4|0))setStats()}
 function leaveStation(){const s=me.slot;if(!s)return;const st=stations.get(s.st);if(st&&st.occ[s.i]===MYID)st.occ[s.i]=null;me.slot=null;me.pose='';pushInfo(true)}
 function vsResult(r){if(!G)return;G.over=true;sfx(r>0?'win':r<0?'lose':'click');showLobby('result',stations.get(me.slot?.st)||{game:curGame},r);if(r>0)announce(`在${GAMES[curGame].name}對戰贏了 ${G.oppName||''}`)}
 function vsCheckEnd(){if(!G||!G.vs)return;if(G.over&&G.oppDone){const r=G.score>G.oppScore?1:G.score<G.oppScore?-1:0;vsResult(r)}else if(G.over)$('cabhint').textContent='等對手完成…'}

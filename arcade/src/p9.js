@@ -33,6 +33,7 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
  else if(me.mode==='site'){siteCam(t,dt)}
  else if(me.mode==='preview'){const a=Math.sin(t*.35)*.45;camT.set(me.x,.72,me.z);camera.position.set(me.x+Math.sin(a)*2.9,1.15,me.z+Math.cos(a)*2.9);camera.lookAt(camT);
   const wide=innerWidth>760;camera.setViewOffset(innerWidth,innerHeight,wide?-innerWidth*.2:0,wide?0:innerHeight*.26,innerWidth,innerHeight);myAv.rotation.y=Math.sin(t*.6)*.25}
+ else if(MV.on){me.speed=0;mvTick(dt)}
  else{me.speed=0;camT.set(me.x,me.y+1.1,me.z);camFollow(camT,dt)}
  if(me.mode==='walk'){me.vx=(me.x-ox)/Math.max(dt,1e-3);me.vz=(me.z-oz)/Math.max(dt,1e-3);if(Math.hypot(me.vx,me.vz)<.05)me.vx=me.vz=0}else{me.vx=me.vz=0;if(me.mode!=='preview'&&me.mode!=='queue')me.speed=0}
  laneTick(dt,t);

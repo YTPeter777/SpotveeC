@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>AVÉRA · Q 版 3D 遊戲場</title>
-<meta name="description" content="和朋友一起逛的 Q 版動物 3D 霓虹遊戲場：組隊打保齡球、雙人對戰機台、語音聊天、一起看 YouTube。">
-<meta property="og:title" content="NEON ARCADE 霓虹遊戲場">
-<meta property="og:description" content="和朋友一起逛的 Q 版動物 3D 霓虹遊戲場：組隊打保齡球、雙人對戰機台、語音聊天、一起看 YouTube。">
+<meta name="description" content="AVÉRA：開在瀏覽器裡的 Q 版 3D 遊戲場。和朋友開包廂打保齡球、夾娃娃、雙人對戰街機、輪流點歌一起看影片，免下載、手機電腦都能玩。">
+<meta property="og:title" content="AVÉRA · Q 版 3D 遊戲場">
+<meta property="og:description" content="和朋友開包廂打保齡球、夾娃娃、雙人對戰街機、輪流點歌一起看影片。免下載，手機電腦都能玩。">
 <meta name="theme-color" content="#0e0b22">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%23ff6fb1%22/%3E%3Cpath d=%22M14 26 20 8l10 12M50 26 44 8 34 20%22 fill=%22%23fff%22/%3E%3Ccircle cx=%2232%22 cy=%2236%22 r=%2218%22 fill=%22%23fff%22/%3E%3Ccircle cx=%2225%22 cy=%2234%22 r=%223.5%22 fill=%22%231d1640%22/%3E%3Ccircle cx=%2239%22 cy=%2234%22 r=%223.5%22 fill=%22%231d1640%22/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Noto+Sans+TC:wght@500;700;900&family=Unbounded:wght@600;800&display=swap">
@@ -263,6 +263,7 @@ body.chatting #feed .m.gone{opacity:1}
 .vsb .pf{width:30px;height:30px;box-shadow:0 0 0 2px var(--pc)}
 .vsb b{font:800 22px var(--disp);color:var(--lemon);min-width:18px;text-align:center;font-variant-numeric:tabular-nums}
 .vsb i{font:800 14px var(--disp);color:var(--dim);font-style:normal}
+.vsb .cpu{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#3a2b70;font:800 10px var(--disp);color:var(--ink2);box-shadow:0 0 0 2px var(--dim)}
 #gcwrap{position:relative;margin-inline:auto;padding:8px;border-radius:22px;background:#0a0620;box-shadow:inset 0 0 0 2px rgba(255,255,255,.06),inset 0 6px 16px rgba(0,0,0,.6)}
 #gc{display:block;width:min(360px,calc(100vw - 72px),calc((100dvh - 230px - var(--padh,0px))*.6667));aspect-ratio:2/3;border-radius:14px;background:#000;touch-action:none}
 #lobby{position:absolute;inset:8px;border-radius:14px;background:radial-gradient(circle at 50% 30%,#4a35a0,#140d34 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:22px;text-align:center;box-sizing:border-box}
@@ -335,6 +336,21 @@ body.chatting #feed .m.gone{opacity:1}
 #tvql{display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto}
 .tvi{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:12px;background:rgba(255,255,255,.04)}.tvi .n{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:#3a2b70;font:800 13px var(--disp)}.tvi:first-child .n{background:var(--pink)}
 .tvi .tt{flex:1;min-width:0}.tvi b{display:block;font:800 13.5px var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tvi small{font:700 11.5px var(--txt);color:var(--dim)}.tvi .ib{width:30px;height:30px}
+/* ---- machine view (game on the real machine) ---- */
+#mlayer{display:none}
+body.in-mach #cab{background:none;backdrop-filter:none;-webkit-backdrop-filter:none;pointer-events:none;display:block;padding:0}
+body.in-mach #mlayer{display:block;position:fixed;inset:0;pointer-events:auto;touch-action:none}
+body.in-mach #cabbox{position:fixed;inset:0;width:auto;max-width:none;max-height:none;padding:calc(env(safe-area-inset-top,0px) + 12px) var(--sr) calc(env(safe-area-inset-bottom,0px) + 14px) var(--sl);border-radius:0;background:none;box-shadow:none;display:flex;flex-direction:column;justify-content:flex-start;gap:10px;pointer-events:none}
+body.in-mach #cabhead{pointer-events:auto;align-self:stretch;padding:8px 12px;border-radius:20px;background:linear-gradient(180deg,rgba(40,30,92,.88),rgba(24,18,60,.88));box-shadow:0 0 0 1.5px var(--gcol),0 10px 24px rgba(0,0,0,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+body.in-mach #gcwrap{position:fixed;left:-10000px;top:0}
+body.in-mach #pad{pointer-events:auto;align-self:center;margin-top:auto;padding:10px;border-radius:24px;background:rgba(14,10,36,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+body.in-mach #cabfoot{pointer-events:auto;align-self:center;width:auto}body.in-mach #pad[hidden]+#cabfoot{margin-top:auto}body.in-mach #cabhint{display:none}
+body.in-mach #cabfoot .cb{background:linear-gradient(180deg,rgba(60,46,128,.95),rgba(36,26,87,.95))}
+body.in-mach #lobby{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);inset:auto;width:min(380px,calc(100vw - 32px));pointer-events:auto;box-shadow:0 0 0 1.5px var(--gcol),0 20px 50px rgba(0,0,0,.5)}
+body.in-mach #pad .ab{width:72px;height:64px;border-radius:20px}body.in-mach #pad .ab .i{width:30px;height:30px}body.in-mach #pad .ab.go{min-width:140px;font-size:19px}
+@media (max-height:560px) and (orientation:landscape){body.in-mach #cabbox{display:flex;grid-template-columns:none}body.in-mach #pad{position:fixed;right:var(--sr);bottom:calc(var(--sb) + 4px)}body.in-mach #cabfoot{position:fixed;left:var(--sl);bottom:var(--sb)}body.in-mach #pad .ab{width:60px;height:54px}}
+#sc>*{flex-shrink:0}
+a.cb{text-decoration:none}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -861,7 +877,7 @@ summary::-webkit-details-marker{display:none}
  <button class="cb ghost round" id="bx" aria-label="離開球道"><svg class="i"><use href="#i-exit"/></svg></button>
 </div>
 
-<div id="cab" hidden><div id="cabbox">
+<div id="cab" hidden><div id="mlayer"></div><div id="cabbox">
  <div id="cabhead"><div id="cabt">—</div><div id="cabs"></div></div>
  <div id="gcwrap"><canvas id="gc" width="360" height="540"></canvas><div id="lobby" hidden></div></div>
  <div id="pad"></div>
@@ -894,4 +910,4 @@ summary::-webkit-details-marker{display:none}
  </div>
  <button class="cb pink wide" id="help-x">知道了</button>
 </div></div>
-<div id="photo" hidden><div><img id="photo-img" alt="拍貼照片"><b id="photo-cap">NEON ARCADE</b><button class="cb pink wide" id="photo-x">收起來</button></div></div>
+<div id="photo" hidden><div><img id="photo-img" alt="拍貼照片"><b id="photo-cap">AVÉRA</b><button class="cb pink wide" id="photo-x">收起來</button></div></div>

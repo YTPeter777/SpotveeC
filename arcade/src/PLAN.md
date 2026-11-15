@@ -36,9 +36,9 @@ Preview (claude artifact) backend = artifact `db` + `user` capabilities; ?local 
 5. [x] Admin panel: players/reports/announce/rooms/theme/shop/TV/config/audit
 6. [~] World (DONE: marble 1F/2F + ultra planar reflection (pV), fluted wainscot+LED strips+spill, LED pillars, AVÉRA signs/medallion/lane masks/posters, theme recolour worldTheme(), realistic batched upright cabinets CAB2 with vertical attract monitors composeAttract, centre island+LED halo. TODO: bowling extras, other machines realism): marble floor, LED strips/wall panels/decor, lighting themes, realistic animated cabinets w/ AVÉRA logo, bowling upgrade
 7. [x] Snack bar queue (pK: presence sq order, clerk, menu, coins; rewards on game exit/bowling) ; photo booth walk-in (pB) ; TV round-robin queue + queue screen + repeater TVs (pY) + coins; photo booth inside; TVs synced + queue screen + round-robin requests
-8. [ ] Real-life play views: cabinet-screen games, 3D claw, 3D hoops, coin pusher, hockey/c4 table views, dance, racer; AI for all 2P; mobile controls
+8. [x] Real-life play views (pM machine view on real screens/tables, pZ 3D claw, CPU rival for racer/hoops/dance). TODO later: 3D hoops: cabinet-screen games, 3D claw, 3D hoops, coin pusher, hockey/c4 table views, dance, racer; AI for all 2P; mobile controls
 9. [ ] Characters: bigger clear eyes, no clipping
-10. [ ] Test (desktop/mobile/landscape), publish artifact, commit to arcade/, push branch claude/relaxed-cray-gqp2dn
+10. [x] Test (desktop/mobile/landscape), publish artifact, commit to arcade/, push branch claude/relaxed-cray-gqp2dn
 
 ## Source layout (built by build.sh, in order)
 p0.html (markup+CSS) p1 config/renderer/textures, p2 world, p3 avatars+portraits, pN notifications/talkers/net card,
