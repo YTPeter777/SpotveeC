@@ -20,6 +20,7 @@ const ACC={pid:null,name:'',look:null,role:'player',coins:0,items:[],equip:{},re
  config:{capacity:40,maintenance:false,maint_msg:'',motd:'',tv_lock:false,shop:DEFAULT_SHOP,theme:'neon'}};
 const ROOM={id:null,name:'',owner:null,ownerName:'',cap:16,pub:true,hasPw:false,locked:false,perm:false,chan:'',theme:'neon',isOwner:false,closing:null};
 const isStaff=(r=ACC.role)=>ROLE_RANK[r]>=1;
+function featureOn(k){const f=ACC.config.features||{};return f[k]!==false||isStaff()}
 const rhex=(n=16)=>[...crypto.getRandomValues(new Uint8Array(n))].map(b=>b.toString(16).padStart(2,'0')).join('');
 async function sha(s){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return 'x'+h}}
 const cleanName=t=>String(t||'').replace(/[\u0000-\u001f<>"`\\]/g,'').replace(/\s+/g,' ').trim().slice(0,12);
@@ -62,7 +63,7 @@ async function dset(p,v){try{await D(p).set(v);return true}catch(e){return false
 async function dupd(p,v){try{await D(p).update(v);return true}catch(e){try{const c=await dget(p);await D(p).set({...(c||{}),...v});return true}catch(x){return false}}}
 
 function applyProfile(p){if(!p)return;ACC.exists=true;ACC.pid=p.id||ACC.pid;ACC.name=p.name||ACC.name;if(p.look)ACC.look=cleanLook(p.look);ACC.role=p.role||ACC.role||'player';ACC.coins=p.coins??ACC.coins;ACC.items=Array.isArray(p.items)?p.items:[];ACC.equip=p.equip&&typeof p.equip==='object'?p.equip:{};ACC.renames=Array.isArray(p.renames)?p.renames:[];ACC.mutedUntil=p.muted_until?+new Date(p.muted_until):(p.mutedUntil||0)}
-function applyConfig(c){if(!c)return;for(const k of ['capacity','maintenance','maint_msg','motd','tv_lock','shop','theme'])if(c[k]!==undefined)ACC.config[k]=c[k];onConfig?.()}
+function applyConfig(c){if(!c)return;for(const k of ['capacity','maintenance','maint_msg','motd','tv_lock','shop','theme','features','cachev'])if(c[k]!==undefined)ACC.config[k]=c[k];onConfig?.()}
 let onConfig=null,onProfile=null,onBackEvent=null;
 
 async function loadProfile(){
@@ -74,13 +75,13 @@ async function loadRoleDoc(){let role=(await dget('staff/'+BK.uid))?.role||'play
 // create the profile (first visit): nickname is required, character is final
 async function createProfile(name,lk){name=cleanName(name);if(name.length<2)return{error:'invalid'};if(RESERVED.test(name))return{error:'reserved'};lk=cleanLook(lk);
  if(BK.mode==='supa'){const r=await rpc('avera_join',{p_secret:BK.secret,p_name:name,p_look:lk});if(r.error)return r;applyProfile(r.profile);applyConfig(r.config);ACC.session=r.session;ACC.since=r.since;return{ok:true}}
- const p={name,look:lk,coins:120,items:[],equip:{},renames:[],created:Date.now(),seen:Date.now()};if(!(await dset('players/'+BK.uid,p)))return{error:'write'};applyProfile({...p,id:BK.uid});return{ok:true}}
+ const p={name,look:lk,coins:5000,items:[],equip:{},renames:[],created:Date.now(),seen:Date.now(),dailyDay:new Date().toDateString()};if(!(await dset('players/'+BK.uid,p)))return{error:'write'};applyProfile({...p,id:BK.uid});return{ok:true}}
 
 // enter: checks ban/maintenance and starts the device session
 async function enterGame(){
- if(BK.mode==='supa'){const r=await rpc('avera_join',{p_secret:BK.secret,p_name:ACC.name,p_look:ACC.look});if(r.error)return r;applyProfile(r.profile);applyConfig(r.config);ACC.session=r.session;ACC.since=r.since;startWatch();return{ok:true}}
+ if(BK.mode==='supa'){const r=await rpc('avera_join',{p_secret:BK.secret,p_name:ACC.name,p_look:ACC.look});if(r.error)return r;applyProfile(r.profile);applyConfig(r.config);ACC.session=r.session;ACC.since=r.since;{const dl=await rpc('avera_daily',{p_secret:BK.secret});ACC.daily=dl.daily||0;if(dl.coins!=null)ACC.coins=dl.coins}startWatch();return{ok:true}}
  const ban=await dget('bans/'+BK.uid);if(ban&&ban.until&&ban.until>Date.now())return{error:'banned',until:ban.until,reason:ban.reason};if(ban?.muted)ACC.mutedUntil=ban.muted;
- if(ACC.config.maintenance&&!isStaff())return{error:'maintenance',msg:ACC.config.maint_msg};ACC.session=rhex(8);ACC.joinedAt=Date.now();dupd('players/'+BK.uid,{seen:Date.now()});startWatch();return{ok:true}}
+ if(ACC.config.maintenance&&!isStaff())return{error:'maintenance',msg:ACC.config.maint_msg};{const me0=(await dget('players/'+BK.uid))||{};const day=new Date().toDateString();if(me0.dailyDay!==day){ACC.coins=(me0.coins??ACC.coins)+1000;await dupd('players/'+BK.uid,{coins:ACC.coins,dailyDay:day});ACC.daily=1000}}ACC.session=rhex(8);ACC.joinedAt=Date.now();dupd('players/'+BK.uid,{seen:Date.now()});startWatch();return{ok:true}}
 
 // ---------- live updates (events, profile, config, single device) ----------
 let pollT=0,pollBusy=false,lastPoll=0;

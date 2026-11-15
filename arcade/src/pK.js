@@ -25,4 +25,4 @@ setInterval(()=>{if(me.sq&&!document.body.classList.contains('playing'))leaveSho
 SHOP.clerk=npcs.find(n=>n.kind==='snack');
 anims.push((t)=>{const c=SHOP.clerk;if(!c)return;const k=(performance.now()-SHOP.prep)/2600;if(k>=0&&k<1){const s=Math.sin(k*Math.PI);c.a.position.z=11+s*1.3;c.a.rotation.y=k<.5?0:Math.PI;if(k>.8)c.a.rotation.y=-Math.PI/2}else{c.a.position.z=11;c.a.rotation.y=-Math.PI/2}});
 // coins for playing: minigames on exit, bowling per finished game
-function rewardGame(game,score){if(!score||score<=0)return;const n=Math.min(30,4+Math.floor(Math.sqrt(score)*1.6));earnCoins(game,n)}
+let rewardGame=function(game,score){if(!score||score<=0)return;const n=Math.min(30,4+Math.floor(Math.sqrt(score)*1.6));earnCoins(game,n)};

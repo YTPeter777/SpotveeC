@@ -366,6 +366,10 @@ a.cb{text-decoration:none}
 .sig{display:inline-block;width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;vertical-align:middle}.sig i{display:none}
 .netp .sig{width:8px;height:8px}.prow .st .sig{width:7px;height:7px}
 .nc-top .sig{width:14px;height:14px}
+/* ---- leaderboard ---- */
+#lbp{right:var(--sr);top:calc(var(--st) + 66px);width:min(380px,calc(100vw - 28px));box-sizing:border-box;padding:14px;z-index:12;display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - var(--st) - 90px);overflow-y:auto}
+.lbtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}.lbtabs button{flex:none;padding:7px 12px;border-radius:999px;font:800 12.5px var(--txt);color:var(--dim);background:rgba(255,255,255,.06)}.lbtabs button[aria-pressed=true]{background:linear-gradient(180deg,var(--lemon1),var(--lemon2));color:#3d2a00}
+.lbr .rk{width:28px;text-align:center;font:800 16px var(--disp);color:var(--dim)}.lbr .rk.r1{color:var(--gold)}.lbr .rk.r2{color:#e4e4ff}.lbr .rk.r3{color:#ffb27a}.lbr .sc{font:800 16px var(--disp);color:var(--gold)}.lbr .pf{width:32px;height:32px}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -817,8 +821,9 @@ summary::-webkit-details-marker{display:none}
  <div class="pnl" id="talkers" hidden></div>
  <div class="pnl" id="people" hidden></div>
 </div>
-<div class="fx pnl h" id="tr"><button class="ib" id="b-room" aria-expanded="false" aria-label="包廂" title="包廂"><svg class="i"><use href="#i-door"/></svg></button><span class="vsep"></span><button class="ib" id="b-tv" aria-expanded="false" aria-label="一起看 YouTube" title="一起看 YouTube"><svg class="i"><use href="#i-tv"/></svg></button><span class="vsep" id="tr-sep"></span><button class="ib" id="b-menu" aria-expanded="false" aria-label="設定"><svg class="i"><use href="#i-sliders"/></svg></button><button class="ib" id="b-admin" hidden aria-label="後台" title="後台" style="color:var(--gold)"><svg class="i"><use href="#i-shield"/></svg></button></div>
+<div class="fx pnl h" id="tr"><button class="ib" id="b-room" aria-expanded="false" aria-label="包廂" title="包廂"><svg class="i"><use href="#i-door"/></svg></button><button class="ib" id="b-lb" aria-expanded="false" aria-label="排行榜" title="排行榜"><svg class="i"><use href="#i-trophy"/></svg></button><span class="vsep"></span><button class="ib" id="b-tv" aria-expanded="false" aria-label="一起看 YouTube" title="一起看 YouTube"><svg class="i"><use href="#i-tv"/></svg></button><span class="vsep" id="tr-sep"></span><button class="ib" id="b-menu" aria-expanded="false" aria-label="設定"><svg class="i"><use href="#i-sliders"/></svg></button><button class="ib" id="b-admin" hidden aria-label="後台" title="後台" style="color:var(--gold)"><svg class="i"><use href="#i-shield"/></svg></button></div>
 <div class="fx pnl h" id="roompnl" hidden></div>
+<div class="fx pnl h" id="lbp" hidden><div class="mh"><b>排行榜</b><button class="ib" id="lbp-x" style="width:36px;height:36px" aria-label="關閉"><svg class="i"><use href="#i-close"/></svg></button></div><div class="lbtabs" id="lb-tabs"></div><div id="lb-list"></div><p class="note" style="margin:4px">只計算真人遊玩的正常成績；電腦對戰每天前 5 場計分。</p></div>
 <div class="fx pnl h" id="menu" hidden>
  <div class="mh"><b>設定</b><button class="ib" id="menu-x" aria-label="關閉" style="width:36px;height:36px"><svg class="i"><use href="#i-close"/></svg></button></div>
  <div class="stabs" role="tablist"><button role="tab" data-t="gen" aria-selected="true">一般</button><button role="tab" data-t="snd" aria-selected="false">聲音</button><button role="tab" data-t="gfx" aria-selected="false">畫面</button><button role="tab" data-t="inv" aria-selected="false">道具</button><button role="tab" data-t="acct" aria-selected="false">帳號</button><button role="tab" data-t="about" aria-selected="false">關於</button></div>
@@ -1676,6 +1681,7 @@ const ACC={pid:null,name:'',look:null,role:'player',coins:0,items:[],equip:{},re
  config:{capacity:40,maintenance:false,maint_msg:'',motd:'',tv_lock:false,shop:DEFAULT_SHOP,theme:'neon'}};
 const ROOM={id:null,name:'',owner:null,ownerName:'',cap:16,pub:true,hasPw:false,locked:false,perm:false,chan:'',theme:'neon',isOwner:false,closing:null};
 const isStaff=(r=ACC.role)=>ROLE_RANK[r]>=1;
+function featureOn(k){const f=ACC.config.features||{};return f[k]!==false||isStaff()}
 const rhex=(n=16)=>[...crypto.getRandomValues(new Uint8Array(n))].map(b=>b.toString(16).padStart(2,'0')).join('');
 async function sha(s){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return 'x'+h}}
 const cleanName=t=>String(t||'').replace(/[\u0000-\u001f<>"`\\]/g,'').replace(/\s+/g,' ').trim().slice(0,12);
@@ -1718,7 +1724,7 @@ async function dset(p,v){try{await D(p).set(v);return true}catch(e){return false
 async function dupd(p,v){try{await D(p).update(v);return true}catch(e){try{const c=await dget(p);await D(p).set({...(c||{}),...v});return true}catch(x){return false}}}
 
 function applyProfile(p){if(!p)return;ACC.exists=true;ACC.pid=p.id||ACC.pid;ACC.name=p.name||ACC.name;if(p.look)ACC.look=cleanLook(p.look);ACC.role=p.role||ACC.role||'player';ACC.coins=p.coins??ACC.coins;ACC.items=Array.isArray(p.items)?p.items:[];ACC.equip=p.equip&&typeof p.equip==='object'?p.equip:{};ACC.renames=Array.isArray(p.renames)?p.renames:[];ACC.mutedUntil=p.muted_until?+new Date(p.muted_until):(p.mutedUntil||0)}
-function applyConfig(c){if(!c)return;for(const k of ['capacity','maintenance','maint_msg','motd','tv_lock','shop','theme'])if(c[k]!==undefined)ACC.config[k]=c[k];onConfig?.()}
+function applyConfig(c){if(!c)return;for(const k of ['capacity','maintenance','maint_msg','motd','tv_lock','shop','theme','features','cachev'])if(c[k]!==undefined)ACC.config[k]=c[k];onConfig?.()}
 let onConfig=null,onProfile=null,onBackEvent=null;
 
 async function loadProfile(){
@@ -1730,13 +1736,13 @@ async function loadRoleDoc(){let role=(await dget('staff/'+BK.uid))?.role||'play
 // create the profile (first visit): nickname is required, character is final
 async function createProfile(name,lk){name=cleanName(name);if(name.length<2)return{error:'invalid'};if(RESERVED.test(name))return{error:'reserved'};lk=cleanLook(lk);
  if(BK.mode==='supa'){const r=await rpc('avera_join',{p_secret:BK.secret,p_name:name,p_look:lk});if(r.error)return r;applyProfile(r.profile);applyConfig(r.config);ACC.session=r.session;ACC.since=r.since;return{ok:true}}
- const p={name,look:lk,coins:120,items:[],equip:{},renames:[],created:Date.now(),seen:Date.now()};if(!(await dset('players/'+BK.uid,p)))return{error:'write'};applyProfile({...p,id:BK.uid});return{ok:true}}
+ const p={name,look:lk,coins:5000,items:[],equip:{},renames:[],created:Date.now(),seen:Date.now(),dailyDay:new Date().toDateString()};if(!(await dset('players/'+BK.uid,p)))return{error:'write'};applyProfile({...p,id:BK.uid});return{ok:true}}
 
 // enter: checks ban/maintenance and starts the device session
 async function enterGame(){
- if(BK.mode==='supa'){const r=await rpc('avera_join',{p_secret:BK.secret,p_name:ACC.name,p_look:ACC.look});if(r.error)return r;applyProfile(r.profile);applyConfig(r.config);ACC.session=r.session;ACC.since=r.since;startWatch();return{ok:true}}
+ if(BK.mode==='supa'){const r=await rpc('avera_join',{p_secret:BK.secret,p_name:ACC.name,p_look:ACC.look});if(r.error)return r;applyProfile(r.profile);applyConfig(r.config);ACC.session=r.session;ACC.since=r.since;{const dl=await rpc('avera_daily',{p_secret:BK.secret});ACC.daily=dl.daily||0;if(dl.coins!=null)ACC.coins=dl.coins}startWatch();return{ok:true}}
  const ban=await dget('bans/'+BK.uid);if(ban&&ban.until&&ban.until>Date.now())return{error:'banned',until:ban.until,reason:ban.reason};if(ban?.muted)ACC.mutedUntil=ban.muted;
- if(ACC.config.maintenance&&!isStaff())return{error:'maintenance',msg:ACC.config.maint_msg};ACC.session=rhex(8);ACC.joinedAt=Date.now();dupd('players/'+BK.uid,{seen:Date.now()});startWatch();return{ok:true}}
+ if(ACC.config.maintenance&&!isStaff())return{error:'maintenance',msg:ACC.config.maint_msg};{const me0=(await dget('players/'+BK.uid))||{};const day=new Date().toDateString();if(me0.dailyDay!==day){ACC.coins=(me0.coins??ACC.coins)+1000;await dupd('players/'+BK.uid,{coins:ACC.coins,dailyDay:day});ACC.daily=1000}}ACC.session=rhex(8);ACC.joinedAt=Date.now();dupd('players/'+BK.uid,{seen:Date.now()});startWatch();return{ok:true}}
 
 // ---------- live updates (events, profile, config, single device) ----------
 let pollT=0,pollBusy=false,lastPoll=0;
@@ -1908,8 +1914,8 @@ function jm(e){const r=joy.getBoundingClientRect();let x=(e.clientX-r.left-r.wid
 $('a-jump').onclick=jump;$('a-act').onclick=()=>interact();$('prompt').onclick=()=>interact();
 $('a-chat').onclick=()=>openChat();$('a-mic').onclick=()=>toggleMic();$('a-emo').onclick=()=>togglePop('emopop');
 EMOTES.forEach(([k,ic,n],i)=>{const b=document.createElement('button');b.innerHTML=`<b>${ic}</b>${n}`;b.title=`${n}（${i+1}）`;b.onclick=()=>doEmote(k);$('emopop').append(b)});
-function togglePop(id,force){const el=$(id);if(!el)return;const open=force??el.hidden;el.hidden=!open;const btn={people:'me-btn',menu:'b-menu',emopop:'a-emo',roompnl:'b-room'}[id];if(btn)$(btn)?.setAttribute('aria-expanded',open);
- if(open){for(const o of ['people','menu','roompnl'])if(o!==id&&o!=='emopop'&&id!=='emopop')togglePop(o,false);if(id==='people')renderPeople();if(id==='roompnl')renderRoomPanel();if(id==='menu')renderSettings()}}
+function togglePop(id,force){const el=$(id);if(!el)return;const open=force??el.hidden;el.hidden=!open;const btn={people:'me-btn',menu:'b-menu',emopop:'a-emo',roompnl:'b-room',lbp:'b-lb'}[id];if(btn)$(btn)?.setAttribute('aria-expanded',open);
+ if(open){for(const o of ['people','menu','roompnl','lbp'])if(o!==id&&o!=='emopop'&&id!=='emopop')togglePop(o,false);if(id==='people')renderPeople();if(id==='roompnl')renderRoomPanel();if(id==='menu')renderSettings()}}
 $('me-btn').onclick=()=>togglePop('people');$('b-menu').onclick=()=>togglePop('menu');
 $('menu-x').onclick=()=>togglePop('menu',false);$('b-help').onclick=()=>{togglePop('menu',false);$('help').hidden=false};$('help-x').onclick=()=>$('help').hidden=true;$('photo-x').onclick=()=>$('photo').hidden=true;
 document.querySelectorAll('#qseg button').forEach(b=>b.onclick=()=>{QUAL=b.dataset.q;store.set('q',QUAL);applyQuality()});
@@ -1940,7 +1946,7 @@ function targetLabel(t){if(t.type!=='st')return t.label;const st=stations.get(t.
  if(other&&other!==MYID){const p=peers.get(other);return p&&p.stState==='wait'?`⚔️ 加入 ${p.name} 的${g.name}對戰`:`${g.name}（${peerName(other)} 在玩）`}return`${g.name} · 雙人對戰`}
 function interact(){if(me.mode==='sit'){standUp();return}if(me.mode!=='walk'||!near)return;const t=near;sfx('click');
  if(t.face!=null)myAv.rotation.y=t.face;
- if(t.type==='bowl')enterLane(t.lane);else if(t.type==='cab')openGame(t.game,{target:t});else if(t.type==='st')stationInteract(t);
+ if(t.type==='bowl')payGate('bowl',()=>enterLane(t.lane));else if(t.type==='cab')payGate(t.game,()=>openGame(t.game,{target:t}));else if(t.type==='st')stationInteract(t);
  else if(t.type==='tv')openTV();else if(t.type==='sit'||t.type==='ride')sitDown(t);
  else if(t.type==='vend'){buyItem('cola').then(r=>{if(r.error){notify({tone:'err',icon:'coin',text:r.error==='coins'?'代幣不夠喔！玩遊戲可以賺代幣':'販賣機故障中',ms:3000});return}heldItem(myAv,'drink');doEmote('drink');sfx('coin');notify({tone:'ok',icon:'bag',text:`買了一瓶霓虹可樂（剩 ${ACC.coins} 代幣）`,ms:2500,quiet:true})})}
  else if(t.type==='snack'){joinShopQueue()}
@@ -2197,7 +2203,7 @@ function gameTick(dt){if(!G||me.mode!=='cab')return;G.t+=dt;cpuTick(dt);if(G.cd>
  if(G.cd>0){gx.fillStyle='rgba(10,6,30,.55)';gx.fillRect(0,0,GW,GH);gtext(gx,Math.ceil(G.cd),GW/2,GH/2,120,'#ffd864')}if(G.vs)vsTick(dt)}
 // ---- factory ----
 function makeGame(k,ctx){const G={k,score:0,over:false,t:0,cd:0,vs:ctx.mode==='vs',ai:ctx.mode==='ai',link:ctx.link,host:!!ctx.host,oppName:ctx.oppName,oppScore:0,rng:mulberry(ctx.seed||((Math.random()*1e9)|0)),pose:'play'};
- const setS=s=>{G.score=s;setStats()};const restart=()=>{if(G.over&&!G.vs){const ng=makeGame(k,ctx);G2(ng);return true}return false};const G2=ng=>setGame(ng);
+ const setS=s=>{G.score=s;setStats()};const restart=()=>{if(G.over&&!G.vs){payGate(k,()=>{const ng=makeGame(k,ctx);if(G?.cpu){ng.cpu=true;ng.cpuF=G.cpuF;ng.cpuSt=G.cpuSt;ng.noScore=cpuCount()>=CPU_FREE;cpuInc()}G2(ng)});return true}return false};const G2=ng=>setGame(ng);
  const finish=()=>{if(G.over)return;G.over=true;if(G.vs){G.link?.send({k:'end',v:G.score});vsCheckEnd()}else gameOverSolo(G.score)};
  if(G.vs&&['racer','hoops','dance'].includes(k))G.cd=3.5;
  const sendScore=()=>{if(G.vs)G.link?.send({k:'sc',v:G.score})};
@@ -2369,15 +2375,16 @@ function showLobby(kind,st,other){const L=$('lobby');L.hidden=false;L.replaceChi
  else if(kind==='result'){L.append(vsrow(pfEl(look),opp?.look?pfEl(opp.look):waitEl()));h.textContent=other>0?'你贏了！':other<0?'輸了，再接再厲':'平手';if(other>0)h.style.color='var(--lemon)';p.textContent=`${G?.score??0} : ${G?.oppScore??0}`;p.style.font='800 28px var(--disp)';L.append(h,p,stack);
   if(G?.cpu&&st)btn('再來一局','pink',()=>startLocal('ai',st),'sync');
   if(MATCH){const b=btn('再來一局','pink',()=>{MATCH.link.send({k:'again'});MATCH.again=true;b.querySelector('span').textContent='等對方確認…';if(MATCH.oppAgain)rematch()},'sync')}}}
-function startLocal(mode,st){$('lobby').hidden=true;me.slot.w=mode==='ai'?'ai':'solo';const cpu=mode==='ai'&&!GAMES[st.game].ai;G=makeGame(st.game,{mode:cpu?'solo':mode});
- if(cpu){G.cpu=true;G.oppName='電腦';G.cpuF=.8+Math.random()*.42;G.cpuSt=st}buildPad(G.pad,G.padCols);setStats();setTitle(st.game,mode);pushInfo(true)}
+function startLocal(mode,st){payGate(st.game,()=>startLocal2(mode,st))}
+function startLocal2(mode,st){$('lobby').hidden=true;me.slot.w=mode==='ai'?'ai':'solo';const cpu=mode==='ai'&&!GAMES[st.game].ai;G=makeGame(st.game,{mode:cpu?'solo':mode});
+ if(cpu||mode==='ai'){G.cpu=cpu;G.oppName='電腦';G.cpuF=.8+Math.random()*.42;G.cpuSt=st;G.noScore=cpuCount()>=CPU_FREE;if(G.noScore)notify({tone:'info',icon:'coin',text:`今天和電腦對戰的 ${CPU_FREE} 場計分場次已用完，這場不計分`,ms:4500});cpuInc()}buildPad(G.pad,G.padCols);setStats();setTitle(st.game,mode);pushInfo(true)}
 // CPU rival for score-race games (racer, hoops, dance): its score chases yours with a random skill factor
 function cpuTick(dt){if(!G||!G.cpu||G.over)return;const tgt=G.score*G.cpuF+(G.t>3?Math.sin(G.t*.7)*1.5:0);G.oppScore=Math.max(G.oppScore||0,Math.round((G.oppScore||0)+(tgt-(G.oppScore||0))*Math.min(1,dt*.8)));if((G.t*4|0)!==((G.t-dt)*4|0))setStats()}
 function leaveStation(){const s=me.slot;if(!s)return;const st=stations.get(s.st);if(st&&st.occ[s.i]===MYID)st.occ[s.i]=null;me.slot=null;me.pose='';pushInfo(true)}
 function vsResult(r){if(!G)return;G.over=true;sfx(r>0?'win':r<0?'lose':'click');showLobby('result',stations.get(me.slot?.st)||{game:curGame},r);if(r>0)announce(`在${GAMES[curGame].name}對戰贏了 ${G.oppName||''}`)}
 function vsCheckEnd(){if(!G||!G.vs)return;if(G.over&&G.oppDone){const r=G.score>G.oppScore?1:G.score<G.oppScore?-1:0;vsResult(r)}else if(G.over)$('cabhint').textContent='等對手完成…'}
 let vsSendT=0;function vsTick(dt){if(!MATCH)return;vsSendT+=dt;const rate=MATCH.link.fast?1/15:1/6;if(vsSendT>rate&&G.net&&!G.over){vsSendT=0;G.net()}if(performance.now()-MATCH.lastRx>9000&&!MATCH.gone){MATCH.gone=true;toast('對手好像斷線了',[],4000);if(!G.over){G.over=true;showLobby('result',stations.get(me.slot?.st),1)}}}
-function beginMatch(m){// m={mid,st,a,b,seed}
+function beginMatch(m){spendCoins(stations.get(m.st)?.game,GAME_COST[stations.get(m.st)?.game]??10).then(()=>notify({key:'coins',tone:'info',icon:'coin',text:`對戰投幣（剩 ${ACC.coins}）`,ms:1800,quiet:true}));AC.reset();// m={mid,st,a,b,seed}
  const st=stations.get(m.st);const host=m.a===MYID,opp=host?m.b:m.a;closeLink();const link=openLink(m.mid,opp);MATCH={...m,host,opp,link,lastRx:performance.now(),again:false,oppAgain:false};me.slot.w='play';pushInfo(true);
  link.on(msg=>{if(!msg||typeof msg!=='object')return;MATCH.lastRx=performance.now();if(msg.k==='bye'){toast(`${peerName(opp)} 離開了對戰`,[],3000);if(G&&!G.over){G.over=true;showLobby('result',st,1)}return}
   if(msg.k==='again'){MATCH.oppAgain=true;if(MATCH.again)rematch();return}if(msg.k==='hi')return;if(msg.k==='end'&&G&&G.vs&&curGame!=='hockey'){G.oppDone=true;G.oppScore=num(msg.v,G.oppScore);setStats();vsCheckEnd()}G?.onMsg?.(msg)});
@@ -2778,7 +2785,50 @@ setInterval(()=>{if(me.sq&&!document.body.classList.contains('playing'))leaveSho
 SHOP.clerk=npcs.find(n=>n.kind==='snack');
 anims.push((t)=>{const c=SHOP.clerk;if(!c)return;const k=(performance.now()-SHOP.prep)/2600;if(k>=0&&k<1){const s=Math.sin(k*Math.PI);c.a.position.z=11+s*1.3;c.a.rotation.y=k<.5?0:Math.PI;if(k>.8)c.a.rotation.y=-Math.PI/2}else{c.a.position.z=11;c.a.rotation.y=-Math.PI/2}});
 // coins for playing: minigames on exit, bowling per finished game
-function rewardGame(game,score){if(!score||score<=0)return;const n=Math.min(30,4+Math.floor(Math.sqrt(score)*1.6));earnCoins(game,n)}
+let rewardGame=function(game,score){if(!score||score<=0)return;const n=Math.min(30,4+Math.floor(Math.sqrt(score)*1.6));earnCoins(game,n)};
+
+// ================= economy: coins to play, daily bonus, leaderboards, anti-cheat =================
+const GAME_COST={snake:10,stack:10,mole:10,brick:10,claw:30,coin:10,racer:15,hoops:15,hockey:15,dance:15,c4:10,grip:10,bowl:30};
+const CPU_FREE=5;// CPU games per day that count for score/rewards; later ones still cost coins but are unscored
+const SCORE_CAP={snake:4,stack:3,mole:5,brick:60,claw:1.2,coin:25,racer:140,hoops:8,dance:45,hockey:1,c4:1,grip:250,bowl:20};
+function cpuCount(){const d=new Date().toDateString(),c=store.get('cpuc',{d:'',n:0});return c.d===d?c.n:0}
+function cpuInc(){store.set('cpuc',{d:new Date().toDateString(),n:cpuCount()+1})}
+async function spendCoins(game,n){if(BK.mode==='supa'){const r=await rpc('avera_spend',{p_secret:BK.secret,p_game:game});if(r.ok)ACC.coins=r.coins;return r}
+ const cur=(await dget('players/'+BK.uid))||{};const c=cur.coins??ACC.coins;if(c<n)return{error:'coins'};ACC.coins=c-n;await dupd('players/'+BK.uid,{coins:ACC.coins});return{ok:true,coins:ACC.coins}}
+let payBusy=false;
+async function payGate(game,go){if(payBusy)return;if(!featureOn('games')&&game!=='bowl'||game==='bowl'&&!featureOn('bowling')){notify({tone:'warn',icon:'gear',text:'這項設施目前維護中',ms:3000});return}
+ const c=GAME_COST[game]??10;if((ACC.coins|0)<c){notify({key:'nocoin',tone:'err',icon:'coin',title:'代幣不足',text:`這台需要 ${c} 代幣，你目前有 ${ACC.coins|0}。每天登入送 1000 枚，也可以玩別的遊戲賺。`,ms:5500});sfx('lose');return}
+ payBusy=true;const r=await spendCoins(game,c).finally(()=>payBusy=false);if(r.error){notify({tone:'err',icon:'coin',text:r.error==='coins'?'代幣不足':'扣款失敗，請稍後再試',ms:3000});return}
+ notify({key:'coins',tone:'info',icon:'coin',text:`投幣 ${c}（剩 ${ACC.coins}）`,ms:1800,quiet:true});sfx('coin');AC.reset();go()}
+// ---- anti-cheat: input rhythm and score plausibility ----
+const AC={taps:[],t0:0,reset(){this.taps=[];this.t0=performance.now()},tap(){const n=performance.now();this.taps.push(n);if(this.taps.length>400)this.taps.shift()},
+ verdict(game,score){const dur=Math.max(1,(performance.now()-this.t0)/1000);const t=this.taps;let maxSec=0;for(let i=0,j=0;i<t.length;i++){while(t[i]-t[j]>1000)j++;maxSec=Math.max(maxSec,i-j+1)}
+  let regular=false;if(t.length>=30){const iv=[];for(let i=1;i<t.length;i++)iv.push(t[i]-t[i-1]);const m=iv.reduce((a,b)=>a+b,0)/iv.length,sd=Math.sqrt(iv.reduce((a,b)=>a+(b-m)**2,0)/iv.length);regular=sd<4&&m<120}
+  const rate=score/dur,cap=(SCORE_CAP[game]||50)*1.5;const why=maxSec>=18?'autoclick':regular?'bot_rhythm':rate>cap?'impossible_score':'';return{why,maxSec,rate:+rate.toFixed(2),dur:+dur.toFixed(1),taps:t.length}}};
+addEventListener('pointerdown',()=>{if(me.mode==='cab'||me.mode==='bowl')AC.tap()},true);addEventListener('keydown',e=>{if(!e.repeat&&(me.mode==='cab'||me.mode==='bowl'))AC.tap()},true);
+async function flagCheat(game,score,v){const data={game,score,...v,room:ROOM.id};if(BK.mode==='supa')rpc('avera_flag',{p_secret:BK.secret,p_kind:'cheat',p_data:data});else{const cur=(await dget('reports/'+BK.uid))||{items:[]};const items=[...(cur.items||[]),{id:rhex(4),kind:'cheat',target:ACC.name,body:`系統偵測：${v.why}（${game} ${score} 分）`,ctx:data,t:Date.now(),status:'open',name:ACC.name}].slice(-30);dset('reports/'+BK.uid,{items,name:ACC.name})}}
+// rewards + leaderboard, only for clean, scored plays
+async function submitScore(game,score){if(BK.mode==='supa'){rpc('avera_score',{p_secret:BK.secret,p_game:game,p_score:score|0});return}
+ const ref='lb/'+game,cur=(await dget(ref))||{top:[]};const me0={id:BK.uid,n:ACC.name,s:score|0,t:Date.now(),lk:ACC.look};const top=(cur.top||[]).filter(x=>x.id!==BK.uid);const prev=(cur.top||[]).find(x=>x.id===BK.uid);top.push(prev&&prev.s>=me0.s?prev:me0);top.sort((a,b)=>b.s-a.s);await dset(ref,{top:top.slice(0,20)})}
+const _rewardGame=rewardGame;
+rewardGame=function(game,score){if(!score||score<=0)return;if(G?.noScore){notify({tone:'info',text:'這場是今日電腦對戰的額外場次，不計分也不發代幣',ms:3500,quiet:true});return}
+ const v=AC.verdict(game,score);if(v.why){notify({tone:'warn',icon:'shield',title:'這場不計分',text:'系統偵測到異常的操作或分數，這場不列入排行也不發代幣。',ms:6000});flagCheat(game,score,v);return}
+ _rewardGame(game,score);submitScore(game,score)};
+async function loadBoard(game){if(BK.mode==='supa'){const r=await rpc('avera_leaderboard',{p_game:game});return(r.top||[]).map(x=>({n:x.name,s:x.score,lk:x.look}))}return((await dget('lb/'+game))?.top||[]).map(x=>({n:x.n,s:x.s,lk:x.lk}))}
+// ---- 3D leaderboard on the wall above the pinballs ----
+const LB={c:cv(768,576),i:0,games:['snake','stack','mole','brick','racer','hoops','dance','claw','grip','bowl'],data:{}};LB.t=tex(LB.c);
+{const m=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.55),new THREE.MeshBasicMaterial({map:LB.t,toneMapped:false}));m.position.set(11.1,4.35,W.z0+.07);scene.add(m);const fr=new THREE.Mesh(RB(3.5,2.65,.04,.02),std('#0b0a14',.3,.5));fr.position.set(11.1,4.35,W.z0+.04);scene.add(fr)}
+function drawBoard(){const g=LB.c.getContext('2d'),w=768,h=576,k=LB.games[LB.i%LB.games.length],list=LB.data[k]||[];const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#1d1450');gr.addColorStop(1,'#0c0820');g.fillStyle=gr;g.fillRect(0,0,w,h);
+ drawWordmark(g,150,52,30,{blur:.2});g.fillStyle='#ffd27a';g.font='800 40px "Noto Sans TC",sans-serif';g.textAlign='right';g.textBaseline='middle';g.fillText(`🏆 ${GAMES[k]?.name||'保齡球'} 排行榜`,w-36,54);
+ g.fillStyle='rgba(255,255,255,.1)';g.fillRect(36,96,w-72,2);g.textAlign='left';if(!list.length){g.fillStyle='#d8d0ff';g.font='600 30px "Noto Sans TC",sans-serif';g.fillText('還沒有人上榜，快來挑戰！',48,170)}
+ list.slice(0,7).forEach((x,i)=>{const y=140+i*60;g.fillStyle=['#ffd27a','#e4e4ff','#ffb27a'][i]||'#a39bd2';g.font='800 32px "Unbounded",sans-serif';g.fillText(i+1,48,y);g.fillStyle='#fff';g.font='800 30px "Noto Sans TC",sans-serif';g.fillText(String(x.n).slice(0,12),110,y);g.textAlign='right';g.fillStyle='#ffd27a';g.font='800 30px "Unbounded",sans-serif';g.fillText(x.s,w-48,y);g.textAlign='left'});LB.t.needsUpdate=true}
+async function refreshBoard(){const k=LB.games[LB.i%LB.games.length];try{LB.data[k]=await loadBoard(k)}catch(e){}drawBoard()}
+setInterval(()=>{if(!document.body.classList.contains('playing'))return;LB.i++;refreshBoard()},9000);
+// ---- leaderboard panel ----
+async function openBoard(game){togglePop('lbp',true);const k=game||$('lbp').dataset.g||'snake';$('lbp').dataset.g=k;const tabs=$('lb-tabs');tabs.replaceChildren();for(const g of LB.games){const b=document.createElement('button');b.textContent=GAMES[g]?.name||'保齡球';b.setAttribute('aria-pressed',g===k);b.onclick=()=>openBoard(g);tabs.append(b)}
+ const l=$('lb-list');l.innerHTML='<div class="empty">讀取中…</div>';const list=await loadBoard(k);l.replaceChildren();if(!list.length){l.innerHTML='<div class="empty">還沒有人上榜。</div>';return}
+ list.slice(0,20).forEach((x,i)=>{const r=document.createElement('div');r.className='prow lbr';const n=document.createElement('b');n.className='rk r'+(i+1);n.textContent=i+1;r.append(n);if(x.lk)r.append(pfEl(cleanLook(x.lk)));const m=document.createElement('div');m.className='mid';const nm=document.createElement('div');nm.className='nm';nm.textContent=x.n;m.append(nm);r.append(m);const s=document.createElement('b');s.className='sc';s.textContent=x.s;r.append(s);l.append(r)})}
+$('b-lb').onclick=()=>$('lbp').hidden?openBoard():togglePop('lbp',false);$('lbp-x').onclick=()=>togglePop('lbp',false);
 
 // ================= photo booth: walk in, pose, 4-shot strip =================
 const BTH={slot:0,busy:false,frame:0,pose:'heart',fov:0,shots:[]};
@@ -3003,7 +3053,7 @@ $('go').onclick=async()=>{const n=cleanName($('nick').value);const err=t=>{$('ni
  if(n.length<2)return err('請輸入 2–12 個字的匿名暱稱');if(RESERVED.test(n))return err('這個暱稱包含保留字（例如 管理員、官方、AVÉRA），請換一個');
  $('go').disabled=true;$('ldg').textContent='建立中…';const r=await createProfile(n,{...look});$('go').disabled=false;$('ldg').textContent='';
  if(r.error){const m={need_name:'請輸入暱稱',reserved:'這個暱稱包含保留字，請換一個',invalid:'暱稱格式不正確',net:'連線失敗，請稍後再試',write:'儲存失敗，請稍後再試'}[r.error]||'建立失敗：'+r.error;return err(m)}
- store.set('nick',n);sfx('go');notify({tone:'ok',title:'角色建立完成',text:`歡迎來到 AVÉRA，${ACC.name}！`,ms:4000});startPlay()};
+ store.set('nick',n);sfx('go');notify({tone:'ok',icon:'gift',title:'角色建立完成',text:`歡迎來到 AVÉRA，${ACC.name}！送你 5000 枚新手代幣`,ms:5000});startPlay()};
 
 // ---------- lobby ----------
 async function renderLobby(){const box=$('rooms-list');if(!box.children.length)box.innerHTML='<div class="empty">正在讀取包廂…</div>';
@@ -3036,7 +3086,7 @@ $('rf-go').onclick=async()=>{const o={name:$('rf-name').value,cap:+$('rf-cap').v
  $('roomf').hidden=true;if(o.perm){notify({tone:'ok',text:'已建立官方包廂'});renderLobby();return}const room=r.room;if(o.pw)ROOM.pwCache=o.pw;tryJoin(room.id,o.pw||null)};
 
 // ---------- joining ----------
-async function ensureSession(){if(APP.entered)return true;const r=await enterGame();if(r.error){gate(r);return false}APP.entered=true;return true}
+async function ensureSession(){if(APP.entered)return true;const r=await enterGame();if(r.error){gate(r);return false}APP.entered=true;if(ACC.daily)notify({tone:'ok',icon:'gift',title:'每日登入獎勵',text:`獲得 ${ACC.daily} 枚 AVÉRA 代幣（共 ${ACC.coins}）`,ms:6000});return true}
 async function tryJoin(id,pw,hint){if(!ACC.exists){APP.pendingRoom=id;openCreator();return}if(!(await ensureSession()))return;
  if(id==='main'){enterRoom(MAIN_ROOM(),false);return}
  const r=await joinRoom(id,pw);

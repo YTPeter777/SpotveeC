@@ -366,6 +366,10 @@ a.cb{text-decoration:none}
 .sig{display:inline-block;width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;vertical-align:middle}.sig i{display:none}
 .netp .sig{width:8px;height:8px}.prow .st .sig{width:7px;height:7px}
 .nc-top .sig{width:14px;height:14px}
+/* ---- leaderboard ---- */
+#lbp{right:var(--sr);top:calc(var(--st) + 66px);width:min(380px,calc(100vw - 28px));box-sizing:border-box;padding:14px;z-index:12;display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - var(--st) - 90px);overflow-y:auto}
+.lbtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}.lbtabs button{flex:none;padding:7px 12px;border-radius:999px;font:800 12.5px var(--txt);color:var(--dim);background:rgba(255,255,255,.06)}.lbtabs button[aria-pressed=true]{background:linear-gradient(180deg,var(--lemon1),var(--lemon2));color:#3d2a00}
+.lbr .rk{width:28px;text-align:center;font:800 16px var(--disp);color:var(--dim)}.lbr .rk.r1{color:var(--gold)}.lbr .rk.r2{color:#e4e4ff}.lbr .rk.r3{color:#ffb27a}.lbr .sc{font:800 16px var(--disp);color:var(--gold)}.lbr .pf{width:32px;height:32px}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -817,8 +821,9 @@ summary::-webkit-details-marker{display:none}
  <div class="pnl" id="talkers" hidden></div>
  <div class="pnl" id="people" hidden></div>
 </div>
-<div class="fx pnl h" id="tr"><button class="ib" id="b-room" aria-expanded="false" aria-label="包廂" title="包廂"><svg class="i"><use href="#i-door"/></svg></button><span class="vsep"></span><button class="ib" id="b-tv" aria-expanded="false" aria-label="一起看 YouTube" title="一起看 YouTube"><svg class="i"><use href="#i-tv"/></svg></button><span class="vsep" id="tr-sep"></span><button class="ib" id="b-menu" aria-expanded="false" aria-label="設定"><svg class="i"><use href="#i-sliders"/></svg></button><button class="ib" id="b-admin" hidden aria-label="後台" title="後台" style="color:var(--gold)"><svg class="i"><use href="#i-shield"/></svg></button></div>
+<div class="fx pnl h" id="tr"><button class="ib" id="b-room" aria-expanded="false" aria-label="包廂" title="包廂"><svg class="i"><use href="#i-door"/></svg></button><button class="ib" id="b-lb" aria-expanded="false" aria-label="排行榜" title="排行榜"><svg class="i"><use href="#i-trophy"/></svg></button><span class="vsep"></span><button class="ib" id="b-tv" aria-expanded="false" aria-label="一起看 YouTube" title="一起看 YouTube"><svg class="i"><use href="#i-tv"/></svg></button><span class="vsep" id="tr-sep"></span><button class="ib" id="b-menu" aria-expanded="false" aria-label="設定"><svg class="i"><use href="#i-sliders"/></svg></button><button class="ib" id="b-admin" hidden aria-label="後台" title="後台" style="color:var(--gold)"><svg class="i"><use href="#i-shield"/></svg></button></div>
 <div class="fx pnl h" id="roompnl" hidden></div>
+<div class="fx pnl h" id="lbp" hidden><div class="mh"><b>排行榜</b><button class="ib" id="lbp-x" style="width:36px;height:36px" aria-label="關閉"><svg class="i"><use href="#i-close"/></svg></button></div><div class="lbtabs" id="lb-tabs"></div><div id="lb-list"></div><p class="note" style="margin:4px">只計算真人遊玩的正常成績；電腦對戰每天前 5 場計分。</p></div>
 <div class="fx pnl h" id="menu" hidden>
  <div class="mh"><b>設定</b><button class="ib" id="menu-x" aria-label="關閉" style="width:36px;height:36px"><svg class="i"><use href="#i-close"/></svg></button></div>
  <div class="stabs" role="tablist"><button role="tab" data-t="gen" aria-selected="true">一般</button><button role="tab" data-t="snd" aria-selected="false">聲音</button><button role="tab" data-t="gfx" aria-selected="false">畫面</button><button role="tab" data-t="inv" aria-selected="false">道具</button><button role="tab" data-t="acct" aria-selected="false">帳號</button><button role="tab" data-t="about" aria-selected="false">關於</button></div>

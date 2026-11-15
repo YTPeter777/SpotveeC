@@ -490,3 +490,45 @@ $$;
 revoke all on function avera._hash(text), avera._rank(text), avera._clean_name(text), avera._clean_look(jsonb), avera._config_public(), avera._profile(uuid), avera._me(text), avera._room_json(avera.rooms, boolean) from public, anon, authenticated;
 revoke all on function public.avera_config(), public.avera_me(text), public.avera_join(text,text,jsonb), public.avera_poll(text,uuid,bigint,text), public.avera_rename(text,text), public.avera_report(text,text,text,text,jsonb), public.avera_earn(text,text,int), public.avera_buy(text,text), public.avera_equip(text,text,text), public.avera_claim(text,text), public.avera_admin(text,text,jsonb), public.avera_rooms(text), public.avera_room_create(text,text,int,boolean,text), public.avera_room_join(text,text,text), public.avera_room_update(text,text,jsonb), public.avera_room_close(text,text,int), public.avera_room_leave(text) from public;
 grant execute on function public.avera_config(), public.avera_me(text), public.avera_join(text,text,jsonb), public.avera_poll(text,uuid,bigint,text), public.avera_rename(text,text), public.avera_report(text,text,text,text,jsonb), public.avera_earn(text,text,int), public.avera_buy(text,text), public.avera_equip(text,text,text), public.avera_claim(text,text), public.avera_admin(text,text,jsonb), public.avera_rooms(text), public.avera_room_create(text,text,int,boolean,text), public.avera_room_join(text,text,text), public.avera_room_update(text,text,jsonb), public.avera_room_close(text,text,int), public.avera_room_leave(text) to anon, authenticated;
+
+-- ===== round 3: economy, leaderboards, anti-cheat flags =====
+alter table avera.players alter column coins set default 5000;
+alter table avera.players add column if not exists daily_day date;
+create table if not exists avera.scores(player uuid references avera.players(id) on delete cascade, game text, score int, at timestamptz default now(), primary key(player, game));
+create table if not exists avera.flags(id bigserial primary key, player uuid, kind text, data jsonb, at timestamptz default now(), ip text);
+alter table avera.scores enable row level security;alter table avera.flags enable row level security;
+
+create or replace function avera._ip() returns text language sql stable set search_path = '' as
+$$ select split_part(coalesce(current_setting('request.headers', true)::json->>'x-forwarded-for',''), ',', 1) $$;
+
+create or replace function public.avera_daily(p_secret text) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r avera.players;
+begin r := avera._me(p_secret); if r.id is null then return jsonb_build_object('error','no_player'); end if;
+  if r.daily_day is distinct from current_date then update avera.players set coins = coins + 1000, daily_day = current_date where id = r.id returning coins into r.coins; return jsonb_build_object('ok',true,'daily',1000,'coins',r.coins); end if;
+  return jsonb_build_object('ok',true,'daily',0,'coins',r.coins); end $$;
+
+create or replace function public.avera_spend(p_secret text, p_game text) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r avera.players; c int;
+begin r := avera._me(p_secret); if r.id is null then return jsonb_build_object('error','no_player'); end if;
+  c := case p_game when 'claw' then 30 when 'bowl' then 30 when 'racer' then 15 when 'hoops' then 15 when 'hockey' then 15 when 'dance' then 15 else 10 end;
+  if r.coins < c then return jsonb_build_object('error','coins','coins',r.coins); end if;
+  update avera.players set coins = coins - c where id = r.id returning coins into r.coins; return jsonb_build_object('ok',true,'coins',r.coins); end $$;
+
+create or replace function public.avera_score(p_secret text, p_game text, p_score int) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r avera.players; cap int;
+begin r := avera._me(p_secret); if r.id is null then return jsonb_build_object('error','no_player'); end if;
+  cap := case p_game when 'racer' then 20000 when 'brick' then 20000 when 'grip' then 5000 when 'bowl' then 300 when 'claw' then 30 else 3000 end;
+  if p_score < 0 or p_score > cap then insert into avera.flags(player,kind,data,ip) values (r.id,'impossible_score',jsonb_build_object('game',p_game,'score',p_score),avera._ip()); return jsonb_build_object('error','rejected'); end if;
+  insert into avera.scores(player,game,score) values (r.id,p_game,p_score) on conflict (player,game) do update set score = greatest(avera.scores.score, excluded.score), at = now();
+  return jsonb_build_object('ok',true); end $$;
+
+create or replace function public.avera_leaderboard(p_game text) returns jsonb language sql stable security definer set search_path = '' as $$
+  select jsonb_build_object('top', coalesce(jsonb_agg(x), '[]'::jsonb)) from (select p.name, p.look, s.score from avera.scores s join avera.players p on p.id = s.player where s.game = p_game and (p.banned_until is null or p.banned_until < now()) order by s.score desc limit 20) x $$;
+
+create or replace function public.avera_flag(p_secret text, p_kind text, p_data jsonb) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r avera.players;
+begin r := avera._me(p_secret);
+  if (select count(*) from avera.flags where player = r.id and at > now() - interval '1 hour') > 30 then return jsonb_build_object('ok',true); end if;
+  insert into avera.flags(player,kind,data,ip) values (r.id, left(p_kind,24), case when pg_column_size(p_data) > 4000 then null else p_data end, avera._ip()); return jsonb_build_object('ok',true); end $$;
+
+grant execute on function public.avera_daily(text), public.avera_spend(text,text), public.avera_score(text,text,int), public.avera_leaderboard(text), public.avera_flag(text,text,jsonb) to anon, authenticated;

@@ -60,10 +60,10 @@ A. UX fixes
  [x] A9 room entry loading screen (no stutter); quality must NOT keep changing; performance panel (FPS, draw calls, memory, ping)
  [x] A10 tutorial reachable from menu (exists in settings — make obvious)
 B. Economy & fairness
- [ ] B1 signup bonus 5000 coins; daily 1000 coins; coins from games
- [ ] B2 every game costs coins (not enough → cannot play); CPU games limited free plays then cost & no scoring
- [ ] B3 leaderboards: 3D wall board + menu tab
- [ ] B4 anti-cheat: autoclicker/impossible scores → not counted, logged for admin
+ [x] B1 signup bonus 5000 coins; daily 1000 coins; coins from games
+ [x] B2 every game costs coins (not enough → cannot play); CPU games limited free plays then cost & no scoring
+ [x] B3 leaderboards: 3D wall board + menu tab
+ [x] B4 anti-cheat: autoclicker/impossible scores → not counted, logged for admin
 C. Characters
  [ ] C1 cuter, girl-appealing, refined (lashes, sparkly eyes, softer pastel palette, blush)
  [ ] C2 more accessories; fix accessories that clip
@@ -90,3 +90,5 @@ G. Games
 H. [ ] lighting themes incl. nightclub + normal bright
 I. [ ] notification settings: on/off, styles/templates, colours, animations
 J. [ ] legal terms (Taiwan PDPA etc.), credit "由僑泰匿名牆團隊製作"; name change also on website settings page
+
+SQL: sql/avera_init.sql + sql/avera_r3.sql (round-3 additions). Both shipped in repo arcade/supabase/.

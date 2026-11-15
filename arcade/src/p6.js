@@ -31,7 +31,7 @@ function gameTick(dt){if(!G||me.mode!=='cab')return;G.t+=dt;cpuTick(dt);if(G.cd>
  if(G.cd>0){gx.fillStyle='rgba(10,6,30,.55)';gx.fillRect(0,0,GW,GH);gtext(gx,Math.ceil(G.cd),GW/2,GH/2,120,'#ffd864')}if(G.vs)vsTick(dt)}
 // ---- factory ----
 function makeGame(k,ctx){const G={k,score:0,over:false,t:0,cd:0,vs:ctx.mode==='vs',ai:ctx.mode==='ai',link:ctx.link,host:!!ctx.host,oppName:ctx.oppName,oppScore:0,rng:mulberry(ctx.seed||((Math.random()*1e9)|0)),pose:'play'};
- const setS=s=>{G.score=s;setStats()};const restart=()=>{if(G.over&&!G.vs){const ng=makeGame(k,ctx);G2(ng);return true}return false};const G2=ng=>setGame(ng);
+ const setS=s=>{G.score=s;setStats()};const restart=()=>{if(G.over&&!G.vs){payGate(k,()=>{const ng=makeGame(k,ctx);if(G?.cpu){ng.cpu=true;ng.cpuF=G.cpuF;ng.cpuSt=G.cpuSt;ng.noScore=cpuCount()>=CPU_FREE;cpuInc()}G2(ng)});return true}return false};const G2=ng=>setGame(ng);
  const finish=()=>{if(G.over)return;G.over=true;if(G.vs){G.link?.send({k:'end',v:G.score});vsCheckEnd()}else gameOverSolo(G.score)};
  if(G.vs&&['racer','hoops','dance'].includes(k))G.cd=3.5;
  const sendScore=()=>{if(G.vs)G.link?.send({k:'sc',v:G.score})};
@@ -203,15 +203,16 @@ function showLobby(kind,st,other){const L=$('lobby');L.hidden=false;L.replaceChi
  else if(kind==='result'){L.append(vsrow(pfEl(look),opp?.look?pfEl(opp.look):waitEl()));h.textContent=other>0?'你贏了！':other<0?'輸了，再接再厲':'平手';if(other>0)h.style.color='var(--lemon)';p.textContent=`${G?.score??0} : ${G?.oppScore??0}`;p.style.font='800 28px var(--disp)';L.append(h,p,stack);
   if(G?.cpu&&st)btn('再來一局','pink',()=>startLocal('ai',st),'sync');
   if(MATCH){const b=btn('再來一局','pink',()=>{MATCH.link.send({k:'again'});MATCH.again=true;b.querySelector('span').textContent='等對方確認…';if(MATCH.oppAgain)rematch()},'sync')}}}
-function startLocal(mode,st){$('lobby').hidden=true;me.slot.w=mode==='ai'?'ai':'solo';const cpu=mode==='ai'&&!GAMES[st.game].ai;G=makeGame(st.game,{mode:cpu?'solo':mode});
- if(cpu){G.cpu=true;G.oppName='電腦';G.cpuF=.8+Math.random()*.42;G.cpuSt=st}buildPad(G.pad,G.padCols);setStats();setTitle(st.game,mode);pushInfo(true)}
+function startLocal(mode,st){payGate(st.game,()=>startLocal2(mode,st))}
+function startLocal2(mode,st){$('lobby').hidden=true;me.slot.w=mode==='ai'?'ai':'solo';const cpu=mode==='ai'&&!GAMES[st.game].ai;G=makeGame(st.game,{mode:cpu?'solo':mode});
+ if(cpu||mode==='ai'){G.cpu=cpu;G.oppName='電腦';G.cpuF=.8+Math.random()*.42;G.cpuSt=st;G.noScore=cpuCount()>=CPU_FREE;if(G.noScore)notify({tone:'info',icon:'coin',text:`今天和電腦對戰的 ${CPU_FREE} 場計分場次已用完，這場不計分`,ms:4500});cpuInc()}buildPad(G.pad,G.padCols);setStats();setTitle(st.game,mode);pushInfo(true)}
 // CPU rival for score-race games (racer, hoops, dance): its score chases yours with a random skill factor
 function cpuTick(dt){if(!G||!G.cpu||G.over)return;const tgt=G.score*G.cpuF+(G.t>3?Math.sin(G.t*.7)*1.5:0);G.oppScore=Math.max(G.oppScore||0,Math.round((G.oppScore||0)+(tgt-(G.oppScore||0))*Math.min(1,dt*.8)));if((G.t*4|0)!==((G.t-dt)*4|0))setStats()}
 function leaveStation(){const s=me.slot;if(!s)return;const st=stations.get(s.st);if(st&&st.occ[s.i]===MYID)st.occ[s.i]=null;me.slot=null;me.pose='';pushInfo(true)}
 function vsResult(r){if(!G)return;G.over=true;sfx(r>0?'win':r<0?'lose':'click');showLobby('result',stations.get(me.slot?.st)||{game:curGame},r);if(r>0)announce(`在${GAMES[curGame].name}對戰贏了 ${G.oppName||''}`)}
 function vsCheckEnd(){if(!G||!G.vs)return;if(G.over&&G.oppDone){const r=G.score>G.oppScore?1:G.score<G.oppScore?-1:0;vsResult(r)}else if(G.over)$('cabhint').textContent='等對手完成…'}
 let vsSendT=0;function vsTick(dt){if(!MATCH)return;vsSendT+=dt;const rate=MATCH.link.fast?1/15:1/6;if(vsSendT>rate&&G.net&&!G.over){vsSendT=0;G.net()}if(performance.now()-MATCH.lastRx>9000&&!MATCH.gone){MATCH.gone=true;toast('對手好像斷線了',[],4000);if(!G.over){G.over=true;showLobby('result',stations.get(me.slot?.st),1)}}}
-function beginMatch(m){// m={mid,st,a,b,seed}
+function beginMatch(m){spendCoins(stations.get(m.st)?.game,GAME_COST[stations.get(m.st)?.game]??10).then(()=>notify({key:'coins',tone:'info',icon:'coin',text:`對戰投幣（剩 ${ACC.coins}）`,ms:1800,quiet:true}));AC.reset();// m={mid,st,a,b,seed}
  const st=stations.get(m.st);const host=m.a===MYID,opp=host?m.b:m.a;closeLink();const link=openLink(m.mid,opp);MATCH={...m,host,opp,link,lastRx:performance.now(),again:false,oppAgain:false};me.slot.w='play';pushInfo(true);
  link.on(msg=>{if(!msg||typeof msg!=='object')return;MATCH.lastRx=performance.now();if(msg.k==='bye'){toast(`${peerName(opp)} 離開了對戰`,[],3000);if(G&&!G.over){G.over=true;showLobby('result',st,1)}return}
   if(msg.k==='again'){MATCH.oppAgain=true;if(MATCH.again)rematch();return}if(msg.k==='hi')return;if(msg.k==='end'&&G&&G.vs&&curGame!=='hockey'){G.oppDone=true;G.oppScore=num(msg.v,G.oppScore);setStats();vsCheckEnd()}G?.onMsg?.(msg)});

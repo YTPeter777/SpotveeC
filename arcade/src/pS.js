@@ -41,7 +41,7 @@ $('go').onclick=async()=>{const n=cleanName($('nick').value);const err=t=>{$('ni
  if(n.length<2)return err('請輸入 2–12 個字的匿名暱稱');if(RESERVED.test(n))return err('這個暱稱包含保留字（例如 管理員、官方、AVÉRA），請換一個');
  $('go').disabled=true;$('ldg').textContent='建立中…';const r=await createProfile(n,{...look});$('go').disabled=false;$('ldg').textContent='';
  if(r.error){const m={need_name:'請輸入暱稱',reserved:'這個暱稱包含保留字，請換一個',invalid:'暱稱格式不正確',net:'連線失敗，請稍後再試',write:'儲存失敗，請稍後再試'}[r.error]||'建立失敗：'+r.error;return err(m)}
- store.set('nick',n);sfx('go');notify({tone:'ok',title:'角色建立完成',text:`歡迎來到 AVÉRA，${ACC.name}！`,ms:4000});startPlay()};
+ store.set('nick',n);sfx('go');notify({tone:'ok',icon:'gift',title:'角色建立完成',text:`歡迎來到 AVÉRA，${ACC.name}！送你 5000 枚新手代幣`,ms:5000});startPlay()};
 
 // ---------- lobby ----------
 async function renderLobby(){const box=$('rooms-list');if(!box.children.length)box.innerHTML='<div class="empty">正在讀取包廂…</div>';
@@ -74,7 +74,7 @@ $('rf-go').onclick=async()=>{const o={name:$('rf-name').value,cap:+$('rf-cap').v
  $('roomf').hidden=true;if(o.perm){notify({tone:'ok',text:'已建立官方包廂'});renderLobby();return}const room=r.room;if(o.pw)ROOM.pwCache=o.pw;tryJoin(room.id,o.pw||null)};
 
 // ---------- joining ----------
-async function ensureSession(){if(APP.entered)return true;const r=await enterGame();if(r.error){gate(r);return false}APP.entered=true;return true}
+async function ensureSession(){if(APP.entered)return true;const r=await enterGame();if(r.error){gate(r);return false}APP.entered=true;if(ACC.daily)notify({tone:'ok',icon:'gift',title:'每日登入獎勵',text:`獲得 ${ACC.daily} 枚 AVÉRA 代幣（共 ${ACC.coins}）`,ms:6000});return true}
 async function tryJoin(id,pw,hint){if(!ACC.exists){APP.pendingRoom=id;openCreator();return}if(!(await ensureSession()))return;
  if(id==='main'){enterRoom(MAIN_ROOM(),false);return}
  const r=await joinRoom(id,pw);

@@ -68,8 +68,8 @@ function jm(e){const r=joy.getBoundingClientRect();let x=(e.clientX-r.left-r.wid
 $('a-jump').onclick=jump;$('a-act').onclick=()=>interact();$('prompt').onclick=()=>interact();
 $('a-chat').onclick=()=>openChat();$('a-mic').onclick=()=>toggleMic();$('a-emo').onclick=()=>togglePop('emopop');
 EMOTES.forEach(([k,ic,n],i)=>{const b=document.createElement('button');b.innerHTML=`<b>${ic}</b>${n}`;b.title=`${n}（${i+1}）`;b.onclick=()=>doEmote(k);$('emopop').append(b)});
-function togglePop(id,force){const el=$(id);if(!el)return;const open=force??el.hidden;el.hidden=!open;const btn={people:'me-btn',menu:'b-menu',emopop:'a-emo',roompnl:'b-room'}[id];if(btn)$(btn)?.setAttribute('aria-expanded',open);
- if(open){for(const o of ['people','menu','roompnl'])if(o!==id&&o!=='emopop'&&id!=='emopop')togglePop(o,false);if(id==='people')renderPeople();if(id==='roompnl')renderRoomPanel();if(id==='menu')renderSettings()}}
+function togglePop(id,force){const el=$(id);if(!el)return;const open=force??el.hidden;el.hidden=!open;const btn={people:'me-btn',menu:'b-menu',emopop:'a-emo',roompnl:'b-room',lbp:'b-lb'}[id];if(btn)$(btn)?.setAttribute('aria-expanded',open);
+ if(open){for(const o of ['people','menu','roompnl','lbp'])if(o!==id&&o!=='emopop'&&id!=='emopop')togglePop(o,false);if(id==='people')renderPeople();if(id==='roompnl')renderRoomPanel();if(id==='menu')renderSettings()}}
 $('me-btn').onclick=()=>togglePop('people');$('b-menu').onclick=()=>togglePop('menu');
 $('menu-x').onclick=()=>togglePop('menu',false);$('b-help').onclick=()=>{togglePop('menu',false);$('help').hidden=false};$('help-x').onclick=()=>$('help').hidden=true;$('photo-x').onclick=()=>$('photo').hidden=true;
 document.querySelectorAll('#qseg button').forEach(b=>b.onclick=()=>{QUAL=b.dataset.q;store.set('q',QUAL);applyQuality()});
@@ -100,7 +100,7 @@ function targetLabel(t){if(t.type!=='st')return t.label;const st=stations.get(t.
  if(other&&other!==MYID){const p=peers.get(other);return p&&p.stState==='wait'?`⚔️ 加入 ${p.name} 的${g.name}對戰`:`${g.name}（${peerName(other)} 在玩）`}return`${g.name} · 雙人對戰`}
 function interact(){if(me.mode==='sit'){standUp();return}if(me.mode!=='walk'||!near)return;const t=near;sfx('click');
  if(t.face!=null)myAv.rotation.y=t.face;
- if(t.type==='bowl')enterLane(t.lane);else if(t.type==='cab')openGame(t.game,{target:t});else if(t.type==='st')stationInteract(t);
+ if(t.type==='bowl')payGate('bowl',()=>enterLane(t.lane));else if(t.type==='cab')payGate(t.game,()=>openGame(t.game,{target:t}));else if(t.type==='st')stationInteract(t);
  else if(t.type==='tv')openTV();else if(t.type==='sit'||t.type==='ride')sitDown(t);
  else if(t.type==='vend'){buyItem('cola').then(r=>{if(r.error){notify({tone:'err',icon:'coin',text:r.error==='coins'?'代幣不夠喔！玩遊戲可以賺代幣':'販賣機故障中',ms:3000});return}heldItem(myAv,'drink');doEmote('drink');sfx('coin');notify({tone:'ok',icon:'bag',text:`買了一瓶霓虹可樂（剩 ${ACC.coins} 代幣）`,ms:2500,quiet:true})})}
  else if(t.type==='snack'){joinShopQueue()}
