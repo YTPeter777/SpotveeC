@@ -8,9 +8,9 @@ function nPump(){while(NS.live.length<nMax()&&NS.wait.length)nShow(NS.wait.shift
 function notify(o){o={tone:'info',ms:6000,btns:[],...o};
  if(o.key){const ex=NS.live.find(n=>n.key===o.key)||NS.wait.find(n=>n.key===o.key);if(ex){const id=ex.id,el=ex.el;Object.assign(ex,o);ex.id=id;ex.el=el;if(el){nRender(ex);nArm(ex)}return nHandle(ex)}}
  o.id=++NS.seq;
- if(NS.live.length>=nMax()){
+ if(NS.live.length>=(NS.hold&&o.prio?1:nMax())){
   if(o.drop)return nHandle(o);
-  const z=NS.live.find(n=>n.drop);if(z){nClose(z,true)}else{if(o.prio)NS.wait.unshift(o);else NS.wait.push(o);return nHandle(o)}}
+  const z=NS.live.find(n=>n.drop)||(o.prio&&!NS.hold?NS.live.find(n=>!n.prio&&!(n.btns&&n.btns.length)):null);if(z){if(!z.drop&&z.ms){NS.wait.unshift({...z,el:null,id:++NS.seq})}nClose(z,true)}else{if(o.prio)NS.wait.unshift(o);else NS.wait.push(o);return nHandle(o)}}
  nShow(o);return nHandle(o)}
 function nHandle(o){return Object.assign(()=>nClose(o),{close:()=>nClose(o),update:t=>{o.text=t;if(o.el)nRender(o)}})}
 function nShow(o){const el=document.createElement('div');el.className='nt';o.el=el;nRender(o);

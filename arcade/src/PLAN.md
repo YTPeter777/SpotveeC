@@ -53,7 +53,7 @@ A. UX fixes
  [x] A2 marble looks dirty → cleaner marble (fewer, finer veins)
  [x] A3 a floor area cannot be walked (invisible collision) — find & fix
  [x] A4 counters (service desk, snack bar, shoe rental) crowded/too low → taller, spaced; NPC greet/speech bubbles when near
- [ ] A5 chairs sittable but never two people in one seat
+ [x] A5 chairs sittable but never two people in one seat
  [x] A6 TVs flush on wall (no protrusion), queue screen on wall NOT above vending machines; rename "影音區 TV"; HUD left panel: now playing / time left / requester; "tablet" song request UI (search + paste)
  [x] A7 network HUD: no wifi/signal-bar icon → rounded pill style
  [x] A8 creator: bottom notification stuck — fix
@@ -77,8 +77,8 @@ E. Admin
  [x] E3 every backend setting applies live (no refresh); feature toggles (disable bowling/games/TV/shop/chat/voice/booth...)
  [x] E4 clear-everyone's-cache button
  [x] E5 backend sees: rooms status (count, music now, players), player activity logs, all chat logs, reports, login logs (IP, device, time), security alerts (signups, bot/crack attempts)
- [ ] E6 separate admin web page (admin.html): unauthorized → fake 404 + attempt logged; admin password set first time; re-login every 8h
- [ ] E7 Supabase: pg_cron 20:00 Asia/Taipei backup snapshot + VACUUM ANALYZE; IP via request.headers
+ [x] E6 separate admin web page (admin.html): unauthorized → fake 404 + attempt logged; admin password set first time; re-login every 8h
+ [x] E7 Supabase: pg_cron 20:00 Asia/Taipei backup snapshot + VACUUM ANALYZE; IP via request.headers
 F. Photos
  [ ] F1 booth: group shot, print-out animation, template choice, items/actions
  [ ] F2 in-game photo mode: hide HUD, toggle name tags
@@ -87,12 +87,13 @@ G. Games
  [ ] G1 new grip-strength game
  [ ] G2 every game: solo + online + CPU
  [ ] G3 advanced claw (weak/strong grip, payout), restock, queue, spectators see who plays
-H. [ ] lighting themes incl. nightclub + normal bright
-I. [ ] notification settings: on/off, styles/templates, colours, animations
-J. [ ] legal terms (Taiwan PDPA etc.), credit "由僑泰匿名牆團隊製作"; name change also on website settings page
+H. [x] lighting themes incl. nightclub + normal bright
+I. [x] notification settings: on/off, styles/templates, colours, animations
+J. [x] legal terms (Taiwan PDPA etc.), credit "由僑泰匿名牆團隊製作"; name change also on website settings page
 
 SQL: sql/avera_init.sql + sql/avera_r3.sql (round-3 additions). Both shipped in repo arcade/supabase/.
 
 NEXT (in order): D chat filter/report msg ; E admin powers/logs/admin.html ; F photos ; G grip+claw adv ; H themes ; I notif settings ; J legal+credit "由僑泰匿名牆團隊製作".
 pP.js = props (PROPS, buyProp, setProp), applyEquip (halo/crown/tiara/wings/cape/pet/aura, staff gold aura), admin quick menu (ADMP hidden/fly/noclip). p7 applyInfo handles hp/hid/eq/rk + admin-join notice.
 pQ.js = chat filter/rate limit, message & player reports, deviceInfo in reports, chat/login/act logs, room status (rstat). pD admin tabs roomstat/chatlog/logins/security + features + cache clear (config.cachev).
+pH.js = notification prefs (NOTI templates/anim/colour/on-off), seat occupancy, website account page (#/account), admin page gate (admin.html / #/admin → 404 for non-staff, password set/check, 8h token). REMAINING: F (photos: booth group/print/templates/props, in-game photo mode, gallery upload) and G (grip game, solo+online+CPU for all, advanced claw restock/queue/spectators).

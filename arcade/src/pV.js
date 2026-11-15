@@ -60,7 +60,8 @@ logoSign(5.2,0,4.35,W.z1-.12,Math.PI,'WELCOME · 歡迎光臨');
 logoSign(4.2,W.x0+.12,9.6,-10,Math.PI/2);
 // theme recolouring: LEDs, trims, beams and coloured point lights follow the room's theme
 {const ptl=[];scene.traverse(o=>{if(o.isPointLight)ptl.push([o,'#'+o.color.getHexString()]);if(o.isMesh&&o.material?.map===beamTex)TH.beams.push(o.material)});TH.lights=ptl}
-function worldTheme(t){const set=(m,c)=>m&&(m.emissive?m.emissive.set(c):m.color.set(c));
+const HEMI=scene.children.find(o=>o.isHemisphereLight);
+function worldTheme(t){if(HEMI)HEMI.intensity=.9*(t.amb||1);key.intensity=t.key||1.45;CLUB.on=t.anim==='club';const set=(m,c)=>m&&(m.emissive?m.emissive.set(c):m.color.set(c));
  for(const r of ['a','b','c'])for(const m of TH[r]){if(m.spill)m.spill.color.set(t[r]);else set(m,t[r])}
  for(const m of TH.flow)m.color.set(t.a).multiplyScalar(2.2);
  [['#ad93ff|1.6','a'],['#ff6fb1|2','b'],['#62c9ff|1.4','c'],['#62c9ff|2.2','c'],['#62c9ff|1.5','c']].forEach(([k,r])=>{const m=glowCache.get(k);if(m)m.emissive.set(t[r])});
@@ -84,3 +85,7 @@ function worldTheme(t){const set=(m,c)=>m&&(m.emissive?m.emissive.set(c):m.color
  const halo=new THREE.Group();halo.position.set(cx,8.6,cz);for(const[r,h]of [[3.2,0],[2.4,.5],[1.6,1]]){const t=new THREE.Mesh(new THREE.TorusGeometry(r,.05,10,128),thMat(h===.5?'b':'a',3.2));t.rotation.x=Math.PI/2;t.position.y=h;halo.add(t)}
  for(let i=0;i<4;i++){const w=new THREE.Mesh(new THREE.CylinderGeometry(.006,.006,CEIL-8.6,4),M.metal);const a=i/4*Math.PI*2;w.position.set(Math.cos(a)*3.2,(CEIL-8.6)/2,Math.sin(a)*3.2);halo.add(w)}
  scene.add(halo);anims.push(t=>{halo.rotation.y=t*.08;halo.children[1].position.y=.5+Math.sin(t*.9)*.12})}
+
+// nightclub mode: colours sweep, beams speed up
+const CLUB={on:false,c:new THREE.Color()};
+anims.push(t=>{if(!CLUB.on)return;for(const[r,ph]of [['a',0],['b',.33],['c',.66]]){CLUB.c.setHSL((t*.12+ph)%1,1,.55);for(const m of TH[r]){if(m.spill)m.spill.color.copy(CLUB.c);else(m.emissive||m.color).copy(CLUB.c)}}for(const m of TH.flow)m.color.setHSL((t*.12)%1,1,.6).multiplyScalar(2.2);TH.beams.forEach((m,i)=>m.color.setHSL((t*.25+i*.17)%1,1,.6));if(HEMI)HEMI.intensity=.32+Math.max(0,Math.sin(t*8))*.1});

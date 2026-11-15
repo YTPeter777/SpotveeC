@@ -116,7 +116,7 @@ body.busy .nb{display:none!important}
 .hr{height:1.5px;background:rgba(255,255,255,.08);margin:4px 2px}
 
 /* ---- notification stack (single column: nothing can overlap) ---- */
-#nstack{left:50%;top:calc(var(--st) + 66px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;width:min(420px,calc(100vw - 28px));z-index:42;pointer-events:none;transition:top .25s}
+#nstack{left:50%;top:calc(var(--st) + 66px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;width:min(420px,calc(100vw - 28px));z-index:46;pointer-events:none;transition:top .25s}
 .nt{pointer-events:auto;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:11px 12px 11px 12px;border-radius:18px;background:linear-gradient(180deg,rgba(44,34,98,.96),rgba(27,20,66,.96));box-shadow:0 0 0 1.5px rgba(14,8,40,.6),0 12px 26px rgba(6,2,24,.45),inset 0 1.5px 0 var(--edge);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:tin .35s cubic-bezier(.2,1.4,.4,1)}
 .nt.out{animation:tout .22s ease-in forwards}
 @keyframes tin{from{transform:translateY(-12px) scale(.96);opacity:0}}
@@ -380,6 +380,15 @@ a.cb{text-decoration:none}
 .tag[data-tag=gold_tag] .nt{background:linear-gradient(100deg,#7a5410,#c9a35a)}.tag[data-tag=vip_tag] .nt{background:linear-gradient(100deg,#7b2ff7,#f107a3)}.tag[data-tag=staff_tag] .nt{background:linear-gradient(100deg,#0f5132,#20c997)}
 .rep-b{margin-left:6px;width:22px;height:22px;border-radius:7px;display:inline-grid;place-items:center;color:var(--dim);background:rgba(255,255,255,.06);pointer-events:auto;opacity:.55;vertical-align:middle}.rep-b:hover{opacity:1;color:var(--red)}
 #feed .m{pointer-events:auto}.rbtns{display:flex;gap:4px;align-items:center}.rep-p{width:32px!important;height:32px!important;color:var(--dim)}.rep-p:hover{color:var(--red)}
+/* ---- notification templates ---- */
+.nt{--tc:var(--ntc)}
+body.nt-glass .nt{background:rgba(255,255,255,.14);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 0 0 1px rgba(255,255,255,.25),0 10px 30px rgba(0,0,0,.3)}
+body.nt-neon .nt{background:rgba(10,6,30,.9);box-shadow:0 0 0 2px var(--ntc),0 0 18px var(--ntc)}
+body.nt-mini .nt{background:rgba(12,9,28,.92);border-radius:12px;padding:8px 12px;box-shadow:none}body.nt-mini .nt .ic{width:28px;height:28px;background:none}
+body.na-slide .nt{animation:nslide .35s ease-out}body.na-fade .nt{animation:nfade .4s ease-out}body.na-none .nt{animation:none}
+@keyframes nslide{from{transform:translateX(40px);opacity:0}}@keyframes nfade{from{opacity:0}}
+#nf{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:#0a0718}.nf-in{text-align:center}.nf-in b{font:800 120px var(--brand);color:#3a2b70;display:block}.nf-in p{color:var(--dim);font:700 18px var(--txt)}
+body.adminpage #tl,body.adminpage #tr,body.adminpage #acts{display:none!important}
 /* ---- tutorial ---- */
 #tut{position:fixed;inset:0;z-index:44;background:rgba(6,3,18,.5)}
 #tut-ring{position:fixed;box-shadow:0 0 0 3px var(--lemon),0 0 30px var(--lemon),0 0 0 9999px rgba(6,3,18,.35);pointer-events:none;transition:all .3s cubic-bezier(.3,1.2,.4,1)}
@@ -697,7 +706,7 @@ summary::-webkit-details-marker{display:none}
 
 <div id="site">
  <header id="nav"><a class="brand" href="#/" aria-label="AVÉRA 首頁"><span class="wm">AV<em>É</em>RA</span></a>
-  <nav id="navl"><a href="#/" data-r="home">首頁</a><a href="#/about" data-r="about">介紹</a><a href="#/rooms" data-r="rooms">包廂</a><a href="#/faq" data-r="faq">常見問題</a><a href="#/contact" data-r="contact">聯絡我們</a></nav>
+  <nav id="navl"><a href="#/" data-r="home">首頁</a><a href="#/about" data-r="about">介紹</a><a href="#/rooms" data-r="rooms">包廂</a><a href="#/faq" data-r="faq">常見問題</a><a href="#/contact" data-r="contact">聯絡我們</a><a href="#/account" data-r="account">我的帳號</a></nav>
   <span class="grow"></span><span id="nav-me" hidden></span><a class="cb pink sm" id="nav-play" href="#/rooms">開始遊玩</a><button class="ib" id="nav-burger" aria-label="選單" aria-expanded="false"><svg class="i"><use href="#i-menu"/></svg></button></header>
  <main id="pages">
   <section class="pg" data-pg="home">
@@ -754,33 +763,38 @@ summary::-webkit-details-marker{display:none}
     <div class="row"><span class="cnt" id="cf-cnt">0 / 1000</span><button class="cb pink" type="submit">送出</button></div>
    </form>
   </div></section>
+  <section class="pg doc" data-pg="account" hidden><div class="wrap narrow"><h1>我的帳號</h1><div id="acct-body"></div></div></section>
   <section class="pg doc" data-pg="terms" hidden><div class="wrap narrow">
-   <h1>服務條款</h1><p class="meta">生效日期：2026 年 11 月 15 日</p>
-   <p>歡迎來到 AVÉRA（以下稱「本服務」）。<b>當你進入或使用本服務，即表示你已閱讀並同意本條款</b>；如果不同意，請不要使用本服務。</p>
-   <h2>1. 使用資格</h2><p>你需要年滿 13 歲；未滿 18 歲請在法定代理人同意下使用。</p>
-   <h2>2. 帳號與暱稱</h2><p>本服務以匿名暱稱與裝置帳號運作。暱稱不得冒充他人、官方或管理員，不得含有歧視、色情、暴力或違法內容。暱稱每 14 天最多更改 2 次；角色外觀建立後玩家不可自行更改。一個帳號同一時間只能在一台裝置上使用。</p>
-   <h2>3. 行為規範</h2><p>請遵守《社群守則》。禁止騷擾、仇恨言論、詐騙、散布個資、利用漏洞或外掛、干擾他人遊玩或伺服器運作。</p>
-   <h2>4. 虛擬代幣與道具</h2><p>AVÉRA 代幣與特殊道具僅能在本服務內使用，不具現金價值，不可兌換、轉售或轉讓。管理員可因違規或系統錯誤調整。</p>
-   <h2>5. 包廂</h2><p>包廂版主可設定人數、密碼與上鎖，並可請人離開自己的包廂。版主離開後包廂會自動關閉。官方包廂由管理員管理。</p>
-   <h2>6. 第三方內容</h2><p>放映室播放的 YouTube 影片由第三方提供，播放行為同時受 YouTube 服務條款規範。請勿點播違法或不當內容。</p>
-   <h2>7. 管理與處分</h2><p>違反條款或守則時，管理員得視情節予以提醒、禁言、移出包廂、暫時或永久停權，並保留相關紀錄。</p>
-   <h2>8. 免責與變更</h2><p>本服務以現狀提供，可能因維護或不可抗力中斷。我們可能更新本條款，更新後繼續使用即視為同意新版條款。</p>
-   <h2>9. 聯絡</h2><p>對本條款有任何疑問，請透過網站的「聯絡我們」表單與我們聯繫。</p>
+   <h1>服務條款</h1><p class="meta">生效日期：2026 年 11 月 15 日 · 營運：僑泰匿名牆團隊</p>
+   <p>歡迎使用 AVÉRA（以下稱「本服務」），本服務由僑泰匿名牆團隊（以下稱「我們」）製作與營運。<b>當你進入或使用本服務，即表示你已閱讀、瞭解並同意本條款、隱私權政策與社群守則</b>；如不同意，請立即停止使用。</p>
+   <h2>1. 使用資格與未成年人</h2><p>你需年滿 13 歲。未滿 18 歲者，應於法定代理人閱讀並同意本條款後使用；法定代理人應負監督責任。</p>
+   <h2>2. 帳號、暱稱與裝置</h2><p>本服務以匿名暱稱與裝置帳號運作，請勿使用真實姓名、聯絡方式或他人身分。暱稱不得冒充他人、官方或管理員，不得含有歧視、色情、暴力、違法或侵權內容。暱稱每 14 天最多更改 2 次；角色外觀建立後玩家不可自行更改。一個帳號同一時間只能在一台裝置上使用，請妥善保管帳號轉移碼，因轉移碼外流造成的損失由你自行負責。</p>
+   <h2>3. 行為規範</h2><p>禁止：騷擾、霸凌、仇恨或歧視言論；散布色情、暴力或其他不適合未成年人之內容（含 18 禁內容）；冒用他人身分或洩漏他人個人資料；詐騙、販售或交易帳號與虛擬物品；使用外掛、連點器、自動化程式或利用漏洞；攻擊、干擾或嘗試未經授權存取本服務（含後台）。違反者我們得依情節處理，並得依法向主管機關檢舉。</p>
+   <h2>4. 虛擬代幣、道具與遊戲成績</h2><p>AVÉRA 代幣、道具、特殊道具與排行榜成績僅供本服務內娛樂使用，<b>不具任何現金或財產價值</b>，不得兌換現金、轉售、轉讓或作為賭博之用。我們得因系統維護、錯誤修正或違規處理而調整、回收或重設代幣、道具與成績。經系統判定為異常（例如連點、外掛或不合理之分數）之成績不予計算。</p>
+   <h2>5. 包廂</h2><p>包廂版主可設定人數、密碼與上鎖，並可請一般玩家離開自己的包廂；版主離開後包廂將自動關閉。官方包廂由管理員管理。版主不得利用包廂從事違反本條款之行為。</p>
+   <h2>6. 使用者內容與第三方內容</h2><p>你透過聊天、語音、點歌、拍貼或上傳所提供的內容，須確保不侵害他人智慧財產權、肖像權或隱私權，並由你自行負責。放映室播放之影片由 YouTube 提供，著作權屬原權利人，播放行為同時受 YouTube 服務條款規範，請勿點播違法、侵權或不當內容。</p>
+   <h2>7. 管理、紀錄與處分</h2><p>為維護安全與公平，我們會記錄登入時間、裝置資訊、網路位址（IP）、聊天內容、檢舉與遊戲紀錄（詳見隱私權政策）。違反條款者，管理員得視情節予以提醒、禁言、移出包廂、暫時或永久停權、清除代幣或道具。惡意或大量不實檢舉亦屬違規。</p>
+   <h2>8. 服務變更、中斷與免責</h2><p>本服務以「現況」提供，可能因維護、更新、第三方服務異常或不可抗力而中斷或變更部分功能。在法律允許範圍內，我們不就服務中斷、資料遺失或你與其他玩家間之互動負擔賠償責任；但因我們故意或重大過失所致者，不在此限。</p>
+   <h2>9. 條款修改</h2><p>我們得修改本條款並於網站公告，修改後你繼續使用本服務，視為同意修改後之條款。</p>
+   <h2>10. 準據法與管轄</h2><p>本條款以中華民國法律為準據法。因本服務所生爭議，雙方應先誠信協商；協商不成時，以中華民國法院為第一審管轄法院，但法律另有專屬管轄規定者從其規定。</p>
+   <h2>11. 聯絡</h2><p>本服務僅透過網站的「聯絡我們」表單受理聯絡與申訴。</p>
   </div></section>
   <section class="pg doc" data-pg="privacy" hidden><div class="wrap narrow">
-   <h1>隱私權政策</h1><p class="meta">生效日期：2026 年 11 月 15 日</p>
-   <h2>我們收集什麼</h2><ul class="ticks"><li>你設定的匿名暱稱與角色外觀。</li><li>一組存在你瀏覽器裡的隨機帳號金鑰（用來辨識同一個帳號）。</li><li>遊戲資料：代幣、道具、改名紀錄、最後上線時間、所在包廂。</li><li>你主動送出的回報與聯絡內容。</li></ul>
-   <h2>我們不收集什麼</h2><ul class="ticks"><li>真實姓名、電話、Email、地址。</li><li>語音內容：語音在玩家之間直接傳送，伺服器不錄音。</li><li>聊天內容：聊天即時轉送，不在伺服器保存。</li></ul>
-   <h2>如何使用</h2><p>僅用於提供遊戲功能、防止濫用、處理檢舉與改善服務，不會出售或用於廣告追蹤。</p>
-   <h2>保存與刪除</h2><p>回報紀錄與管理紀錄會保存至處理完畢後的合理期間。若想刪除帳號資料，請透過「聯絡我們」提出。</p>
-   <h2>第三方服務</h2><p>本服務使用 Supabase 提供即時連線與資料儲存、使用 YouTube 嵌入播放器播放影片；這些服務有各自的隱私政策。</p>
+   <h1>隱私權政策</h1><p class="meta">生效日期：2026 年 11 月 15 日 · 依中華民國《個人資料保護法》制定</p>
+   <h2>蒐集目的</h2><p>提供與維護線上遊戲服務、帳號與安全管理、防止濫用與詐欺、處理檢舉與客服、統計與改善服務。</p>
+   <h2>蒐集之個人資料類別</h2><ul class="ticks"><li>帳號資料：匿名暱稱、角色外觀、隨機帳號識別碼（存於你的瀏覽器）。</li><li>使用紀錄：登入時間、裝置與瀏覽器資訊、網路位址（IP）、所在包廂、遊戲與購買紀錄、代幣與道具。</li><li>互動內容：聊天文字、檢舉與聯絡表單內容、你主動上傳的照片。</li></ul>
+   <h2>不蒐集的資料</h2><ul class="ticks"><li>真實姓名、電話、Email、地址等可直接識別身分之資料（請勿主動提供）。</li><li>語音內容：語音在玩家之間直接傳送，我們不錄音、不保存。</li></ul>
+   <h2>利用期間、地區、對象與方式</h2><p>於服務營運期間及處理完畢後之合理期間內保存（聊天與登入紀錄原則保存 180 天、檢舉紀錄保存至處理完成後 1 年）；資料存放於我們使用之雲端服務供應商（Supabase）之伺服器；僅由經授權之管理員為上述目的利用，除法令要求或經你同意外，不會提供給第三人，也不用於廣告追蹤或販售。</p>
+   <h2>你的權利</h2><p>依個人資料保護法第 3 條，你可以請求查詢、閱覽、製給複本、補充或更正、停止蒐集處理利用或刪除你的資料。請透過網站「聯絡我們」提出；我們可能請你提供帳號轉移碼以確認身分。你拒絕提供必要資料時，可能無法使用部分或全部服務。</p>
+   <h2>安全措施</h2><p>我們以存取控管、權限分級、伺服器端驗證與定期備份保護資料；後台僅限授權管理員以密碼登入，且所有後台操作均有紀錄。</p>
+   <h2>第三方服務</h2><p>本服務使用 Supabase（即時連線與資料庫）及 YouTube 嵌入播放器，這些服務有各自的隱私權政策。</p>
   </div></section>
   <section class="pg doc" data-pg="rules" hidden><div class="wrap narrow">
    <h1>社群守則</h1>
    <ul class="ticks"><li><b>友善相處</b>：不騷擾、不辱罵、不歧視任何人。</li><li><b>保護隱私</b>：不要問、也不要公開任何人的真實個資。</li><li><b>尊重空間</b>：在別人的包廂裡，請聽從版主的安排。</li><li><b>公平遊戲</b>：不使用外掛、不利用 Bug、不故意干擾別人的遊戲。</li><li><b>合宜內容</b>：暱稱、聊天與點播影片都要適合所有年齡。</li><li><b>看到問題就回報</b>：設定 →「回報問題」，管理員會處理。</li></ul>
   </div></section>
  </main>
- <footer id="foot"><div class="wrap"><span class="wm sm">AV<em>É</em>RA</span><span class="grow"></span><a href="#/about">介紹</a><a href="#/terms">服務條款</a><a href="#/privacy">隱私權政策</a><a href="#/rules">社群守則</a><a href="#/contact">聯絡我們</a><span class="copy">© 2026 AVÉRA</span></div></footer>
+ <footer id="foot"><div class="wrap"><span class="wm sm">AV<em>É</em>RA</span><span class="grow"></span><a href="#/about">介紹</a><a href="#/terms">服務條款</a><a href="#/privacy">隱私權政策</a><a href="#/rules">社群守則</a><a href="#/contact">聯絡我們</a><span class="copy">© 2026 AVÉRA · 由僑泰匿名牆團隊製作</span></div></footer>
 </div>
 
 <div id="creator" hidden><div id="sc" class="pnl">
@@ -821,6 +835,7 @@ summary::-webkit-details-marker{display:none}
 <div id="booth" hidden><div class="fx pnl" id="b-bar"><div class="bgrp"><small>相框</small><div class="thms" id="b-frames"></div></div><div class="bgrp"><small>第一張的姿勢</small><div id="b-poses"></div></div><button class="cb pink" id="b-go"><svg class="i"><use href="#i-camera"/></svg><span>開始拍（4 張）</span></button><button class="cb ghost" id="b-x"><svg class="i"><use href="#i-exit"/></svg><span>離開</span></button></div>
  <div id="b-count" hidden>3</div><div id="b-flash"></div>
  <div id="b-res" hidden><div class="pnl dlg-b"><h3>拍好了！</h3><img id="b-img" alt="拍貼照片"><div class="dlg-btns"><a class="cb pink" id="b-dl" download="avera-photo.png"><svg class="i"><use href="#i-arrow"/></svg><span>下載</span></a><button class="cb ghost" id="b-again">再拍一次</button><button class="cb ghost" id="b-done">離開</button></div></div></div></div>
+<div id="nf" hidden><div class="nf-in"><b>404</b><p>找不到這個頁面</p><a href="./" class="cb ghost">回到首頁</a></div></div>
 <div id="dlg" hidden><div class="pnl dlg-b" role="dialog" aria-modal="true"><div class="dlg-ic" id="dlg-ic"></div><h3 id="dlg-t"></h3><p id="dlg-p"></p><div id="dlg-x"></div><div class="dlg-btns" id="dlg-btns"></div></div></div>
 
 <div class="fx h" id="tl">
@@ -841,6 +856,7 @@ summary::-webkit-details-marker{display:none}
   <div class="mrow"><svg class="i"><use href="#i-edit"/></svg><span class="grow">暱稱<small id="st-rn"></small></span><button class="cb ghost sm" id="b-rename">更改</button></div>
   <div class="mrow"><svg class="i"><use href="#i-lock"/></svg><span class="grow">角色外觀<small>建立後無法自行更改，如需調整請聯絡管理員</small></span></div>
   <div class="hr"></div>
+  <div class="sec"><svg class="i sm"><use href="#i-megaphone"/></svg><span>通知</span></div><div id="st-noti"></div><div class="hr"></div>
   <button class="cb ghost wide" id="b-help"><svg class="i"><use href="#i-help"/></svg><span>操作說明</span></button>
   <button class="cb ghost wide" id="b-tut"><svg class="i"><use href="#i-sparkle"/></svg><span>重新看一次新手教學</span></button>
   <button class="cb ghost wide" id="b-report"><svg class="i"><use href="#i-flagr"/></svg><span>回報問題 / 檢舉</span></button></div>
@@ -1442,7 +1458,8 @@ logoSign(5.2,0,4.35,W.z1-.12,Math.PI,'WELCOME · 歡迎光臨');
 logoSign(4.2,W.x0+.12,9.6,-10,Math.PI/2);
 // theme recolouring: LEDs, trims, beams and coloured point lights follow the room's theme
 {const ptl=[];scene.traverse(o=>{if(o.isPointLight)ptl.push([o,'#'+o.color.getHexString()]);if(o.isMesh&&o.material?.map===beamTex)TH.beams.push(o.material)});TH.lights=ptl}
-function worldTheme(t){const set=(m,c)=>m&&(m.emissive?m.emissive.set(c):m.color.set(c));
+const HEMI=scene.children.find(o=>o.isHemisphereLight);
+function worldTheme(t){if(HEMI)HEMI.intensity=.9*(t.amb||1);key.intensity=t.key||1.45;CLUB.on=t.anim==='club';const set=(m,c)=>m&&(m.emissive?m.emissive.set(c):m.color.set(c));
  for(const r of ['a','b','c'])for(const m of TH[r]){if(m.spill)m.spill.color.set(t[r]);else set(m,t[r])}
  for(const m of TH.flow)m.color.set(t.a).multiplyScalar(2.2);
  [['#ad93ff|1.6','a'],['#ff6fb1|2','b'],['#62c9ff|1.4','c'],['#62c9ff|2.2','c'],['#62c9ff|1.5','c']].forEach(([k,r])=>{const m=glowCache.get(k);if(m)m.emissive.set(t[r])});
@@ -1466,6 +1483,10 @@ function worldTheme(t){const set=(m,c)=>m&&(m.emissive?m.emissive.set(c):m.color
  const halo=new THREE.Group();halo.position.set(cx,8.6,cz);for(const[r,h]of [[3.2,0],[2.4,.5],[1.6,1]]){const t=new THREE.Mesh(new THREE.TorusGeometry(r,.05,10,128),thMat(h===.5?'b':'a',3.2));t.rotation.x=Math.PI/2;t.position.y=h;halo.add(t)}
  for(let i=0;i<4;i++){const w=new THREE.Mesh(new THREE.CylinderGeometry(.006,.006,CEIL-8.6,4),M.metal);const a=i/4*Math.PI*2;w.position.set(Math.cos(a)*3.2,(CEIL-8.6)/2,Math.sin(a)*3.2);halo.add(w)}
  scene.add(halo);anims.push(t=>{halo.rotation.y=t*.08;halo.children[1].position.y=.5+Math.sin(t*.9)*.12})}
+
+// nightclub mode: colours sweep, beams speed up
+const CLUB={on:false,c:new THREE.Color()};
+anims.push(t=>{if(!CLUB.on)return;for(const[r,ph]of [['a',0],['b',.33],['c',.66]]){CLUB.c.setHSL((t*.12+ph)%1,1,.55);for(const m of TH[r]){if(m.spill)m.spill.color.copy(CLUB.c);else(m.emissive||m.color).copy(CLUB.c)}}for(const m of TH.flow)m.color.setHSL((t*.12)%1,1,.6).multiplyScalar(2.2);TH.beams.forEach((m,i)=>m.color.setHSL((t*.25+i*.17)%1,1,.6));if(HEMI)HEMI.intensity=.32+Math.max(0,Math.sin(t*8))*.1});
 
 // ================= Q-style animal avatars =================
 const SPECIES=[{k:'cat',n:'貓咪',e:'🐱'},{k:'dog',n:'狗狗',e:'🐶'},{k:'bunny',n:'兔兔',e:'🐰'},{k:'bear',n:'熊熊',e:'🐻'},{k:'panda',n:'熊貓',e:'🐼'},{k:'fox',n:'狐狸',e:'🦊'},{k:'frog',n:'青蛙',e:'🐸'},{k:'penguin',n:'企鵝',e:'🐧'}];
@@ -1626,9 +1647,9 @@ function nPump(){while(NS.live.length<nMax()&&NS.wait.length)nShow(NS.wait.shift
 function notify(o){o={tone:'info',ms:6000,btns:[],...o};
  if(o.key){const ex=NS.live.find(n=>n.key===o.key)||NS.wait.find(n=>n.key===o.key);if(ex){const id=ex.id,el=ex.el;Object.assign(ex,o);ex.id=id;ex.el=el;if(el){nRender(ex);nArm(ex)}return nHandle(ex)}}
  o.id=++NS.seq;
- if(NS.live.length>=nMax()){
+ if(NS.live.length>=(NS.hold&&o.prio?1:nMax())){
   if(o.drop)return nHandle(o);
-  const z=NS.live.find(n=>n.drop);if(z){nClose(z,true)}else{if(o.prio)NS.wait.unshift(o);else NS.wait.push(o);return nHandle(o)}}
+  const z=NS.live.find(n=>n.drop)||(o.prio&&!NS.hold?NS.live.find(n=>!n.prio&&!(n.btns&&n.btns.length)):null);if(z){if(!z.drop&&z.ms){NS.wait.unshift({...z,el:null,id:++NS.seq})}nClose(z,true)}else{if(o.prio)NS.wait.unshift(o);else NS.wait.push(o);return nHandle(o)}}
  nShow(o);return nHandle(o)}
 function nHandle(o){return Object.assign(()=>nClose(o),{close:()=>nClose(o),update:t=>{o.text=t;if(o.el)nRender(o)}})}
 function nShow(o){const el=document.createElement('div');el.className='nt';o.el=el;nRender(o);
@@ -1704,7 +1725,7 @@ const SPECIAL_ITEMS={
  stars:{n:'星星足跡',slot:'trail'},hearts:{n:'愛心足跡',slot:'trail'},aura:{n:'彩虹光暈',slot:'fx'}};
 const SLOT_NAME={hat:'頭飾',back:'背飾',tag:'名牌',pet:'寵物',trail:'足跡',fx:'光效'};
 const DEFAULT_SHOP={cola:{n:'霓虹可樂',p:15,k:'drink'},bubble:{n:'珍珠奶茶',p:25,k:'drink'},soda:{n:'彩虹汽水',p:18,k:'drink'},popcorn:{n:'焦糖爆米花',p:20,k:'eat'},hotdog:{n:'大熱狗',p:30,k:'eat'},fries:{n:'黃金薯條',p:20,k:'eat'},icecream:{n:'霜淇淋',p:22,k:'eat'},donut:{n:'糖霜甜甜圈',p:18,k:'eat'}};
-const THEMES={neon:{n:'霓虹紫',a:'#a77bff',b:'#ff5fb8',c:'#5cc2ff'},sunset:{n:'夕陽橘',a:'#ff8a3d',b:'#ff4f7b',c:'#ffd25e'},ocean:{n:'海洋藍',a:'#2fb8ff',b:'#3d6bff',c:'#4fe3d0'},
+const THEMES={normal:{n:'正常照明',a:'#fff1dc',b:'#ffe0c2',c:'#ffffff',amb:1.9,key:2.1},club:{n:'夜店',a:'#ff2bd6',b:'#00e5ff',c:'#7a2bff',amb:.35,key:.6,anim:'club'},neon:{n:'霓虹紫',a:'#a77bff',b:'#ff5fb8',c:'#5cc2ff'},sunset:{n:'夕陽橘',a:'#ff8a3d',b:'#ff4f7b',c:'#ffd25e'},ocean:{n:'海洋藍',a:'#2fb8ff',b:'#3d6bff',c:'#4fe3d0'},
  forest:{n:'森林綠',a:'#41e08f',b:'#b6f05a',c:'#2fd3b2'},sakura:{n:'櫻花粉',a:'#ff8cc4',b:'#ffb3d9',c:'#c79bff'},gold:{n:'午夜金',a:'#ffcf6b',b:'#ff9f4a',c:'#fff1c4'},mono:{n:'純白',a:'#e8e6ff',b:'#bfc3ff',c:'#ffffff'}};
 const ACC={pid:null,name:'',look:null,role:'player',coins:0,items:[],equip:{},renames:[],mutedUntil:0,exists:false,session:null,since:0,joinedAt:Date.now(),
  config:{capacity:40,maintenance:false,maint_msg:'',motd:'',tv_lock:false,shop:DEFAULT_SHOP,theme:'neon'}};
@@ -2961,9 +2982,9 @@ function renderSettings(){document.querySelectorAll('.stabs button').forEach(b=>
  if(setTab==='gen')renderGen();if(setTab==='snd')renderVols();if(setTab==='gfx')$('st-fps').textContent=Math.round(NETH.fps)+' FPS';if(setTab==='inv')renderInv();if(setTab==='acct')renderAcct()}
 function profCard(){const c=document.createElement('div');c.className='profc';c.append(pfEl(look));const t=document.createElement('div');t.className='grow';const b=document.createElement('b');b.textContent=ACC.name||myName;const sm=document.createElement('small');sm.textContent=(isStaff()?ROLE_NAME[ACC.role]+' · ':'')+'ID '+String(ACC.pid||BK.uid||'').slice(0,8);t.append(b,sm);
  const cc=document.createElement('span');cc.className='coinchip';cc.innerHTML=`<svg class="i"><use href="#i-coin"/></svg>${ACC.coins|0}`;c.append(t,cc);return c}
-function renderGen(){$('st-prof').replaceChildren(profCard());const rs=renameState();$('st-rn').textContent=isStaff()?'管理員不受次數限制':rs.left>0?`14 天內還能改 ${rs.left} 次`:`下次可改：${new Date(rs.next).toLocaleDateString('zh-TW')}`;$('b-rename').disabled=!isStaff()&&rs.left<=0}
+function renderGen(){$('st-prof').replaceChildren(profCard());renderNotiSettings();const rs=renameState();$('st-rn').textContent=isStaff()?'管理員不受次數限制':rs.left>0?`14 天內還能改 ${rs.left} 次`:`下次可改：${new Date(rs.next).toLocaleDateString('zh-TW')}`;$('b-rename').disabled=!isStaff()&&rs.left<=0}
 $('b-rename').onclick=async()=>{let err='';for(;;){const rs=renameState();const v=await dialog({icon:'edit',title:'更改暱稱',text:isStaff()?'':`每 14 天最多改 2 次（剩 ${rs.left} 次）`,input:{value:ACC.name,max:12,ph:'2–12 個字',err},btns:[{t:'取消'},{t:'確定更改',pri:true}]});if(v==null)return;
- const r=await renameSelf(v);if(r.ok){myName=ACC.name;$('me-name').textContent=myName;lastInfoKey='';pushInfo(true);notify({tone:'ok',text:`暱稱已改為「${ACC.name}」`,ms:3000});renderSettings();return}
+ const r=await renameSelf(v);if(r.ok){renderAccountPage();myName=ACC.name;$('me-name').textContent=myName;lastInfoKey='';pushInfo(true);notify({tone:'ok',text:`暱稱已改為「${ACC.name}」`,ms:3000});renderSettings();return}
  err={invalid:'請輸入 2–12 個字',same:'跟現在的暱稱一樣',reserved:'包含保留字（管理員、官方、AVÉRA…），請換一個',limit:`14 天內已改過 2 次，${r.next?new Date(r.next).toLocaleDateString('zh-TW')+' 後':'之後'}才能再改`,net:'連線失敗，請稍後再試'}[r.error]||'更改失敗';if(r.error==='limit'){notify({tone:'warn',text:err});return}}};
 $('b-tut').onclick=()=>{togglePop('menu',false);startTutorial(true)};
 function renderVols(){$('s-sfx').value=Math.round(SFX.vol*100);$('s-voice').value=Math.round(VOICE.vol*100);const w=$('plvols');w.replaceChildren();
@@ -3113,7 +3134,7 @@ const _admVenue=admVenue;admVenue=function(m){_admVenue(m);const c=el('div','adm
 const _admTab=admTab;admTab=function(k){if(['roomstat','chatlog','logins','security'].includes(k)){ADM.tab=k;document.querySelectorAll('#adm-nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.k===k));const m=$('adm-main');m.replaceChildren();m.append(el('h2',null,ADM_TABS.find(t=>t[0]===k)[2]));({roomstat:admRoomstat,chatlog:admChatlog,logins:admLogins,security:admSecurity}[k])(m);return}_admTab(k)};
 
 // ================= website, lobby & room flow =================
-const PAGES=['home','about','rooms','faq','contact','terms','privacy','rules'];
+const PAGES=['home','about','rooms','faq','contact','terms','privacy','rules','account'];
 const APP={page:'home',entered:false,roomsT:0,ownerGoneAt:0,closingNote:null,lastInput:performance.now(),afkNote:null};
 const MAIN_ROOM=()=>({id:'main',name:'AVÉRA 大廳',cap:ACC.config.capacity||40,pub:true,has_pw:false,locked:false,perm:true,owner:null,owner_name:'AVÉRA',chan:'main',theme:ACC.config.theme||'neon',count:null,official:true});
 const esc2=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -3136,7 +3157,7 @@ function showPage(pg){APP.page=pg;$('creator').hidden=true;document.body.classLi
  document.querySelectorAll('#pages .pg').forEach(s=>s.hidden=s.dataset.pg!==pg);document.querySelectorAll('#navl a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.r===pg));if(document.querySelector('#navl a[aria-current]'))document.querySelector('#navl a[aria-current]').setAttribute('aria-current','page');
  $('site').classList.toggle('solid',pg!=='home');$('nav').classList.remove('open');$('site').scrollTop=0;siteMode();
  clearInterval(APP.roomsT);if(pg==='rooms'){if(!ACC.exists){openCreator();return}renderLobby();APP.roomsT=setInterval(renderLobby,10000)}
- document.title=pg==='home'?'AVÉRA · Q 版 3D 遊戲場':`${{about:'介紹',rooms:'包廂',faq:'常見問題',contact:'聯絡我們',terms:'服務條款',privacy:'隱私權政策',rules:'社群守則'}[pg]} · AVÉRA`}
+ if(pg==='account')renderAccountPage();document.title=pg==='home'?'AVÉRA · Q 版 3D 遊戲場':`${{about:'介紹',rooms:'包廂',faq:'常見問題',contact:'聯絡我們',account:'我的帳號',terms:'服務條款',privacy:'隱私權政策',rules:'社群守則'}[pg]} · AVÉRA`}
 function siteMode(){if(me.mode==='walk'||me.mode==='bowl'||me.mode==='cab'||me.mode==='sit')return;me.mode='site';myAv.visible=false;camera.clearViewOffset()}
 addEventListener('hashchange',route);
 $('nav-burger').onclick=()=>{const o=$('nav').classList.toggle('open');$('nav-burger').setAttribute('aria-expanded',o)};
@@ -3309,7 +3330,7 @@ async function siteBoot(){$('ldg').textContent='';myAv.visible=false;if(me.mode=
  try{await initBackend()}catch(e){console.warn(e)}
  if(ACC.exists){Object.assign(look,ACC.look||look);const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;myAv.visible=false;$('nav-me').hidden=false;$('nav-me').replaceChildren(pfEl(look),Object.assign(document.createElement('span'),{textContent:ACC.name}));$('nav-play').textContent='進入包廂'}
  if(BK.netErr)notify({tone:'warn',text:'暫時連不上 AVÉRA 伺服器，部分功能可能無法使用',ms:8000});
- route()}
+ if(ADMPAGE){adminGate();return}route()}
 $('contact-f').addEventListener('submit',async e=>{e.preventDefault();const body=$('cf-body').value.trim();if(body.length<5){notify({tone:'warn',text:'內容至少 5 個字'});return}await initBackend();
  const r=await sendReport($('cf-kind').value,$('cf-target').value.trim(),body,{from:'website',ua:navigator.userAgent.slice(0,120)});
  if(r.ok){$('cf-body').value='';$('cf-target').value='';$('cf-cnt').textContent='0 / 1000';dialog({icon:'check',title:'已送出',text:'謝謝你！管理員會在後台查看並處理。',color:'var(--mint)'})}else notify({tone:'err',text:{rate:'送出太頻繁了，請一小時後再試',length:'內容太短或太長',net:'連線失敗，請稍後再試'}[r.error]||'送出失敗'})});
@@ -3366,6 +3387,34 @@ async function logAct(what,extra){if(BK.mode==='supa'){rpc('avera_flag',{p_secre
 // room status for the admin dashboard (written by the room's TV host)
 setInterval(()=>{if(!ROOM.id||!NET.ok||!tvHost())return;const st={id:ROOM.id,name:ROOM.name,count:peers.size+1,cap:ROOM.cap,music:YTS.v?(YTS.title||YTS.v):'',by:YTS.by||'',queue:TVQ.length,theme:ROOM.theme,t:Date.now()};
  if(BK.mode==='supa')rpc('avera_room_stat',{p_secret:BK.secret,p_stat:st});else dset('rstat/'+String(ROOM.id).replace(/[^A-Za-z0-9_-]/g,''),st)},20000);
+
+// ================= notification styles, seats, account page, admin page =================
+// ---- notification preferences: on/off, template, accent colour, animation ----
+const NOTI={on:store.get('noti_on',true),tpl:store.get('noti_tpl','candy'),col:store.get('noti_col','#ff8cc4'),anim:store.get('noti_anim','pop')};
+const NTPL=[['candy','糖果'],['glass','透明玻璃'],['neon','霓虹框'],['mini','極簡']],NANIM=[['pop','彈跳'],['slide','滑入'],['fade','淡入'],['none','不動']],NCOLS=['#ff8cc4','#7fd2ff','#4fe3b0','#ffd25e','#c9b4ff','#ff9a5c'];
+function applyNoti(){const b=document.body;for(const[k]of NTPL)b.classList.toggle('nt-'+k,NOTI.tpl===k);for(const[k]of NANIM)b.classList.toggle('na-'+k,NOTI.anim===k);document.documentElement.style.setProperty('--ntc',NOTI.col)}
+applyNoti();
+const _notify=notify;notify=function(o){if(!NOTI.on&&!o.prio&&!['ann','room','err','warn'].includes(o.tone||'info')&&!(o.btns&&o.btns.length))return nHandle({...o,el:null});return _notify(o)};
+function renderNotiSettings(){const w=$('st-noti');w.replaceChildren();const row=document.createElement('div');row.className='mrow';row.innerHTML='<svg class="i"><use href="#i-megaphone"/></svg><span class="grow">一般通知<small>關掉後仍會顯示公告、邀請與重要提醒</small></span><button class="tog"></button>';const tg=row.querySelector('.tog');tg.setAttribute('aria-pressed',NOTI.on);tg.onclick=()=>{NOTI.on=!NOTI.on;store.set('noti_on',NOTI.on);renderNotiSettings()};w.append(row);
+ const seg=(title,list,key)=>{const l=document.createElement('div');l.className='slab';l.textContent=title;const g=document.createElement('div');g.className='seg';g.style.gridTemplateColumns=`repeat(${list.length},1fr)`;for(const[k,n]of list){const b=document.createElement('button');b.textContent=n;b.setAttribute('aria-pressed',NOTI[key]===k);b.onclick=()=>{NOTI[key]=k;store.set('noti_'+key,k);applyNoti();renderNotiSettings();notify({tone:'info',text:'這是通知的樣子',ms:2500})};g.append(b)}w.append(l,g)};
+ seg('樣式',NTPL,'tpl');seg('動畫',NANIM,'anim');const cl=document.createElement('div');cl.className='slab';cl.textContent='顏色';const cg=document.createElement('div');cg.className='thms';for(const c of NCOLS){const b=document.createElement('button');b.className='thm';b.style.background=c;b.setAttribute('aria-pressed',NOTI.col===c);b.onclick=()=>{NOTI.col=c;store.set('noti_col',c);applyNoti();renderNotiSettings()};cg.append(b)}w.append(cl,cg)}
+// ---- seats: one animal per seat ----
+const _sitDown=sitDown;sitDown=function(t){const sx=t.seat.x,sz=t.seat.z;for(const p of peers.values()){if(p.pose==='sit'&&p.av&&Math.hypot(p.av.position.x-sx,p.av.position.z-sz)<.35){notify({key:'seat',tone:'info',icon:'sofa',text:'這個位子有人坐了，換一個吧',ms:2500,quiet:true});return}}_sitDown(t)};
+// ---- website account page: nickname change (14 days / 2 times) ----
+function renderAccountPage(){const w=$('acct-body');if(!w)return;w.replaceChildren();if(!ACC.exists){const b=document.createElement('button');b.className='cb pink';b.textContent='建立角色';b.onclick=()=>openCreator();w.append(b);return}
+ w.append(profCard());const rs=renameState();const r=document.createElement('div');r.className='mrow';r.innerHTML=`<svg class="i"><use href="#i-edit"/></svg><span class="grow">暱稱：<b></b><small>${isStaff()?'管理員不受次數限制':rs.left>0?`14 天內還能改 ${rs.left} 次`:'下次可改：'+new Date(rs.next).toLocaleDateString('zh-TW')}</small></span>`;r.querySelector('b').textContent=ACC.name;const bt=document.createElement('button');bt.className='cb ghost sm';bt.textContent='更改';bt.onclick=()=>$('b-rename').click();r.append(bt);w.append(r);
+ const n=document.createElement('p');n.className='note';n.textContent='角色外觀建立後無法自行更改；代幣、道具與排行榜都跟著這個帳號。';w.append(n)}
+// ---- dedicated admin page: strangers see a 404, admins need a password every 8 hours ----
+const ADMPAGE=typeof ADMIN_PAGE!=='undefined'||location.hash.startsWith('#/admin');
+async function adminGate(){document.body.classList.add('adminpage');$('site').hidden=true;me.mode='site';await initBackend();
+ if(!isStaff()){$('nf').hidden=false;flagProbe();return}
+ const tok=store.get('admtok',null);if(tok&&tok.exp>Date.now()&&tok.id===(ACC.pid||BK.uid)){openAdmin();$('adm-x').hidden=true;return}
+ const hasPw=await adminPw('has');const v=await dialog({icon:'shield',title:hasPw?'後台登入':'第一次使用：設定後台密碼',text:hasPw?'請輸入後台密碼（每 8 小時需要重新登入）':'請設定至少 8 個字元的後台密碼',input:{type:'password',max:64},cancel:false,btns:[{t:hasPw?'登入':'設定並進入',pri:true}]});
+ if(!v||v.length<(hasPw?1:8)){location.reload();return}const ok=await adminPw(hasPw?'check':'set',v);if(!ok){flagProbe('wrong_password');await dialog({icon:'ban',title:'密碼錯誤',text:'這次嘗試已被記錄。',cancel:false});location.reload();return}
+ store.set('admtok',{exp:Date.now()+8*36e5,id:ACC.pid||BK.uid});openAdmin();$('adm-x').hidden=true}
+async function adminPw(op,pw){if(BK.mode==='supa'){const r=await rpc('avera_admin_pw',{p_secret:BK.secret,p_op:op,p_pw:pw||null});return op==='has'?!!r.has:!!r.ok}
+ const cur=(await dget('staff/'+BK.uid))||{};if(op==='has')return!!cur.pwh;const h=await sha('avera-admin:'+pw);if(op==='set'){await dset('staff/'+BK.uid,{...cur,role:cur.role||ACC.role,pwh:h});return true}return cur.pwh===h}
+function flagProbe(why='admin_probe'){const data={why,dev:deviceInfo(),url:location.href.slice(0,120)};if(BK.mode==='supa')rpc('avera_flag',{p_secret:BK.secret||'probe-'+rhex(12),p_kind:'admin_probe',p_data:data});else{dget('reports/'+BK.uid).then(cur=>{cur=cur||{items:[]};dset('reports/'+BK.uid,{name:ACC.name||'訪客',items:[...(cur.items||[]),{id:rhex(4),kind:'cheat',target:'後台',body:`嘗試進入後台（${why}）`,ctx:data,t:Date.now(),status:'open',name:ACC.name||'訪客'}].slice(-30)})})}}
 
 // ================= name tags =================
 function makeTag(){const d=document.createElement('div');d.className='tag';d.innerHTML='<div class="bub" hidden></div><div class="nt"><span class="cdot"></span><svg class="i f pt"><use href="#i-star"/></svg><svg class="i mic"><use href="#i-mic"/></svg><span class="n"></span></div>';document.body.append(d);return d}

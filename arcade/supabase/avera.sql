@@ -578,3 +578,25 @@ declare me avera.players; res jsonb; begin me := avera._me(p_secret); if me.id i
  else return jsonb_build_object('error','kind'); end if;
  return jsonb_build_object('ok',true,'rows',res); end $$;
 grant execute on function public.avera_chat(text,text,text), public.avera_login_log(text,jsonb), public.avera_room_stat(text,jsonb), public.avera_admin_logs(text,text) to anon, authenticated;
+
+-- admin page password (8h sessions are enforced client-side; every check is logged)
+alter table avera.players add column if not exists admin_pw text;
+create or replace function public.avera_admin_pw(p_secret text, p_op text, p_pw text) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r avera.players; begin r := avera._me(p_secret);
+ if r.id is null or avera._rank(r.role) < 1 then insert into avera.flags(player,kind,data,ip) values (r.id,'admin_probe',jsonb_build_object('op',p_op),avera._ip()); perform pg_sleep(1); return jsonb_build_object('error','forbidden'); end if;
+ if p_op = 'has' then return jsonb_build_object('has', r.admin_pw is not null); end if;
+ if p_op = 'set' then if r.admin_pw is not null or char_length(coalesce(p_pw,'')) < 8 then return jsonb_build_object('error','set'); end if; update avera.players set admin_pw = extensions.crypt(p_pw, extensions.gen_salt('bf')) where id = r.id; return jsonb_build_object('ok',true); end if;
+ if p_op = 'check' then if r.admin_pw is not null and r.admin_pw = extensions.crypt(coalesce(p_pw,''), r.admin_pw) then insert into avera.audit(by,op,data) values (r.id,'admin_login',jsonb_build_object('ip',avera._ip())); return jsonb_build_object('ok',true); end if;
+  insert into avera.flags(player,kind,data,ip) values (r.id,'admin_bad_password','{}',avera._ip()); perform pg_sleep(1.5); return jsonb_build_object('error','password'); end if;
+ return jsonb_build_object('error','op'); end $$;
+grant execute on function public.avera_admin_pw(text,text,text) to anon, authenticated;
+-- nightly backup + optimise at 20:00 Asia/Taipei (12:00 UTC)
+create table if not exists avera.backups(id bigserial primary key, at timestamptz default now(), data jsonb);
+alter table avera.backups enable row level security;
+create or replace function avera.backup_now() returns void language sql security definer set search_path = '' as $$
+ insert into avera.backups(data) select jsonb_build_object('players',(select coalesce(jsonb_agg(p),'[]') from avera.players p),'rooms',(select coalesce(jsonb_agg(r),'[]') from avera.rooms r),'config',(select coalesce(jsonb_object_agg(k,v),'{}') from avera.config),'scores',(select coalesce(jsonb_agg(s),'[]') from avera.scores s));
+ delete from avera.backups where at < now() - interval '14 days';
+ delete from avera.chat where at < now() - interval '180 days'; delete from avera.logins where at < now() - interval '180 days'; $$;
+create extension if not exists pg_cron;
+select cron.schedule('avera-backup', '0 12 * * *', 'select avera.backup_now()');
+select cron.schedule('avera-optimize', '10 12 * * *', 'vacuum analyze avera.players, avera.chat, avera.events, avera.flags, avera.logins, avera.scores');

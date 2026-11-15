@@ -14,7 +14,7 @@ const SPECIAL_ITEMS={
  stars:{n:'星星足跡',slot:'trail'},hearts:{n:'愛心足跡',slot:'trail'},aura:{n:'彩虹光暈',slot:'fx'}};
 const SLOT_NAME={hat:'頭飾',back:'背飾',tag:'名牌',pet:'寵物',trail:'足跡',fx:'光效'};
 const DEFAULT_SHOP={cola:{n:'霓虹可樂',p:15,k:'drink'},bubble:{n:'珍珠奶茶',p:25,k:'drink'},soda:{n:'彩虹汽水',p:18,k:'drink'},popcorn:{n:'焦糖爆米花',p:20,k:'eat'},hotdog:{n:'大熱狗',p:30,k:'eat'},fries:{n:'黃金薯條',p:20,k:'eat'},icecream:{n:'霜淇淋',p:22,k:'eat'},donut:{n:'糖霜甜甜圈',p:18,k:'eat'}};
-const THEMES={neon:{n:'霓虹紫',a:'#a77bff',b:'#ff5fb8',c:'#5cc2ff'},sunset:{n:'夕陽橘',a:'#ff8a3d',b:'#ff4f7b',c:'#ffd25e'},ocean:{n:'海洋藍',a:'#2fb8ff',b:'#3d6bff',c:'#4fe3d0'},
+const THEMES={normal:{n:'正常照明',a:'#fff1dc',b:'#ffe0c2',c:'#ffffff',amb:1.9,key:2.1},club:{n:'夜店',a:'#ff2bd6',b:'#00e5ff',c:'#7a2bff',amb:.35,key:.6,anim:'club'},neon:{n:'霓虹紫',a:'#a77bff',b:'#ff5fb8',c:'#5cc2ff'},sunset:{n:'夕陽橘',a:'#ff8a3d',b:'#ff4f7b',c:'#ffd25e'},ocean:{n:'海洋藍',a:'#2fb8ff',b:'#3d6bff',c:'#4fe3d0'},
  forest:{n:'森林綠',a:'#41e08f',b:'#b6f05a',c:'#2fd3b2'},sakura:{n:'櫻花粉',a:'#ff8cc4',b:'#ffb3d9',c:'#c79bff'},gold:{n:'午夜金',a:'#ffcf6b',b:'#ff9f4a',c:'#fff1c4'},mono:{n:'純白',a:'#e8e6ff',b:'#bfc3ff',c:'#ffffff'}};
 const ACC={pid:null,name:'',look:null,role:'player',coins:0,items:[],equip:{},renames:[],mutedUntil:0,exists:false,session:null,since:0,joinedAt:Date.now(),
  config:{capacity:40,maintenance:false,maint_msg:'',motd:'',tv_lock:false,shop:DEFAULT_SHOP,theme:'neon'}};

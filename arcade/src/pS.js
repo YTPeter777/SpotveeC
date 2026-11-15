@@ -1,6 +1,6 @@
 
 // ================= website, lobby & room flow =================
-const PAGES=['home','about','rooms','faq','contact','terms','privacy','rules'];
+const PAGES=['home','about','rooms','faq','contact','terms','privacy','rules','account'];
 const APP={page:'home',entered:false,roomsT:0,ownerGoneAt:0,closingNote:null,lastInput:performance.now(),afkNote:null};
 const MAIN_ROOM=()=>({id:'main',name:'AVÉRA 大廳',cap:ACC.config.capacity||40,pub:true,has_pw:false,locked:false,perm:true,owner:null,owner_name:'AVÉRA',chan:'main',theme:ACC.config.theme||'neon',count:null,official:true});
 const esc2=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -23,7 +23,7 @@ function showPage(pg){APP.page=pg;$('creator').hidden=true;document.body.classLi
  document.querySelectorAll('#pages .pg').forEach(s=>s.hidden=s.dataset.pg!==pg);document.querySelectorAll('#navl a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.r===pg));if(document.querySelector('#navl a[aria-current]'))document.querySelector('#navl a[aria-current]').setAttribute('aria-current','page');
  $('site').classList.toggle('solid',pg!=='home');$('nav').classList.remove('open');$('site').scrollTop=0;siteMode();
  clearInterval(APP.roomsT);if(pg==='rooms'){if(!ACC.exists){openCreator();return}renderLobby();APP.roomsT=setInterval(renderLobby,10000)}
- document.title=pg==='home'?'AVÉRA · Q 版 3D 遊戲場':`${{about:'介紹',rooms:'包廂',faq:'常見問題',contact:'聯絡我們',terms:'服務條款',privacy:'隱私權政策',rules:'社群守則'}[pg]} · AVÉRA`}
+ if(pg==='account')renderAccountPage();document.title=pg==='home'?'AVÉRA · Q 版 3D 遊戲場':`${{about:'介紹',rooms:'包廂',faq:'常見問題',contact:'聯絡我們',account:'我的帳號',terms:'服務條款',privacy:'隱私權政策',rules:'社群守則'}[pg]} · AVÉRA`}
 function siteMode(){if(me.mode==='walk'||me.mode==='bowl'||me.mode==='cab'||me.mode==='sit')return;me.mode='site';myAv.visible=false;camera.clearViewOffset()}
 addEventListener('hashchange',route);
 $('nav-burger').onclick=()=>{const o=$('nav').classList.toggle('open');$('nav-burger').setAttribute('aria-expanded',o)};
@@ -196,7 +196,7 @@ async function siteBoot(){$('ldg').textContent='';myAv.visible=false;if(me.mode=
  try{await initBackend()}catch(e){console.warn(e)}
  if(ACC.exists){Object.assign(look,ACC.look||look);const so=SFX.on;SFX.on=false;refreshLook();SFX.on=so;myAv.visible=false;$('nav-me').hidden=false;$('nav-me').replaceChildren(pfEl(look),Object.assign(document.createElement('span'),{textContent:ACC.name}));$('nav-play').textContent='進入包廂'}
  if(BK.netErr)notify({tone:'warn',text:'暫時連不上 AVÉRA 伺服器，部分功能可能無法使用',ms:8000});
- route()}
+ if(ADMPAGE){adminGate();return}route()}
 $('contact-f').addEventListener('submit',async e=>{e.preventDefault();const body=$('cf-body').value.trim();if(body.length<5){notify({tone:'warn',text:'內容至少 5 個字'});return}await initBackend();
  const r=await sendReport($('cf-kind').value,$('cf-target').value.trim(),body,{from:'website',ua:navigator.userAgent.slice(0,120)});
  if(r.ok){$('cf-body').value='';$('cf-target').value='';$('cf-cnt').textContent='0 / 1000';dialog({icon:'check',title:'已送出',text:'謝謝你！管理員會在後台查看並處理。',color:'var(--mint)'})}else notify({tone:'err',text:{rate:'送出太頻繁了，請一小時後再試',length:'內容太短或太長',net:'連線失敗，請稍後再試'}[r.error]||'送出失敗'})});
